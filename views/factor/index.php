@@ -7,7 +7,7 @@ require_once '../../layouts/callcenter/nav.php';
 require_once '../../layouts/callcenter/sidebar.php';
 ?>
 <div class="rtl min-h-screen grid grid-cols-1 md:grid-cols-6 gap-2 lg:gap-3 mb-4">
-    <div class="bg-white min-h-full col-span-3 shadow-md">
+    <div class="bg-white min-h-full md:col-span-3 shadow-md">
         <div class="flex items-center justify-between p-3 bg-gray-900">
             <h2 class="text-xl font-semibold text-white flex items-center gap-2">
                 <img class="w-7 h-7" src="./assets/img/incomplete.svg" alt="customer icon">
@@ -39,7 +39,7 @@ require_once '../../layouts/callcenter/sidebar.php';
 
     </div>
 
-    <div class="bg-white min-h-full col-span-2 shadow-md">
+    <div class="bg-white min-h-full md:col-span-2 shadow-md">
         <div class="flex items-center justify-between p-3 bg-gray-900">
             <h2 class="text-xl font-semibold text-white flex items-center gap-2">
                 <img class="w-7 h-7" src="./assets/img/saved_bill.svg" alt="customer icon">
@@ -64,7 +64,7 @@ require_once '../../layouts/callcenter/sidebar.php';
         </div>
     </div>
 
-    <div class="bg-white min-h-full shadow-md">
+    <div class="bg-white min-h-full shadow-md md:col-span-1">
         <div class="p-3 bg-gray-900">
             <h2 class="text-xl font-semibold text-white flex items-center gap-2">
                 <img class="w-7 h-7" src="./assets/img/select_user.svg" alt="inventory icon">

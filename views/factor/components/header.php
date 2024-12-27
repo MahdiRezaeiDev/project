@@ -10,7 +10,7 @@ require_once '../../utilities/jdf.php';
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
     <meta name="description" content="This is a simple CMS for tracing goods based on their serial or part number.">
     <meta name="author" content="Mahdi Rezaei">
     <title id="customer_factor"><?= $pageTitle ?></title>

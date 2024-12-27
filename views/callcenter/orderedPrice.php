@@ -27,7 +27,7 @@ if ($isValidCustomer) :
 ?>
         <link href="./assets/css/report.css" rel="stylesheet" />
         <section class="flex gap-8 justify-between">
-            <div class="m-2 bg-gray-700 p-2 w-96">
+            <div class="hidden sm:block m-2 bg-gray-700 p-2 sm:w-96">
                 <table class="col-6 text-sm border border-white font-light mb-2 w-full h-full">
                     <thead class="font-medium bg-gray-700 border-b border-white">
                         <tr>
@@ -55,7 +55,7 @@ if ($isValidCustomer) :
                     </tbody>
                 </table>
             </div>
-            <div class="m-2 p-2 bg-gray-700  w-96">
+            <div class="hidden sm:block m-2 p-2 bg-gray-700  sm:w-96">
                 <form class="h-full border border-white flex flex-col gap-2 p-2 " target="_blank" action="./orderedPrice.php" method="post">
                     <div class="h-full">
                         <input type="text" name="givenPrice" value="givenPrice" id="form" hidden>
@@ -74,7 +74,7 @@ if ($isValidCustomer) :
                     </span>
                 </form>
             </div>
-            <div class="m-2 p-2 bg-gray-700  w-4/12 relative">
+            <div class="m-2 p-2 bg-gray-700  sm:w-4/12 relative">
                 <table style="direction: ltr !important;" class="w-full h-full text-sm p-2">
                     <thead class="font-medium">
                         <tr class="border">
@@ -181,7 +181,7 @@ if ($isValidCustomer) :
                         <input type="text" name="customer" value="1" id="target_customer" hidden>
                         <textarea style="direction: ltr !important;" onchange="filterCode(this)" id="code" name="code" required class="h-full bg-transparent w-full p-2 text-white placeholder-white outline-none focus:border-white hidden" placeholder="لطفا کد های مورد نظر خود را در خط های مجزا قرار دهید"><?= $codes; ?></textarea>
                     </div>
-                    <span class="flex justify-between">
+                    <span class="hidden sm:flex justify-between">
                         <div class="flex gap-1 items-center">
                             <button type="submit" formaction="../factor/createPreCompleteBill.php?partner=0" class="cursor-pointer  text-white rounded bg-sky-600 hover:bg-sky-500 px-1 py-1 text-xs">مصرف کننده</button>
                             <button type="submit" formaction="../factor/createPreCompleteBill.php?partner=1" class="cursor-pointer bg-green-600 hover:bg-green-700 text-white rounded px-1 py-1 text-xs">همکار</button>

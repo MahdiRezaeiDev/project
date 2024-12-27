@@ -79,12 +79,12 @@ $NOT_INCLUDED = []; ?>
 <!-- HTML STRUCTURE -->
 <section id="wrapper" class="mx-5 rounded-lg shadow overflow-hidden">
     <div class="bg-gray-800 p-3 flex justify-between h-28 pt-8 hide_while_print">
-        <div>
-            <input minlength="3" id="customer" class="bg-transparent border-2 border-white px-3 py-2 text-white w-72 outline-none" autofocus="true" name="customer" type="text" placeholder="نام خریدار را وارد کنید ...">
-            <button onclick="getNewFactorNumber()" class="bg-blue-500 border-2 border-transparent py-2 px-3 text-white" type="button"> گرفتن شماره فاکتور</button>
+        <div class="flex sm:block justify-between items-center gap-5">
+            <input minlength="3" id="customer" class="bg-transparent border-2 border-white py-1 px-1 sm:px-3 sm:py-2 text-white sm:w-72 outline-none text-xs sm:text-sm" autofocus="true" name="customer" type="text" placeholder="نام خریدار را وارد کنید ...">
+            <button onclick="getNewFactorNumber()" class="bg-blue-500 border-2 border-transparent py-1 px-1 sm:py-2 sm:px-3 text-white text-xs sm:text-sm" type="button"> گرفتن شماره فاکتور</button>
             <p id="customer_error" class="py-2 text-rose-500 text-xs font-semibold hidden">نام خریدار باید بیشتر از ۳ حرف باشد.</p>
         </div>
-        <p class="text-white text-lg font-semibold">
+        <p class="text-white text-lg font-semibold hidden sm:block">
             <?= jdate('l J F'); ?> -
             <?= jdate('Y/m/d')  ?>
         </p>
@@ -92,15 +92,15 @@ $NOT_INCLUDED = []; ?>
     <div class="bg-gray-100 p-5 flex justify-between hide_while_print">
         <form>
             <label class="text-sm font-semibold" for="invoice_time">
-                <img class="inline" src="./assets/img/filter.svg" alt="filter icon">
+                <img class="hidden sm:inline" src="./assets/img/filter.svg" alt="filter icon">
             </label>
-            <input class="text-sm py-2 px-3 font-semibold w-60 border-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="invoice_time" id="invoice_time">
+            <input class="text-sm py-2 px-3 font-semibold sm:w-60 border-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="invoice_time" id="invoice_time">
         </form>
         <div class="flex justify-center items-center gap-2">
             <a title="چاپ کردن گزارش" class="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-md cursor-pointer" onClick="window.print()">
-                <img src="./assets/img/print.svg" alt="print icon" />
+                <img class="w-6 h-6 sm:w-12 sm:h-11" src="./assets/img/print.svg" alt="print icon" />
             </a>
-            <img onclick="calculateTotal()" title="گزارش فروشات امروز" class="w-12 h-11 cursor-pointer" src="./assets/img/chasier.svg" alt="chasier icon">
+            <img onclick="calculateTotal()" title="گزارش فروشات امروز" class="w-8 h-8 sm:w-12 sm:h-11 cursor-pointer" src="./assets/img/chasier.svg" alt="chasier icon">
         </div>
     </div>
 
@@ -114,8 +114,8 @@ $NOT_INCLUDED = []; ?>
     </div>
     <!-- Saved new factor success message END -->
 
-    <div id="resultBox" class="grid grid-cols-8 gap-3 py-5">
-        <div class="col-span-6">
+    <div id="resultBox" class="grid sm:grid-cols-8 gap-3 py-5">
+        <div class="sm:col-span-6">
             <table id="factor_table" class="w-full">
                 <thead class="bg-gray-800">
                     <tr class="text-white">
@@ -126,7 +126,7 @@ $NOT_INCLUDED = []; ?>
                         <?php
                         $isAdmin = $_SESSION['username'] === 'niyayesh' || $_SESSION['username'] === 'mahdi' || $_SESSION['username'] === 'babak' ? true : false;
                         if ($isAdmin) : ?>
-                            <th class="p-3 text-sm font-semibold hide_while_print">ویرایش</th>
+                            <th class="p-3 text-sm font-semibold hide_while_print hidden sm:table-cell">ویرایش</th>
                         <?php endif; ?>
                     </tr>
                 </thead>
@@ -145,7 +145,7 @@ $NOT_INCLUDED = []; ?>
                             } ?>
                             <tr class="even:bg-gray-100 factor_row" data-total="<?= $factor['total'] ?? 'xxx' ?>" data-status="<?= $factor['status'] ?? 'xxx' ?>">
                                 <td class="text-center align-middle">
-                                    <span class="flex justify-center items-center gap-2 bg-blue-500 rounded-sm text-white w-24 py-2 mx-auto cursor-pointer" title="کپی کردن شماره فاکتور" data-billNumber="<?= $factor['shomare'] ?>" onClick="copyBillNumberSingle(this)">
+                                    <span class="flex justify-center items-center gap-2 bg-blue-500 rounded-sm text-white sm:w-24 py-2 mx-auto cursor-pointer" title="کپی کردن شماره فاکتور" data-billNumber="<?= $factor['shomare'] ?>" onClick="copyBillNumberSingle(this)">
                                         <span class="factorNumberContainer"><?= $factor['shomare'] ?></span>
                                         <img src="./assets/img/copy.svg" alt="copy icon" />
                                     </span>
@@ -166,7 +166,7 @@ $NOT_INCLUDED = []; ?>
 
                                 <?php
                                 if ($isAdmin) : ?>
-                                    <td class="text-center align-middle hide_while_print">
+                                    <td class="text-center align-middle hide_while_print hidden sm:table-cell">
                                         <a onclick="toggleModal(this); edit(this)" data-factor="<?= $factor["id"] ?>" data-user="<?= $factor['user']; ?>" data-billNO="<?= $factor['shomare'] ?>" data-user-info="<?= getUserInfo($factor['user']) ?>" data-customer="<?= $factor['kharidar'] ?>" class="text-xs bg-cyan-500 text-white cursor-pointer px-2 py-1 rounded">
                                             ویرایش
                                         </a>
@@ -185,8 +185,8 @@ $NOT_INCLUDED = []; ?>
                 </tbody>
             </table>
         </div>
-        <div class="col-span-2 hide_while_print">
-            <div class="px-3">
+        <div class="sm:col-span-2 hide_while_print">
+            <div class="px-">
                 <table class="w-full">
                     <thead class="bg-gray-800">
                         <tr class="text-white">

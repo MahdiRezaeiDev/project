@@ -59,7 +59,7 @@ function displayUI($factors, $countFactorByUser)
     $REGULAR = 0;
     $NOT_INCLUDED = [];
 ?>
-    <div class="col-span-6">
+    <div class="sm:col-span-6">
         <table class="w-full">
             <thead class="bg-gray-800">
                 <tr class="text-white">
@@ -136,7 +136,7 @@ function displayUI($factors, $countFactorByUser)
             </tbody>
         </table>
     </div>
-    <div class="col-span-2 hide_while_print">
+    <div class="sm:col-span-2 hide_while_print">
         <div class="px-3">
             <table class="w-full">
                 <thead class="bg-gray-800">

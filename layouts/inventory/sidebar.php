@@ -9,6 +9,100 @@ $fileName = basename($_SERVER['PHP_SELF']);
         <li style="display: flex; justify-content: end;">
             <img src="../../public/icons/close.svg" class="cursor-pointer ml-3 mt-4" alt="close menu icon" onclick="toggleSidebar()">
         </li>
+        <li class="block sm:hidden">
+            <div class="dropdown">
+                <a class="flex items-center gap-2 p-4 hover:bg-gray-200 text-sm font-semibold justify-between <?= $fileName == 'transfer_index.php' ? 'bg-gray-400' : '' ?>" href="#">
+                    <span class="flex items-center gap-2">
+                        <img src="./assets/icons/chart.svg" alt="save icon">
+                        گزارش ورود
+                    </span>
+                    <img src="./assets/icons/left_arrow.svg" alt="left arrow">
+                </a>
+                <ul class="drop_down_menu_aside bg-gray-800 border border-gray-800">
+                    <li class="text-white text-sm font-semibold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="purchaseReport.php?interval=3">
+                            <img class="hidden sm:inline-block" src="./assets/icons/three.svg" alt="add icon">
+                            3 روز اخیر
+                        </a>
+                    </li>
+                    <li class="text-white text-sm font-semibold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="purchaseReport.php?interval=10">
+                            <img class="hidden sm:inline-block" src="./assets/icons/ten.svg" alt="add icon">
+                            10 روز اخیر</a>
+                    </li>
+                    <li class="text-white text-sm font-semibold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="purchaseReport.php?interval=30">
+                            <img class="hidden sm:inline-block" src="./assets/icons/thirty.svg" alt="add icon">
+                            30 روز اخیر</a>
+                    </li>
+                    <li class="text-white text-sm font-semibold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="purchaseReport.php?interval=60">
+                            <img class="hidden sm:inline-block" src="./assets/icons/sixty.svg" alt="add icon">
+                            60 روز اخیر</a>
+                    </li>
+                    <li class="text-white text-sm font-semibold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="purchaseReport.php?interval=120">
+                            <img class="hidden sm:inline-block" src="./assets/icons/hundred.svg" alt="add icon">
+                            120 روز اخیر</a>
+                    </li>
+                    <li class="text-white text-sm font-semibold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="purchaseReport.php">
+                            <img class="hidden sm:inline-block" src="./assets/icons/complete.svg" alt="add icon">
+                            گزارش کامل
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="block sm:hidden">
+            <div class="dropdown">
+                <a class="flex items-center gap-2 p-4 hover:bg-gray-200 text-sm font-semibold justify-between <?= $fileName == 'transfer_index.php' ? 'bg-gray-400' : '' ?>" href="#">
+                    <span class="flex items-center gap-2">
+                        <img src="./assets/icons/chart.svg" alt="save icon">
+                        گزارش خروج
+                    </span>
+                    <img src="./assets/icons/left_arrow.svg" alt="left arrow">
+                </a>
+                <ul class="drop_down_menu_aside bg-gray-800 border border-gray-800">
+                    <li class="hover:bg-gray-900 text-white text-sm font-bold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="sellsReport.php?interval=3">
+                            <img class="hidden sm:inline-block" src="./assets/icons/three.svg" alt="add icon">
+                            3 روز اخیر
+                        </a>
+                    </li>
+                    <li class="hover:bg-gray-900 text-white text-sm font-bold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="sellsReport.php?interval=10">
+                            <img class="hidden sm:inline-block" src="./assets/icons/ten.svg" alt="add icon">
+                            10 روز اخیر
+                        </a>
+                    </li>
+                    <li class="hover:bg-gray-900 text-white text-sm font-bold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="sellsReport.php?interval=30">
+                            <img class="hidden sm:inline-block" src="./assets/icons/thirty.svg" alt="add icon">
+                            30 روز اخیر
+                        </a>
+                    </li>
+                    <li class="hover:bg-gray-900 text-white text-sm font-bold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="sellsReport.php?interval=60">
+                            <img class="hidden sm:inline-block" src="./assets/icons/sixty.svg" alt="add icon">
+                            60 روز اخیر
+                        </a>
+                    </li>
+                    <li class="hover:bg-gray-900 text-white text-sm font-bold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="sellsReport.php?interval=120">
+                            <img class="hidden sm:inline-block" src="./assets/icons/hundred.svg" alt="add icon">
+                            120 روز اخیر
+                        </a>
+                    </li>
+                    <li class="hover:bg-gray-900 text-white text-sm font-bold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="sellsReport.php">
+                            <img class="hidden sm:inline-block" src="./assets/icons/complete.svg" alt="add icon">
+                            گزارش کامل
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
         <li>
             <a class="flex justify-start items-center gap-2 p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == '404.php' ? 'bg-gray-400' : '' ?>" href="../callcenter/registerGoods.php">
                 <img src="./assets/icons/save.svg" alt="save icon">

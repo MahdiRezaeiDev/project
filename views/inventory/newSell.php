@@ -174,6 +174,7 @@ require_once '../../layouts/inventory/sidebar.php';
                     ERROR_BOX.innerHTML = '';
                     const factorItems = response.data;
                     billItems = {};
+                    trackingQuantity = {};
 
                     for (const item of factorItems) {
                         try {
@@ -217,12 +218,27 @@ require_once '../../layouts/inventory/sidebar.php';
                                 if (ALL_ALLOWED_BRANDS.includes(good.brandName)) {
                                     if (totalQuantity >= billItemQuantity && billItemQuantity > 0) {
                                         sellQuantity = billItemQuantity;
+                                        if (trackingQuantity.hasOwnProperty(good.quantityId)) {
+                                            // Skip goods with no remaining quantity
+                                            if (trackingQuantity[good.quantityId] <= 0) {
+                                                continue;
+                                            }
+
+                                            // Update the good's remaining quantity from the tracker
+                                            good.remaining_qty = trackingQuantity[good.quantityId];
+                                        } else {
+                                            // Initialize tracker with the good's original remaining quantity
+                                            trackingQuantity[good.quantityId] = good.remaining_qty;
+                                        }
+
                                         if (billItemQuantity >= Number(good.remaining_qty)) {
                                             sellQuantity = Number(good.remaining_qty);
                                             billItemQuantity -= Number(good.remaining_qty);
+                                            trackingQuantity[good.quantityId] = 0;
                                             addToBillItems(good, sellQuantity);
                                         } else {
                                             sellQuantity = billItemQuantity;
+                                            trackingQuantity[good.quantityId] -= sellQuantity;
                                             addToBillItems(good, sellQuantity);
                                             break;
                                         }

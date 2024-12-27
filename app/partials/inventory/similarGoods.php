@@ -3,6 +3,7 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
 {
     $selectedGoods = [];
     $lowQuantity = [];
+    $trackingQuantity = [];
 
     foreach ($factorItems as $item) {
 
@@ -32,8 +33,6 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
             case 'کره ای':
                 $ALLOWED_BRANDS[] = 'KOREA';
                 break;
-            default:
-                $ALLOWED_BRANDS[] = $goodNameBrand;
         }
 
         if ($goodNameBrand == 'HIQ' || $goodNameBrand == 'HI') {
@@ -131,11 +130,31 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
                 break;
             }
 
+            // Check if the good's brand is allowed
             if (in_array(strtoupper($good['brandName']), $ALLOWED_BRANDS)) {
                 if ($totalQuantity >= $billItemQuantity) {
-                    $sellQuantity = min($billItemQuantity, $good['remaining_qty']);
-                    $billItemQuantity -= $sellQuantity;
+                    // Use the global tracker for remaining quantities
+                    if (array_key_exists($good['quantityId'], $trackingQuantity)) {
+                        // Skip goods with no remaining quantity
+                        if ($trackingQuantity[$good['quantityId']] <= 0) {
+                            continue;
+                        }
 
+                        // Update the good's remaining quantity from the tracker
+                        $good['remaining_qty'] = $trackingQuantity[$good['quantityId']];
+                    } else {
+                        // Initialize tracker with the good's original remaining quantity
+                        $trackingQuantity[$good['quantityId']] = $good['remaining_qty'];
+                    }
+
+                    // Determine how much can be allocated
+                    $sellQuantity = min($billItemQuantity, $good['remaining_qty']);
+
+                    // Deduct the allocated quantity from both the bill item and tracker
+                    $billItemQuantity -= $sellQuantity;
+                    $trackingQuantity[$good['quantityId']] -= $sellQuantity;
+
+                    // Add the allocated good to the selected goods
                     addToBillItems($good, $sellQuantity, $selectedGoods, $item->id);
                 } else {
                     $good['quantity'] = $totalQuantity;

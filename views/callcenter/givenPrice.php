@@ -5,7 +5,7 @@ require_once './components/header.php';
 require_once '../../layouts/callcenter/nav.php';
 require_once '../../layouts/callcenter/sidebar.php';
 ?>
-<div class="max-w-2xl mx-auto py-14 sm:px-6 lg:px-8 bg-gray-200 rounded-lg shadow-s mt-32">
+<div class="max-w-2xl mx-auto py-14 px-6 lg:px-8 bg-gray-200 rounded-lg shadow-s mt-32">
     <form target="_blank" action="./orderedPrice.php" method="post">
         <input type="text" name="givenPrice" value="givenPrice" id="form" hidden>
         <input type="text" name="user" value="<?= $_SESSION["id"] ?>" hidden>
@@ -25,7 +25,7 @@ require_once '../../layouts/callcenter/sidebar.php';
                 <button type="submit" formaction="../factor/createPreCompleteBill.php?partner=0" class="cursor-pointer  text-white rounded bg-sky-600 hover:bg-sky-500 px-3 py-2 text-xs">پیش فاکتور مصرف کننده</button>
                 <button type="submit" formaction="../factor/createPreCompleteBill.php?partner=1" class="cursor-pointer bg-green-600 hover:bg-green-700 text-white rounded px-3 py-2 text-xs">پیش فاکتور همکار</button>
             </div>
-            <button type="submit" class="inline-flex items-center px-5 py-3 bg-gray-800 font-semibold text-xs text-white hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none"> جستجو
+            <button type="submit" class="inline-flex items-center px-5 py-2 bg-gray-800 font-semibold text-xs text-white hover:bg-gray-700 rounded"> جستجو
             </button>
         </div>
     </form>
