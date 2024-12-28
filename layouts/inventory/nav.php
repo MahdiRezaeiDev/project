@@ -28,7 +28,7 @@ $fileName = basename($_SERVER['PHP_SELF']);
                 خروج کالا جدید
             </a>
         </li>
-        <li class="mx-1 <?= $fileName == 'purchaseReport.php' ? 'bg-gray-400' : 'bg-gray-200' ?> hover:bg-gray-400 text-sm font-bold hidden ms:flex gap-2">
+        <li class="mx-1 <?= $fileName == 'purchaseReport.php' ? 'bg-gray-400' : 'bg-gray-200' ?> hover:bg-gray-400 text-sm font-bold hidden sm:flex gap-2">
             <div class="dropdown">
                 <a class="p-2 menu_item flex items-center gap-2">
                     <img class="hidden sm:inline-block" src="./assets/icons/chart.svg" alt="add icon">
@@ -73,7 +73,7 @@ $fileName = basename($_SERVER['PHP_SELF']);
                 </div>
             </div>
         </li>
-        <li class="mx-1 <?= $fileName == 'sellsReport.php' ? 'bg-gray-400' : 'bg-gray-200' ?> hover:bg-gray-400 text-sm font-bold hidden ms:flex gap-2">
+        <li class="mx-1 <?= $fileName == 'sellsReport.php' ? 'bg-gray-400' : 'bg-gray-200' ?> hover:bg-gray-400 text-sm font-bold hidden sm:flex gap-2">
             <div class="dropdown">
                 <a class="p-2 menu_item flex items-center gap-2">
                     <img class="hidden sm:inline-block" src="./assets/icons/chart_report.svg" alt="add icon">

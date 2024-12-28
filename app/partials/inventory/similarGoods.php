@@ -10,8 +10,13 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
         $brandSeparator = strripos($item->partName, '-');
         $factorItemParts = explode('-', $item->partName);
 
-        $goodNameBrand = trim(substr($item->partName, $brandSeparator + 1));
-        $goodNamePart = trim(explode(' ', $factorItemParts[0])[0]);
+        if(count($factorItemParts) > 1) {
+            $goodNameBrand = trim(substr($item->partName, $brandSeparator + 1));
+            $goodNamePart = trim(explode(' ', $factorItemParts[0])[0]);
+        } else {
+            $goodNameBrand = 'اصلی';
+            $goodNamePart = trim(explode(' ', $factorItemParts[0])[0]);
+        }
 
         $ALLOWED_BRANDS = [];
 
@@ -113,7 +118,7 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
                 'stockId' => null,
                 'purchase_Description' => '',
                 'stockName' => '',
-                'brandName' => $goodNameBrand,
+                'brandName' => mb_convert_encoding($goodNameBrand, 'UTF-8', 'UTF-8'),
                 'sellerName' => '',
                 'quantity' => $item->quantity,
                 'pos1' => '',
@@ -166,9 +171,9 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
         }
     }
 
-    if (!empty($selectedGoods) || !empty($lowQuantity)) {
-        sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId);
-    }
+    // if (!empty($selectedGoods) || !empty($lowQuantity)) {
+    //     sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId);
+    // }
 
     // if ($factorType == 0) {
     //     sendPurchaseMessageToCustomer($customer, $factorNumber, $totalPrice, $date);
