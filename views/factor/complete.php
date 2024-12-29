@@ -119,7 +119,6 @@ require_once '../../layouts/callcenter/sidebar.php'; ?>
                         }
                     }
                 }
-                updateCompleteFactor();
                 displayBill();
             }
         </script>
