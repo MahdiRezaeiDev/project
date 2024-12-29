@@ -101,8 +101,6 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
             $ALLOWED_BRANDS = addRelatedBrands($ALLOWED_BRANDS);
         }
 
-        print_r($ALLOWED_BRANDS);
-
         $goods = getGoodsSpecification($goodNamePart, $ALLOWED_BRANDS);
 
         $inventoryGoods = isset($goods['goods']) ? $goods['goods'] : [];
