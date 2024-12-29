@@ -1,5 +1,5 @@
 <?php
-function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $factorType, $totalPrice, $date)
+function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $factorType, $totalPrice, $date, $isComplete)
 {
     $selectedGoods = [];
     $lowQuantity = [];
@@ -101,6 +101,8 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
             $ALLOWED_BRANDS = addRelatedBrands($ALLOWED_BRANDS);
         }
 
+        print_r($ALLOWED_BRANDS);
+
         $goods = getGoodsSpecification($goodNamePart, $ALLOWED_BRANDS);
 
         $inventoryGoods = isset($goods['goods']) ? $goods['goods'] : [];
@@ -174,7 +176,7 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
     }
 
     if (!empty($selectedGoods) || !empty($lowQuantity)) {
-        sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId);
+        sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete);
     }
 
     if ($factorType == 0) {
@@ -231,34 +233,40 @@ function sendPurchaseMessageToCustomer($customer, $factorNumber, $totalPrice, $d
 }
 
 
-function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId)
+function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete)
 {
     $name = $_SESSION['user']['name'] ?? '';
     $family = $_SESSION['user']['family'] ?? '';
     $fullName = $name . ' ' . $family;
+    $edited = $isComplete ? ' ویرایش شده' : '';
 
     // Construct the link URL
     $destinationPage = $factorType == 0 ? 'complete.php' : 'complete.php';
     $factorLink = "http://192.168.9.14/YadakShop-APP/views/factor/" . $destinationPage . "?factor_number=" . $billId;
     // Build the header message
     $header = sprintf(
-        "%s %s\nکاربر : %s\nشماره فاکتور : <a href='%s'>%s</a>\n",
+        "%s %s\nکاربر : %s\nشماره فاکتور : <a href='%s'>%s</a>\n<span style='color:red'> ❌%s❌</span>\n",
         htmlspecialchars($customer->displayName, ENT_QUOTES, 'UTF-8'),
         htmlspecialchars($customer->family, ENT_QUOTES, 'UTF-8'),
         htmlspecialchars($fullName, ENT_QUOTES, 'UTF-8'),
         htmlspecialchars($factorLink, ENT_QUOTES, 'UTF-8'),
-        htmlspecialchars($factorNumber, ENT_QUOTES, 'UTF-8')
+        htmlspecialchars($factorNumber, ENT_QUOTES, 'UTF-8'),
+        htmlspecialchars($edited, ENT_QUOTES, 'UTF-8')
     );
 
 
     $destination = $factorNumber % 2 == 0 ? "http://sells.yadak.center/" : "http://sells2.yadak.center/";
 
-    sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination);
+    sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete);
 }
 
-function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination)
+function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete)
 {
-    $typeID = $factorType == 0 ? 3516 : 3514;
+    if (!$isComplete) {
+        $typeID = $factorType == 0 ? 3517 : 3515;
+    } else {
+        $typeID = 17815;
+    }
 
     $postData = array(
         "sendMessage" => "sellsReportTest",

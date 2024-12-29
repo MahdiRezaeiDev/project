@@ -35,7 +35,7 @@ if (isset($_POST['GenerateCompleteFactor'])) {
 
         CreateCompleteBill($factorInfo, $customer_id, $factorNumber);
         CreateBillItems($factorInfo, $factorItems);
-        getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorNumber, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date);
+        getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorNumber, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date, false);
         // sendSMS($customerInfo, $factorInfo, $factorItems, $factorNumber);
     } catch (Exception $e) {
         $success = false; // Set success to false if an error occurred
@@ -93,6 +93,7 @@ if (isset($_POST['updateCompleteFactor'])) {
         updateRegisteredFactorNumber($factorInfo->billNO, $customerInfo);
         UpdateCompletedBill($factorInfo, $customer_id);
         CreateBillItems($factorInfo, $factorItems);
+        getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorInfo->billNO, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date, true);
     } catch (Exception $e) {
         // An error occurred, rollback the transaction
         PDO_CONNECTION->rollback();

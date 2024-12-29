@@ -471,8 +471,6 @@ require_once './components/factor.php'; ?>
         displayBill(); // Assuming this updates the UI with the new price
     }
 
-
-
     // This function append a related prefix to the customer name
     function appendPrefix(prefix) {
         const nameElement = document.getElementById('name');
