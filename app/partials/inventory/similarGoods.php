@@ -238,7 +238,7 @@ function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, 
     $name = $_SESSION['user']['name'] ?? '';
     $family = $_SESSION['user']['family'] ?? '';
     $fullName = $name . ' ' . $family;
-    $edited = $isComplete ? ' ویرایش شده' : '';
+    $edited = $isComplete ? ' ویرایش شده' : '*';
 
     // Construct the link URL
     $destinationPage = $factorType == 0 ? 'complete.php' : 'complete.php';
@@ -262,11 +262,11 @@ function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, 
 
 function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete)
 {
-    if (!$isComplete) {
+    // if (!$isComplete) {
         $typeID = $factorType == 0 ? 3517 : 3515;
-    } else {
-        $typeID = 17815;
-    }
+    // } else {
+    //     $typeID = 17815;
+    // }
 
     $postData = array(
         "sendMessage" => "sellsReportTest",
