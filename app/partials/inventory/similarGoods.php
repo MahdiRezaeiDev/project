@@ -260,11 +260,11 @@ function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, 
 
 function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete)
 {
-    // if (!$isComplete) {
-        $typeID = $factorType == 0 ? 3517 : 3515;
-    // } else {
-    //     $typeID = 17815;
-    // }
+    if (!$isComplete) {
+        $typeID = $factorType == 0 ? 3516 : 3514;
+    } else {
+        $typeID = 17815;
+    }
 
     $postData = array(
         "sendMessage" => "sellsReportTest",
