@@ -242,15 +242,26 @@ function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, 
     $destinationPage = $factorType == 0 ? 'complete.php' : 'complete.php';
     $factorLink = "http://192.168.9.14/YadakShop-APP/views/factor/" . $destinationPage . "?factor_number=" . $billId;
     // Build the header message
-    $header = sprintf(
-        "%s %s\nکاربر : %s\nشماره فاکتور : <a href='%s'>%s</a>\n<span style='color:red'> ❌%s❌</span>\n",
-        htmlspecialchars($customer->displayName, ENT_QUOTES, 'UTF-8'),
-        htmlspecialchars($customer->family, ENT_QUOTES, 'UTF-8'),
-        htmlspecialchars($fullName, ENT_QUOTES, 'UTF-8'),
-        htmlspecialchars($factorLink, ENT_QUOTES, 'UTF-8'),
-        htmlspecialchars($factorNumber, ENT_QUOTES, 'UTF-8'),
-        htmlspecialchars($edited, ENT_QUOTES, 'UTF-8')
-    );
+    if ($isComplete) {
+        $header = sprintf(
+            "%s %s\nکاربر : %s\nشماره فاکتور : <a href='%s'>%s</a>\n<span style='color:red'> ❌%s❌</span>\n",
+            htmlspecialchars($customer->displayName, ENT_QUOTES, 'UTF-8'),
+            htmlspecialchars($customer->family, ENT_QUOTES, 'UTF-8'),
+            htmlspecialchars($fullName, ENT_QUOTES, 'UTF-8'),
+            htmlspecialchars($factorLink, ENT_QUOTES, 'UTF-8'),
+            htmlspecialchars($factorNumber, ENT_QUOTES, 'UTF-8'),
+            htmlspecialchars($edited, ENT_QUOTES, 'UTF-8')
+        );
+    } else {
+        $header = sprintf(
+            "%s %s\nکاربر : %s\nشماره فاکتور : <a href='%s'>%s</a>\n",
+            htmlspecialchars($customer->displayName, ENT_QUOTES, 'UTF-8'),
+            htmlspecialchars($customer->family, ENT_QUOTES, 'UTF-8'),
+            htmlspecialchars($fullName, ENT_QUOTES, 'UTF-8'),
+            htmlspecialchars($factorLink, ENT_QUOTES, 'UTF-8'),
+            htmlspecialchars($factorNumber, ENT_QUOTES, 'UTF-8')
+        );
+    }
 
 
     $destination = $factorNumber % 2 == 0 ? "http://sells.yadak.center/" : "http://sells2.yadak.center/";
