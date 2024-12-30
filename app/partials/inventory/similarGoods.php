@@ -111,7 +111,7 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
 
         $relatesCodes = isset($goods['codes']) ? $goods['codes'] : [];
 
-        if (empty($relatesCodes)) {
+        if (empty($relatesCodes) || count($inventoryGoods) == 0) {
             array_push($lowQuantity, [...[
                 'quantityId' => $item->id,
                 'id' => $item->id,
