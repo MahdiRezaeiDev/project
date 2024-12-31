@@ -63,7 +63,6 @@ function sendSMS($customer, $factor, $factorItems, $factorNumber)
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
     // Execute cURL request
     curl_exec($ch);
     // Close cURL session

@@ -186,46 +186,6 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
     }
 }
 
-function sendPurchaseMessageToCustomer($customer, $factorNumber, $totalPrice, $date)
-{
-    $fullName = $customer->name . ' ' . $customer->family;
-    $phone = $customer->phone;
-    $date = explode('/', $date);
-    $current = $date[1] . '/' . $date[2];
-    // Construct the message
-    $message = "$fullName عزیز\n" .
-        "خرید شما با مبلغ $totalPrice ریال در تاریخ $current با موفقیت ثبت شد \n" .
-        "شماره فاکتور : $factorNumber \n" .
-        "یدک شاپ از انتخاب شما سپاسگزار است و خوشحالیم که همراه شما هستیم. \n" .
-        "www.yadak.shop";
-
-    // URL-encode the message
-    $encodedMessage = rawurlencode($message);
-
-    // Construct the full URL
-    $url = "http://192.168.9.16/cgi/WebCGI?1500101=account=test&password=test1028&port=1&destination=" . $phone . "&content=" . $encodedMessage;
-
-    // Initialize cURL
-    $ch = curl_init();
-
-    // Set cURL options
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    // Execute request
-    $response = curl_exec($ch);
-
-    // Check for errors
-    // if ($response === false) {
-    //     echo "cURL Error: " . curl_error($ch);
-    // } else {
-    //     echo "Message sent successfully: " . htmlspecialchars($response);
-    // }
-
-    // Close cURL
-    curl_close($ch);
-}
-
 function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete)
 {
     $name = $_SESSION['user']['name'] ?? '';
