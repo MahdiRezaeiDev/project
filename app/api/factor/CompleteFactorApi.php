@@ -36,7 +36,8 @@ if (isset($_POST['GenerateCompleteFactor'])) {
         CreateCompleteBill($factorInfo, $customer_id, $factorNumber);
         CreateBillItems($factorInfo, $factorItems);
         getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorNumber, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date, false);
-        sendSMS($customerInfo, $factorInfo, $factorItems, $factorNumber);
+        if (!$factorInfo->partner)
+            sendSMS($customerInfo, $factorInfo, $factorItems, $factorNumber);
     } catch (Exception $e) {
         $success = false; // Set success to false if an error occurred
     }
