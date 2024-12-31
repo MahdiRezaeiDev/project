@@ -36,7 +36,7 @@ if (isset($_POST['GenerateCompleteFactor'])) {
         CreateCompleteBill($factorInfo, $customer_id, $factorNumber);
         CreateBillItems($factorInfo, $factorItems);
         getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorNumber, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date, false);
-        // sendSMS($customerInfo, $factorInfo, $factorItems, $factorNumber);
+        sendSMS($customerInfo, $factorInfo, $factorItems, $factorNumber);
     } catch (Exception $e) {
         $success = false; // Set success to false if an error occurred
     }
@@ -58,14 +58,13 @@ function sendSMS($customer, $factor, $factorItems, $factorNumber)
     $ch = curl_init();
 
     // Set cURL options
-    curl_setopt($ch, CURLOPT_URL, "http://contacts.test/");
+    curl_setopt($ch, CURLOPT_URL, "http://sells.yadak.shop/");
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
     // Execute cURL request
-    $result = curl_exec($ch);
-
+    curl_exec($ch);
     // Close cURL session
     curl_close($ch);
     exit();

@@ -177,10 +177,6 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
         sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete);
     }
 
-    if ($factorType == 0) {
-        sendPurchaseMessageToCustomer($customer, $factorNumber, $totalPrice, $date);
-    }
-
     $selectedGoods = [...$selectedGoods, ...$lowQuantity];
 
     if (hasPreSellFactor($billId)) {
@@ -229,7 +225,6 @@ function sendPurchaseMessageToCustomer($customer, $factorNumber, $totalPrice, $d
     // Close cURL
     curl_close($ch);
 }
-
 
 function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete)
 {
