@@ -38,8 +38,6 @@ if (isset($_POST['GenerateCompleteFactor'])) {
         getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorNumber, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date, false);
         if (!$factorInfo->partner)
             sendSMS($customerInfo, $factorInfo, $factorItems, $factorNumber);
-        else
-            echo "Not Sended";
     } catch (Exception $e) {
         $success = false; // Set success to false if an error occurred
     }
