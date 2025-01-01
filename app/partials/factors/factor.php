@@ -58,6 +58,7 @@ function displayUI($factors, $countFactorByUser)
     $PARTNER = 0;
     $REGULAR = 0;
     $NOT_INCLUDED = [];
+    $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan'];
 ?>
     <div class="sm:col-span-6">
         <table class="w-full">
@@ -67,6 +68,9 @@ function displayUI($factors, $countFactorByUser)
                     <th class="p-3 text-sm font-semibold hide_while_print"></th>
                     <th class="p-3 text-sm font-semibold">خریدار</th>
                     <th class="p-3 text-sm font-semibold">کاربر</th>
+                    <?php if (in_array($_SESSION['username'], $qualified)): ?>
+                        <th class="p-3 text-sm font-semibold hide_while_print">وضعیت</th>
+                    <?php endif; ?>
                     <?php
                     $isAdmin = $_SESSION['username'] === 'niyayesh' || $_SESSION['username'] === 'mahdi' || $_SESSION['username'] === 'babak' ? true : false;
                     if ($isAdmin) : ?>
@@ -109,7 +113,13 @@ function displayUI($factors, $countFactorByUser)
                             <td class="text-center align-middle">
                                 <img onclick="userReport(this)" class="w-10 rounded-full hover:cursor-pointer mt-2" data-id="<?= $factor['user']; ?>" src="<?= getUserProfile($factor['user'], "../") ?>" />
                             </td>
-
+                            <?php if (in_array($_SESSION['username'], $qualified)): ?>
+                                <td class="hide_while_print">
+                                    <div class="flex justify-center items-center">
+                                        <input onclick="changeStatus(this)" <?= $factor["approved"] ? 'checked' : '' ?> type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
+                                    </div>
+                                </td>
+                            <?php endif; ?>
                             <?php
                             $isAdmin = $_SESSION['username'] === 'niyayesh' || $_SESSION['username'] === 'mahdi' || $_SESSION['username'] === 'babak' ? true : false;
                             if ($isAdmin) : ?>
@@ -128,7 +138,7 @@ function displayUI($factors, $countFactorByUser)
                     endforeach;
                 else : ?>
                     <tr class="bg-gray-100">
-                        <td class="text-center py-40" colspan="5">
+                        <td class="text-center py-40" colspan="6">
                             <p class="text-rose-500 font-semibold">هیچ فاکتوری برای امروز ثبت نشده است.</p>
                         </td>
                     </tr>

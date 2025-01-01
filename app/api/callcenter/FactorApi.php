@@ -29,6 +29,25 @@ if (isset($_POST["saveChanges"])) {
     UpdateFactor($customer, $factor_id, $user);
 }
 
+if (isset($_POST["changeStatus"])) {
+    $factor_id = $_POST['factor'];
+    $status = $_POST['status'];
+    UpdateStatus($factor_id, $status);
+}
+
+function UpdateStatus($factor_id, $status)
+{
+    $sql = "UPDATE factor.shomarefaktor SET approved=:status WHERE shomare = :factor_id";
+    $stmt = PDO_CONNECTION->prepare($sql);
+    $stmt->bindParam(':status', $status, PDO::PARAM_INT);
+    $stmt->bindParam(':factor_id', $factor_id, PDO::PARAM_INT);
+    if ($stmt->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function UpdateFactor($customer, $factor_id, $user)
 {
     $sql = "UPDATE factor.shomarefaktor SET kharidar=:customer, user=:user WHERE id = :factor_id";
@@ -42,6 +61,7 @@ function UpdateFactor($customer, $factor_id, $user)
         return false;
     }
 }
+
 function getLatestFactorNumber()
 {
     $sql = "SELECT MAX(shomare) AS latest FROM factor.shomarefaktor;";

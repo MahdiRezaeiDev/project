@@ -8,7 +8,10 @@ require_once '../../layouts/callcenter/sidebar.php';
 $TOTAL = 0;
 $PARTNER = 0;
 $REGULAR = 0;
-$NOT_INCLUDED = []; ?>
+$NOT_INCLUDED = [];
+
+$qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan'];
+?>
 <!-- COMPONENT STYLES -->
 <style>
     #editFactorModal {
@@ -123,6 +126,9 @@ $NOT_INCLUDED = []; ?>
                         <th class="p-3 text-sm font-semibold hide_while_print"></th>
                         <th class="p-3 text-sm font-semibold">خریدار</th>
                         <th class="p-3 text-sm font-semibold">کاربر</th>
+                        <?php if (in_array($_SESSION['username'], $qualified)): ?>
+                            <th class="p-3 text-sm font-semibold hide_while_print">وضعیت</th>
+                        <?php endif ?>
                         <?php
                         $isAdmin = $_SESSION['username'] === 'niyayesh' || $_SESSION['username'] === 'mahdi' || $_SESSION['username'] === 'babak' ? true : false;
                         if ($isAdmin) : ?>
@@ -161,9 +167,15 @@ $NOT_INCLUDED = []; ?>
                                     <?= $factor['kharidar'] ?>
                                 </td>
                                 <td class="text-center align-middle">
-                                    <img onclick="userReport(this)" class="w-10 rounded-full hover:cursor-pointer mt-2" data-id="<?= $factor['user']; ?>" src="<?= getUserProfile($factor['user']) ?>" />
+                                    <img onclick="userReport(this)" class="w-10 rounded-full hover:cursor-pointer mt-2 mx-auto" data-id="<?= $factor['user']; ?>" src="<?= getUserProfile($factor['user']) ?>" />
                                 </td>
-
+                                <?php if (in_array($_SESSION['username'], $qualified)): ?>
+                                    <td class="hide_while_print">
+                                        <div class="flex justify-center items-center">
+                                            <input onclick="changeStatus(this)" <?= $factor["approved"] ? 'checked' : '' ?> type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
+                                        </div>
+                                    </td>
+                                <?php endif ?>
                                 <?php
                                 if ($isAdmin) : ?>
                                     <td class="text-center align-middle hide_while_print hidden sm:table-cell">
@@ -177,7 +189,7 @@ $NOT_INCLUDED = []; ?>
                         endforeach;
                     else : ?>
                         <tr class="bg-gray-100">
-                            <td class="text-center py-40" colspan="5">
+                            <td class="text-center py-40" colspan="6">
                                 <p class="text-rose-500 font-semibold">هیچ فاکتوری برای امروز ثبت نشده است.</p>
                             </td>
                         </tr>
@@ -554,6 +566,22 @@ $NOT_INCLUDED = []; ?>
             getNewFactorNumber();
         }
     });
+
+    function changeStatus(element) {
+        const params = new URLSearchParams();
+        const status = element.checked ? 1 : 0;
+        const factor = element.id;
+        params.append('changeStatus', 'changeStatus');
+        params.append('status', status);
+        params.append('factor', factor);
+        axios.post("../../app/api/callcenter/FactorApi.php", params)
+            .then(function(response) {
+                console.log(response.data);
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+    }
 </script>
 <?php
 require_once './components/footer.php';
