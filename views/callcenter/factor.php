@@ -9,7 +9,7 @@ $TOTAL = 0;
 $PARTNER = 0;
 $REGULAR = 0;
 $NOT_INCLUDED = [];
-$qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi', 'hadishasanpouri','rana'];
+$qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi', 'hadishasanpouri', 'rana'];
 ?>
 <!-- COMPONENT STYLES -->
 <style>
@@ -575,10 +575,10 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
         params.append('factor', factor);
         axios.post("../../app/api/callcenter/FactorApi.php", params)
             .then(function(response) {
-                console.log(response.data);
+                alert("تغیرات موفقانه اعمال شد.");
             })
             .catch(function(error) {
-                console.log(error);
+                alert("خطا در هنگام ثبت وضعیت، لطفا مجددا تلاش نمایید");
             });
     }
 </script>
