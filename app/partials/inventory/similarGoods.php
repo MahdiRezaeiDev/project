@@ -38,6 +38,9 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
             case 'کره ای':
                 $ALLOWED_BRANDS[] = 'KOREA';
                 break;
+            case 'HYUNDAI':
+                $ALLOWED_BRANDS[] = 'HYUNDAI BRAKE';
+                break;
             default:
                 $ALLOWED_BRANDS[] = $goodNameBrand;
         }
@@ -174,9 +177,9 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
         }
     }
 
-    if (!empty($selectedGoods) || !empty($lowQuantity)) {
-        sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete);
-    }
+    // if (!empty($selectedGoods) || !empty($lowQuantity)) {
+    //     sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete);
+    // }
 
     $selectedGoods = [...$selectedGoods, ...$lowQuantity];
 
