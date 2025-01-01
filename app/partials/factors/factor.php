@@ -58,7 +58,7 @@ function displayUI($factors, $countFactorByUser)
     $PARTNER = 0;
     $REGULAR = 0;
     $NOT_INCLUDED = [];
-    $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan'];
+    $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi', 'hadishasanpouri','rana'];
 ?>
     <div class="sm:col-span-6">
         <table class="w-full">

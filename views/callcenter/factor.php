@@ -9,8 +9,7 @@ $TOTAL = 0;
 $PARTNER = 0;
 $REGULAR = 0;
 $NOT_INCLUDED = [];
-
-$qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan'];
+$qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi', 'hadishasanpouri','rana'];
 ?>
 <!-- COMPONENT STYLES -->
 <style>
