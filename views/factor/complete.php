@@ -164,7 +164,7 @@ require_once '../../layouts/callcenter/sidebar.php'; ?>
             <ul class="flex gap-3">
                 <?php if ($date_difference_days <= 1 || $_SESSION['id'] == 1 || $_SESSION['id'] == 5 || $_SESSION['id'] == 6) : ?>
                     <li>
-                        <button onclick="updateCompleteFactor()" id="incomplete_save_button" class="bg-white rounded text-gray-800 px-3 py-1 cursor-pointer">
+                        <button onclick="updateCompleteFactor(this)" id="incomplete_save_button" class="bg-white rounded text-gray-800 px-3 py-1 cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-200">
                             ویرایش
                         </button>
                     </li>
@@ -530,19 +530,22 @@ require_once './components/factor.php'; ?>
     }
 
     // Update the incomplete 
-    function updateCompleteFactor() {
+    function updateCompleteFactor(element) {
+        element.disabled = true;
         if (factorInfo.date == 'null')
             factorInfo.date = moment().locale('fa').format('YYYY/MM/DD');
 
         if (!checkIfReadyToUpdate('phone')) {
+            element.disabled = false;
             return false
         }
 
         if (!checkIfReadyToUpdate('name')) {
+            element.disabled = false;
             return false
         }
         if (factorItems.length <= 0) {
-
+            element.disabled = false;
             displayModal('فاکتور مشتری خالی بوده نمیتواند.')
             return false;
         }
@@ -562,8 +565,10 @@ require_once './components/factor.php'; ?>
 
                     setTimeout(() => {
                         save_message.classList.add('hidden');
+                        element.disabled = false;
                     }, 3000);
                 } else {
+                    element.disabled = false;
                     const save_error_message = document.getElementById('save_error_message');
                     save_error_message.classList.remove('hidden');
 
@@ -573,6 +578,7 @@ require_once './components/factor.php'; ?>
                 }
             })
             .catch(function(error) {
+                element.disabled = false;
                 console.log(error);
             });
     }
