@@ -184,6 +184,7 @@ require_once '../../layouts/callcenter/sidebar.php'; ?>
 require_once './components/modal.php';
 require_once './components/factor.php'; ?>
 <script>
+    const BRANDS_ENDPOINT = '../../app/api/factor/LoadFactorItemBrandsAPI.php';
     // Accessing the conatainers to have global access for easy binding data
     const customer_results = document.getElementById('customer_results');
     const resultBox = document.getElementById("selected_box");
@@ -230,6 +231,17 @@ require_once './components/factor.php'; ?>
             const payPrice = Number(item.quantity) * Number(item.price_per);
             totalPrice += payPrice;
             factorInfo.quantity += Number(item.quantity);
+
+            if (!item.hasOwnProperty('actual_price')) {
+                item.actual_price = item.price_per;
+            }
+
+            let border = false;
+
+            if (Number(item.actual_price) !== 0 && Number(item.actual_price) > Number(item.price_per)) {
+                border = true;
+            }
+
             template += `
             <tr id="${item.id}" class="even:bg-gray-100 border-gray-800 add-column" >
                 <td class="py-3 px-4 w-10 relative text-left">
@@ -239,8 +251,8 @@ require_once './components/factor.php'; ?>
                         <img onclick="addNewRowAt('after','${counter + 1}')" title="افزودن ردیف بعد از این ردیف" class="cursor-pointer w-6" src="./assets/img/bottom_arrow.svg" />
                     </div>
                 </td>
-                <td class="relative py-3 px-4 w-2/4" >
-                    <input name="itemName" type="text" class="tab-op w-2/4 p-2 border text-gray-800 outline-none focus::border-gray-500 w-42" onchange="editCell(this, 'partName', '${item.id}', '${item.partName}')" value="${item.partName}" />`;
+                <td class="relative py-3 px-4 w-3/5" >
+                    <input name="itemName" type="text"class="tab-op w-2/4 p-2 border-dotted border-1 text-gray-500 w-42" onchange="editCell(this, 'partName', '${item.id}', '${item.partName}')" value="${item.partName}" />`;
             if (ItemsBrands[item['partNumber']]) {
                 template += `<div class="absolute left-1/2 top-5 transform -translate-x-1/2 flex flex-wrap gap-1">`;
                 for (const brand of Object.keys(ItemsBrands[item['partNumber']])) {
@@ -248,14 +260,14 @@ require_once './components/factor.php'; ?>
                 }
                 template += `</div>`;
             }
-
             template += `<div class="absolute left-5 top-5 flex flex-wrap gap-1 w-42">
-                                    <span style="font-size:12px" onclick="appendSufix('${item.id}','اصلی')" class="cursor-pointer text-md text-white bg-gray-600 rounded p-1" title="">اصلی</span>
-                                    <span style="font-size:12px" onclick="appendSufix('${item.id}','چین')" class="cursor-pointer text-md text-white bg-gray-600 rounded p-1" title="">چین</span>
-                                    <span style="font-size:12px" onclick="appendSufix('${item.id}','کره')" class="cursor-pointer text-md text-white bg-gray-600 rounded p-1" title="">کره</span>
-                                    <span style="font-size:12px" onclick="appendSufix('${item.id}','متفرقه')" class="cursor-pointer text-md text-white bg-gray-600 rounded p-1" title="">متفرقه</span>
-                                    <span style="font-size:12px" onclick="appendSufix('${item.id}','تایوان')" class="cursor-pointer text-md text-white bg-gray-600 rounded p-1" title="">تایوان</span>
-                                    <span style="font-size:12px" onclick="appendSufix('${item.id}','شرکتی')" class="cursor-pointer text-md text-white bg-gray-600 rounded p-1" title="">شرکتی</span>`;
+                        <span style="font-size:12px" onclick="appendSufix('${item.id}','اصلی')" class="cursor-pointer text-md text-white bg-gray-600 rounded p-1" title="">اصلی</span>
+                        <span style="font-size:12px" onclick="appendSufix('${item.id}','چین')" class="cursor-pointer text-md text-white bg-gray-600 rounded p-1" title="">چین</span>
+                        <span style="font-size:12px" onclick="appendSufix('${item.id}','کره')" class="cursor-pointer text-md text-white bg-gray-600 rounded p-1" title="">کره</span>
+                        <span style="font-size:12px" onclick="appendSufix('${item.id}','متفرقه')" class="cursor-pointer text-md text-white bg-gray-600 rounded p-1" title="">متفرقه</span>
+                        <span style="font-size:12px" onclick="appendSufix('${item.id}','تایوان')" class="cursor-pointer text-md text-white bg-gray-600 rounded p-1" title="">تایوان</span>
+                        <span style="font-size:12px" onclick="appendSufix('${item.id}','شرکتی')" class="cursor-pointer text-md text-white bg-gray-600 rounded p-1" title="">شرکتی</span>
+                        <span style="font-size:12px" onclick="appendSufix('${item.id}','ترک')" class="cursor-pointer text-md text-white bg-gray-600 rounded p-1" title="">ترک</span>`;
             if (customerInfo.car != '' && customerInfo.car != null) {
                 template += `<span style="font-size:12px" onclick="appendCarSufix('${item.id}','${customerInfo.car}')" class="cursor-pointer text-md text-white bg-gray-600 rounded p-1" title="">${customerInfo.car}</span>`;
             }
@@ -265,7 +277,7 @@ require_once './components/factor.php'; ?>
                     <input name="quantity"  onchange="editCell(this, 'quantity', '${item.id}', '${item.quantity}')" type="number" style="direction:ltr !important;" class="tab-op tab-op-number  p-2 border border-1 w-16" value="${item.quantity}" />
                 </td>
                 <td class="text-center py-3 px-4 w-18" >
-                    <input name="price" onchange="editCell(this, 'price_per', '${item.id}', '${item.price_per}')" type="text" style="direction:ltr !important;" class="tab-op tab-op-number w-18 p-2 border " onkeyup="displayAsMoney(this);convertToEnglish(this)" value="${formatAsMoney(item.price_per)}" />
+                    <input name="price" onchange="editCell(this, 'price_per', '${item.id}', '${item.price_per}')" type="text" style="direction:ltr !important; ${border ? 'border: 2px solid red !important': ''}" class="tab-op tab-op-number w-18 p-2 border" onkeyup="displayAsMoney(this);convertToEnglish(this)" value="${formatAsMoney(item.price_per)}" />
                 </td>
                 <td class="text-center py-3 px-4 ltr">${formatAsMoney(payPrice)}</td>
                 <td class="text-center py-3 px-4 w-18 h-12 font-medium">
@@ -279,7 +291,6 @@ require_once './components/factor.php'; ?>
         factorInfo.totalPrice = (totalPrice);
         factorInfo.totalInWords = numberToPersianWords(totalPrice - factorInfo.discount);
         // Display the Bill Information
-        document.getElementById('billNO').value = factorInfo.billNO;
         document.getElementById('quantity').value = factorInfo.quantity;
         document.getElementById('discount').value = factorInfo.discount;
         document.getElementById('totalPrice').value = formatAsMoney(factorInfo.totalPrice);
@@ -380,8 +391,30 @@ require_once './components/factor.php'; ?>
     function editCell(cell, property, itemId, originalValue) {
         const newValue = cell.value;
 
+        if (property == 'price_per') {
+            for (let i = 0; i < factorItems.length; i++) {
+                if (factorItems[i].id == itemId) {
+                    const sanitized = newValue.replaceAll(',', '');
+                    if (Number(factorItems[i]['actual_price']) > Number(sanitized)) {
+                        const systemPrice = `\n قیمت سیستم: ${formatAsMoney(factorItems[i]['actual_price'])}`;
+                        const confirmation = confirm('قیمت سیستم بیشتر از مقدار داده شده است آیا تایید میکنید ؟' + systemPrice);
+                        if (!confirmation) {
+                            cell.value = formatAsMoney(originalValue); // Reset to original value if not confirmed
+                            return null;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         // Update the corresponding item in your data structure (factorItems)
         updateItemProperty(itemId, property, newValue, cell);
+
+        if (property == 'partName') {
+            loadBrands(cell, itemId, newValue);
+        }
 
         if (property == 'quantity' || property == 'price_per') {
             const parentRow = cell.closest('tr');
@@ -400,7 +433,120 @@ require_once './components/factor.php'; ?>
                 secondToLastTd.innerHTML = formatAsMoney(Number(totalpriceValue) * value); // Replace 'New Value' with the desired content
             }
         }
+    }
 
+    function loadBrands(cell, itemId, value) {
+        const partNumber = filterPartNumber(value);
+
+        if (partNumber.length > 6) {
+            const params = new URLSearchParams();
+            params.append('completeCode', value);
+            axios.post(BRANDS_ENDPOINT, params).then(response => {
+                const data = response.data;
+                const key = Object.keys(data)[0];
+                if (key) {
+                    ItemsBrands[key] = data[key]['prices'];
+                    let originalPrice = data[key]['original'];
+                    if (originalPrice.includes("(LR)")) {
+                        alert('این قطعه دارای شاخص (LR) می باشد.')
+                    }
+                    const specificItemsQuantity = {
+                        "51712": 2,
+                        "54813": 2,
+                        "55513": 2,
+                        "58411": 2,
+                        "234102": 4,
+                        "230412": 4,
+                        "234103": 6,
+                        "230413": 6,
+                    };
+
+                    for (let i = 0; i < factorItems.length; i++) {
+                        if (factorItems[i].id == itemId) {
+
+                            factorItems[i]['partNumber'] = key;
+                            factorItems[i]['partName'] = data[key]['partName'];
+                            factorItems[i]['price_per'] = data[key]['prices']['اصلی'] ?? 0;
+                            factorItems[i]['actual_price'] = data[key]['prices']['اصلی'] ?? 0;
+
+                            const ICN = key.substring(0, 5); // Extracts the first 5 characters
+                            const ICN_BIG = key.substring(0, 6); // Extracts the first 6 characters
+                            let quantity = 1;
+
+
+                            // Check if ICN or ICN_BIG exist as keys in the specificItemsQuantity object
+                            if (specificItemsQuantity.hasOwnProperty(ICN)) {
+                                quantity = specificItemsQuantity[ICN];
+                            } else if (specificItemsQuantity.hasOwnProperty(ICN_BIG)) {
+                                quantity = specificItemsQuantity[ICN_BIG];
+                            } else {
+                                quantity = 1;
+                            }
+                            factorItems[i]['quantity'] = quantity;
+                            break;
+                        }
+                    }
+                    displayBill();
+                }
+
+            }).catch(error => {
+                console.error(error);
+            });
+        }
+    }
+
+    function filterPartNumber(message) {
+        if (!message) {
+            return "";
+        }
+
+        const codes = message.split("\n");
+
+        const filteredCodes = codes
+            .map(function(code) {
+                code = code.replace(/\[[^\]]*\]/g, "");
+
+                const parts = code.split(/[:,]/, 2);
+
+                // Check if parts[1] contains a forward slash
+                if (parts[1] && parts[1].includes("/")) {
+                    // Remove everything after the forward slash
+                    parts[1] = parts[1].split("/")[0];
+                }
+
+                const rightSide = (parts[1] || "").replace(/[^a-zA-Z0-9 ]/g, "").trim();
+
+                return rightSide ? rightSide : code.replace(/[^a-zA-Z0-9 ]/g, "").trim();
+            })
+            .filter(Boolean);
+
+        const finalCodes = filteredCodes.filter(function(item) {
+            const data = item.split(" ");
+            if (data[0].length > 4) {
+                return item;
+            }
+        });
+
+        const mappedFinalCodes = finalCodes.map(function(item) {
+            const parts = item.split(" ");
+            if (parts.length >= 2) {
+                const partOne = parts[0];
+                const partTwo = parts[1];
+                if (!/[a-zA-Z]{4,}/i.test(partOne) && !/[a-zA-Z]{4,}/i.test(partTwo)) {
+                    return partOne + partTwo;
+                }
+            }
+            return parts[0];
+        });
+
+        const nonConsecutiveCodes = mappedFinalCodes.filter(function(item) {
+            const consecutiveChars = /[a-zA-Z]{4,}/i.test(item);
+            return !consecutiveChars;
+        });
+
+        return nonConsecutiveCodes.map(function(item) {
+            return item.split(" ")[0];
+        }).join("\n") + "\n";
     }
 
     // Update the edited item property in the data source

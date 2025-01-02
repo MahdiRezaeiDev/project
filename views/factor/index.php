@@ -228,7 +228,7 @@ require_once '../../layouts/callcenter/sidebar.php';
                                                         <a target="_blank" href="./complete.php?factor_number=${factor.id}" >
                                                             <img src="./assets/img/editFactor.svg" class="hover:scale-125" />
                                                         </a>
-                                                        <li onClick="createIncompleteBill('${factor.id}')" title="ایجاد پیش فاکتور از این فاکتور">
+                                                        <li onClick="createIncompleteBill('${factor.id}', ${factor.partner})" title="ایجاد پیش فاکتور از این فاکتور">
                                                             <img src="./assets/img/useFactorTemplate.svg" class="hover:scale-125" />
                                                         </li>
                                                         <li onClick="copyFactorInfo(this,'${factor.name}', '${factor.family}','${factor.bill_number}', '${formatAsMoney(factor.total)}')" title="کپی کردن مشخصات فاکتور">
