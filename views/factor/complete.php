@@ -291,6 +291,7 @@ require_once './components/factor.php'; ?>
         factorInfo.totalPrice = (totalPrice);
         factorInfo.totalInWords = numberToPersianWords(totalPrice - factorInfo.discount);
         // Display the Bill Information
+        document.getElementById('billNO').value = factorInfo.billNO;
         document.getElementById('quantity').value = factorInfo.quantity;
         document.getElementById('discount').value = factorInfo.discount;
         document.getElementById('totalPrice').value = formatAsMoney(factorInfo.totalPrice);
