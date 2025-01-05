@@ -12,6 +12,7 @@ function getFactors($start, $end, $user = null)
     $query = "SELECT
                 shomarefaktor.*,
                 bill.id AS bill_id,
+                bill.printed,
                 CASE WHEN bill.bill_number IS NOT NULL THEN TRUE ELSE FALSE END AS exists_in_bill,
                 bill.total,
                 bill.partner as isPartner

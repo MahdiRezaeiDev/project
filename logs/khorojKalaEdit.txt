@@ -1,2 +1,0 @@
-[2023-11-19 08:39:33] Action: UPDATE exitrecord SET getter='8',jamkon='مهدی',qty='50',des='مهدی اقا زحمت این جنس را کشده است.',invoice_date='1402/08/28',customer='محمد مهدی شفیعی',invoice_number='44442' WHERE id = '17420', User:5
-[2023-12-11 11:04:17] Action: UPDATE exitrecord SET getter='',jamkon='',qty='3',des='',invoice_date='1402/09/19',customer='مهرداد ملکی ss',invoice_number='51164' WHERE id = '20874', User:5

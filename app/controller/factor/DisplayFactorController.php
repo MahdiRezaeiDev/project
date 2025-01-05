@@ -35,6 +35,7 @@ if (isset($_GET['factorNumber']) && is_numeric($_GET['factorNumber'])) {
     die();
 }
 
+
 function hasPreSellFactor($factorId)
 {
     $sql = "SELECT * FROM factor.pre_sell WHERE bill_id = :billId";

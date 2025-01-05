@@ -18,7 +18,7 @@
         <p class="action_tooltip">فاکتور کوریا</p>
     </li>
     <li style="position: relative;">
-        <img class="action_button print" onclick="window.print();" src="./assets/img/print.svg" alt="print icon">
+        <img class="action_button print" onclick="handlePrint('<?= $factorNumber ?>')" src="./assets/img/print.svg" alt="print icon">
         <p class="action_tooltip">پرینت</p>
     </li>
     <li style="position: relative;">
@@ -30,3 +30,18 @@
         <p class="action_tooltip">پی دی اف</p>
     </li>
 </ul>
+<script>
+    function handlePrint(factorNumber) {
+        const params = new URLSearchParams();
+        params.append('factorNumber', factorNumber);
+        params.append('action', 'print');
+
+        axios.post('../../app/api/factor/CompleteFactorApi.php', params).then(res => {
+            console.log(res);
+        }).catch(err => {
+            console.log(err);
+        });
+
+        window.print();
+    }
+</script>

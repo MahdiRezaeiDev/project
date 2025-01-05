@@ -1,5 +1,0 @@
-[2024-01-24 08:46:12] Action: DELETE FROM qtybank WHERE id = '17892d=26215' , User:5
-[2024-01-24 08:46:57] Action: DELETE FROM qtybank WHERE id = '17891' , User:5
-[2024-01-24 08:57:01] Action: DELETE FROM qtybank WHERE id = '17890' , User:5
-[2024-01-24 08:58:33] Action: DELETE FROM qtybank WHERE id = '17889' , User:5
-[2024-01-24 08:58:46] Action: DELETE FROM qtybank WHERE id = '17842' , User:5

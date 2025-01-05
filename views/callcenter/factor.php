@@ -157,11 +157,16 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                     </span>
                                 </td>
                                 <td class="text-center align-middle hide_while_print">
+                                    <div class="flex items-center gap-2">
                                     <?php if ($factor['exists_in_bill']) : ?>
                                         <a href="../factor/complete.php?factor_number=<?= $factor['bill_id'] ?>">
                                             <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده فاکتور" src="./assets/img/bill.svg" />
                                         </a>
                                     <?php endif; ?>
+                                    <?php if ($factor['printed']) : ?>
+                                        <img class="w-6 cursor-pointer d-block" title="چاپ شده" src="./assets/img/printed.svg" />
+                                    <?php endif; ?>
+                                    </div>
                                 </td>
                                 <td class="text-center align-middle font-semibold">
                                     <?= $factor['kharidar'] ?>

@@ -423,3 +423,21 @@ function updateRegisteredFactorNumber($factorNumber, $customer)
         echo $e->getMessage();
     }
 }
+
+
+if (isset($_POST['action']) && $_POST['action'] === 'print') {
+    $factorNumber = $_POST['factorNumber'];
+    updatePrintedStatus($factorNumber);
+}
+
+function updatePrintedStatus($factorNumber)
+{
+    try {
+        $sql = "UPDATE factor.bill SET printed = 1 WHERE id = :billNumber";
+        $stmt = PDO_CONNECTION->prepare($sql);
+        $stmt->bindParam(':billNumber', $factorNumber, PDO::PARAM_INT);
+        echo $stmt->execute();
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+}
