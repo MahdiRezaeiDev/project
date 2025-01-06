@@ -134,7 +134,8 @@ foreach ($goodDetails as $partNumber => $goodDetail) {
         "price_per" => getItemPrice($goodDetail['finalPrice']),
         "quantity" => $quantity,
         "max" => "undefined",
-        "partNumber" => $partNumber
+        "partNumber" => $partNumber,
+        "original_price" => $goodDetail['finalPrice'],
     ];
 }
 

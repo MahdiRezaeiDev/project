@@ -194,9 +194,9 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
         }
     }
 
-    if (!empty($selectedGoods) || !empty($lowQuantity)) {
-        sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete);
-    }
+    // if (!empty($selectedGoods) || !empty($lowQuantity)) {
+    //     sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete);
+    // }
 
     $selectedGoods = [...$selectedGoods, ...$lowQuantity];
 
@@ -290,6 +290,7 @@ function getGoodsSpecification($completeCode, $allAllowedBrands)
         $existingGoods = array_filter($stockInfo, function ($item) {
             return count($item) > 0;
         });
+
 
         $MatchedGoods = fetchCodesWithInfo($existingGoods, $allAllowedBrands, $completeCode);
 
@@ -395,8 +396,9 @@ function resultCustomSort($a, $b)
 
 function fetchCodesWithInfo($existingGoods, $allowedBrands, $completeCode)
 {
-    $allowedBrands = array_map('trim', $allowedBrands);
-    $allowedBrands = array_map('strtoupper', $allowedBrands);
+    // Normalize allowed brands
+    $allowedBrands = array_map(fn($brand) => strtoupper(trim($brand)), $allowedBrands);
+    $primaryBrand = $allowedBrands[0] ?? null; // The first brand in the allowed list
 
     $CODES_INFORMATION = [
         'goods' => [],
@@ -406,60 +408,74 @@ function fetchCodesWithInfo($existingGoods, $allowedBrands, $completeCode)
     $specifiedCode = [];
     $similarCodes = [];
 
-    foreach ($existingGoods as $key => $code) {
-        foreach ($code as $item) {
+    foreach ($existingGoods as $partNumber => $items) {
+        foreach ($items as $item) {
             $processedBrand = strtoupper(trim($item['brandName']));
 
             if (in_array($processedBrand, $allowedBrands)) {
-                $item['brandName'] = strtoupper(trim($item['brandName']));
-                $allowedBrands = array_map('strtoupper', $allowedBrands);
-                $item['partNumber'] = $key;
-                if ($key == $completeCode) {
+                $item['brandName'] = $processedBrand;
+                $item['partNumber'] = $partNumber;
+
+                if ($partNumber === $completeCode) {
                     $specifiedCode[] = $item;
                 } else {
                     $similarCodes[] = $item;
                 }
-                $CODES_INFORMATION['codes'][] = $key;
-                $CODES_INFORMATION['codes'] = array_unique($CODES_INFORMATION['codes']);
+
+                $CODES_INFORMATION['codes'][] = $partNumber;
             }
         }
     }
 
-    $YadakShopInventory = [];
-    $otherInventory = [];
+    // Remove duplicate codes
+    $CODES_INFORMATION['codes'] = array_unique($CODES_INFORMATION['codes']);
 
-    foreach ($specifiedCode as $good) {
-        if ($good['stockId'] == 9) {
-            $YadakShopInventory[] = $good;
-        } else {
-            $otherInventory[] = $good;
+    // Helper function to segregate inventory
+    $prioritizeInventory = function ($goods) {
+        $yadakShop = [];
+        $other = [];
+
+        foreach ($goods as $good) {
+            if ($good['stockId'] == 9) {
+                $yadakShop[] = $good;
+            } else {
+                $other[] = $good;
+            }
         }
-    }
 
-    $specifiedCode = array_merge($YadakShopInventory, $otherInventory);
+        return array_merge($yadakShop, $other);
+    };
 
-    $YadakShopInventory = [];
-    $otherInventory = [];
-
-    foreach ($similarCodes as $good) {
-        if ($good['stockId'] == 9) {
-            $YadakShopInventory[] = $good;
-        } else {
-            $otherInventory[] = $good;
-        }
-    }
+    // Prioritize inventories for specified and similar codes
+    $specifiedCode = $prioritizeInventory($specifiedCode);
+    $similarCodes = $prioritizeInventory($similarCodes);
 
     // Merge inventories
-    $CODES_INFORMATION['goods'] = array_merge($specifiedCode, $YadakShopInventory, $otherInventory);
+    $mergedGoods = array_merge($specifiedCode, $similarCodes);
 
-    // No need to filter empty goods, all goods will have data
-    $CODES_INFORMATION['goods'] = array_filter($CODES_INFORMATION['goods'], function ($item) {
-        return !empty($item); // Ensuring that goods are non-empty
-    });
+    // Final sort based on primary brand
+    if ($primaryBrand) {
+        usort($mergedGoods, function ($a, $b) use ($primaryBrand) {
+            $isPrimaryA = $a['brandName'] === $primaryBrand;
+            $isPrimaryB = $b['brandName'] === $primaryBrand;
 
-    // Return unique codes instead of array keys
-    return ($CODES_INFORMATION);
+            // Prioritize primary brand
+            if ($isPrimaryA && !$isPrimaryB) {
+                return -1;
+            } elseif (!$isPrimaryA && $isPrimaryB) {
+                return 1;
+            }
+
+            // Retain original order otherwise
+            return 0;
+        });
+    }
+
+    $CODES_INFORMATION['goods'] = $mergedGoods;
+
+    return $CODES_INFORMATION;
 }
+
 
 function getTotalQuantity($goods = [], $brandsName = [])
 {
