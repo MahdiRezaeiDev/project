@@ -329,7 +329,8 @@ require_once './components/factor.php'; ?>
             price_per: 0,
             quantity: 1,
             max: 'undefined',
-            partNumber: 'NOTPART'
+            partNumber: 'NOTPART',
+            original_price: 'موجود نیست'
         });
         displayBill();
     }
@@ -343,7 +344,8 @@ require_once './components/factor.php'; ?>
             price_per: 0,
             quantity: 1,
             max: 'undefined',
-            partNumber: 'NOTPART'
+            partNumber: 'NOTPART',
+            original_price: 'موجود نیست'
         };
         // Ensure the targetIndex is within the valid range
         if (targetIndex >= 0 && targetIndex < factorItems.length) {
@@ -466,6 +468,7 @@ require_once './components/factor.php'; ?>
                         if (factorItems[i].id == itemId) {
 
                             factorItems[i]['partNumber'] = key;
+                            factorItems[i]['original_price'] = originalPrice;
                             factorItems[i]['partName'] = data[key]['partName'];
                             factorItems[i]['price_per'] = data[key]['prices']['اصلی'] ?? 0;
                             factorItems[i]['actual_price'] = data[key]['prices']['اصلی'] ?? 0;
