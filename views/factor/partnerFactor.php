@@ -67,7 +67,7 @@ require_once '../../layouts/callcenter/sidebar.php';
 <script src="./assets/js/displayFactor/factor.js"></script>
 <script>
     const time = '<?= $BillInfo['created_at']; ?>';
-    const now = moment(time).locale('fa').format('H:0M');
+    const now = moment(time).locale('fa').format('H:M');
     displayFinanceBill();
     displayFinanceCustomer();
     displayFinanceBillDetails();
