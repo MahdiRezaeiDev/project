@@ -304,6 +304,56 @@ function copyItemsWith(elem) {
   }
 }
 
+// A function to copy content to clipboard
+function copyItemsWithout(elem) {
+  try {
+    // Get the text field
+    let parentElement = document.getElementById("priceReport");
+
+    let tdElements = parentElement.getElementsByTagName("td");
+    let tdTextContent = [];
+
+    const elementLength = tdElements.length;
+
+    const forbiddenPrices = ["موجود نیست", "نیاز به بررسی", "نیاز به قیمت"];
+
+    for (let i = 0; i < elementLength; i++) {
+      const elementText = tdElements[i].textContent.trim();
+      if (elementText !== "content_copy") {
+        tdTextContent.push(elementText);
+      }
+    }
+
+    const chunkSize = 2;
+    tdTextContent = tdTextContent.filter((td) => td.length > 0);
+
+    let finalResult = [];
+    const size = tdTextContent.length;
+    for (let i = 0; i < size; i += chunkSize) {
+      finalResult.push(tdTextContent.slice(i, i + chunkSize));
+    }
+
+    const filteredResult = finalResult.filter((item) =>
+      forbiddenPrices.includes(item[1])
+    );
+
+    // Copy the text inside the text field
+    let text = "";
+    for (let item of filteredResult) {
+      text += item.join(" : ");
+      text += "\n";
+    }
+    copyToClipboard(text.trim());
+    // Alert the copied text
+    elem.src = `./assets/img/complete.svg`;
+    setTimeout(() => {
+      elem.src = `./assets/img/forbidden.svg`;
+    }, 1500);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 function copyItemPrice(elem) {
   // Get the parent <td> element
   var parentTd = elem.parentNode;

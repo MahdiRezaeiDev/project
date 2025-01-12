@@ -82,6 +82,7 @@ if ($isValidCustomer) :
                             <th class="text-left px-3 py-2">قیمت</th>
                             <th class="text-left px-3 py-2 flex items-center justify-between gap-2" onclick="closeTab()">
                                 <span class="flex gap-1">
+                                    <img class="inline cursor-pointer" title="کپی مقادیر فاقد قیمت" onclick="copyItemsWithout(this)" src="./assets/img/forbidden.svg" alt="copy all items">
                                     <i id="copy_all_with_price" title="کاپی کردن مقادیر دارای قیمت" onclick="copyItemsWith(this)" class="text-sm material-icons hover:cursor-pointer text-green-500">content_copy</i>
                                     <img class="inline cursor-pointer" id="copy_all" title="کاپی کردن مقادیر" onclick="copyPrice(this)" src="./assets/img/all.svg" alt="copy all items">
                                 </span>
@@ -335,7 +336,7 @@ if ($isValidCustomer) :
                     }
 
                     // Append formatted text to the final array (without HTML tags)
-                    final.push(`${persianName} :\n ${description}`);
+                    final.push(`${persianName} : ${description}`);
                 }
 
                 // Copy the plain text to clipboard
