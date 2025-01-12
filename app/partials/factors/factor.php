@@ -56,7 +56,9 @@ function displayUI($factors, $countFactorByUser)
 {
     $TOTAL = 0;
     $PARTNER = 0;
+    $PARTNER_COUNT = 0;
     $REGULAR = 0;
+    $REGULAR_COUNT = 0;
     $NOT_INCLUDED = [];
     $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi', 'hadishasanpouri', 'rana'];
 ?>
@@ -89,11 +91,13 @@ function displayUI($factors, $countFactorByUser)
 
                         if ($factor['isPartner']) {
                             $PARTNER += $factor['total'];
+                            $PARTNER_COUNT++;
                         } else {
                             $REGULAR += $factor['total'];
+                            $REGULAR_COUNT++;
                         }
                 ?>
-                        <tr class="even:bg-gray-100 factor_row" data-total="<?= $factor['total'] ?? 'xxx' ?>" data-partner="<?= $factor['status'] ?? 'xxx' ?>">
+                        <tr class="<?= $factor['partner'] ? 'bg-green-200' : 'even:bg-gray-100' ?> factor_row" data-total="<?= $factor['total'] ?? 'xxx' ?>" data-status="<?= $factor['status'] ?? 'xxx' ?>">
                             <td class="text-center align-middle">
                                 <span class="flex justify-center items-center gap-2 bg-blue-500 rounded-sm text-white w-24 py-2 mx-auto cursor-pointer" title="کپی کردن شماره فاکتور" data-billNumber="<?= $factor['shomare'] ?>" onClick="copyBillNumberSingle(this)">
                                     <?= $factor['shomare'] ?>
@@ -116,7 +120,7 @@ function displayUI($factors, $countFactorByUser)
                                 <?= $factor['kharidar'] ?>
                             </td>
                             <td class="text-center align-middle">
-                                <img onclick="userReport(this)" class="w-10 rounded-full hover:cursor-pointer mt-2" data-id="<?= $factor['user']; ?>" src="<?= getUserProfile($factor['user'], "../") ?>" />
+                                <img onclick="userReport(this)" class="w-10 rounded-full hover:cursor-pointer mt-2 mx-auto" data-id="<?= $factor['user']; ?>" src="<?= getUserProfile($factor['user'], "../") ?>" />
                             </td>
                             <?php if (in_array($_SESSION['username'], $qualified)): ?>
                                 <td class="hide_while_print">
@@ -152,7 +156,7 @@ function displayUI($factors, $countFactorByUser)
         </table>
     </div>
     <div class="sm:col-span-2 hide_while_print">
-        <div class="px-3">
+        <div class="px-">
             <table class="w-full">
                 <thead class="bg-gray-800">
                     <tr class="text-white">
@@ -171,22 +175,24 @@ function displayUI($factors, $countFactorByUser)
             <?php
             if (count($countFactorByUser)) :
                 foreach ($countFactorByUser as $index => $row) : $index++; ?>
-                    <div class="relative bg-gray-100 hover:bg-gray-200 p-5 shadow rounded-lg m-3 mb-10 cursor-pointer">
-                        <div class="flex justify-between">
-                            <div class="w-16 h-16 overflow-hidden rounded-full bg-gray-100 hover:bg-gray-200 p-2" style="position: absolute; top: -50%;">
-                                <img class="rounded-full" src="<?= getUserProfile($row['user'], '../') ?>" alt="ananddavis" />
+                    <div class="group">
+                        <div class="relative bg-gray-100 group-hover:hover:bg-gray-200 p-5 shadow rounded-lg m-3 mb-10 cursor-pointer">
+                            <div class="flex justify-between">
+                                <div class="w-16 h-16 overflow-hidden rounded-full bg-gray-100 group-hover:bg-gray-200 p-2" style="position: absolute; top: -50%;">
+                                    <img onclick="userReport(this)" data-id="<?= $row['user'] ?>" class="rounded-full" src="<?= getUserProfile($row['user'], '../') ?>" alt="ananddavis" />
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div class="grow text-left">
-                                <img style="z-index: 10000;" src="../../public/icons/<?= getRankingBadge($index) ?>" alt="first" />
-                            </div>
-                            <div class="grow">
-                                <h4 class="text-left font-semibold text-sm"><?= getUserInfo($row['user']) ?></h4>
-                            </div>
-                            <div class="grow">
-                                <div class="text-sm text-left font-semibold">فاکتورها
-                                    <span class="profile__key"><?= $row['count_shomare']; ?></span>
+                            <div class="flex justify-between items-center">
+                                <div class="grow text-left">
+                                    <img style="z-index: 10000;" src="../../public/icons/<?= getRankingBadge($index) ?>" alt="first" />
+                                </div>
+                                <div class="grow">
+                                    <h4 class="text-left font-semibold text-sm"><?= getUserInfo($row['user']) ?></h4>
+                                </div>
+                                <div class="grow">
+                                    <div class="text-sm text-left font-semibold">فاکتورها
+                                        <span class="profile__key"><?= $row['count_shomare']; ?></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -202,7 +208,7 @@ function displayUI($factors, $countFactorByUser)
         </div>
     </div>
     <div onclick="toggleDollarModal()" id="dollarContainerModal" class="hide_while_print hidden fixed flex inset-0 bg-gray-900/75 justify-center items-center">
-        <div class="bg-white p-4 rounded w-96 ">
+        <div class="bg-white p-4 rounded w-1/3">
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl mb-2">گزارش مجموع فروشات روزانه</h2>
                 <img class="cursor-pointer" src="./assets/img/close.svg" alt="close icon">
@@ -216,13 +222,17 @@ function displayUI($factors, $countFactorByUser)
                         </td>
                     </tr>
                     <tr>
-                        <td class="p-2 bg-sky-800 text-white font-semibold text-xs">جمع همکار :</td>
+                        <td class="p-2 bg-sky-800 text-white font-semibold text-xs">جمع همکار :
+                            (<?= $PARTNER_COUNT ?>)
+                        </td>
                         <td id="total_partner" class="p-2 bg-sky-800 text-white font-semibold text-xs">
                             <?= displayAsMoney($PARTNER); ?>
                         </td>
                     </tr>
                     <tr>
-                        <td class="p-2 bg-sky-800 text-white font-semibold text-xs">جمع مصرف کننده :</td>
+                        <td class="p-2 bg-sky-800 text-white font-semibold text-xs">جمع مصرف کننده :
+                            (<?= $REGULAR_COUNT ?>)
+                        </td>
                         <td id="total_consumer" class="p-2 bg-sky-800 text-white font-semibold text-xs">
                             <?= displayAsMoney($REGULAR); ?>
                         </td>

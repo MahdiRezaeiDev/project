@@ -463,6 +463,8 @@ require_once './components/factor.php';
                         "230603": 6,
                         "234103": 6,
                         "230413": 6,
+                        '230603F': 8,
+                        '210203F': 4,
                     };
 
                     for (let i = 0; i < factorItems.length; i++) {

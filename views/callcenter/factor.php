@@ -7,7 +7,9 @@ require_once '../../layouts/callcenter/nav.php';
 require_once '../../layouts/callcenter/sidebar.php';
 $TOTAL = 0;
 $PARTNER = 0;
+$PARTNER_COUNT = 0;
 $REGULAR = 0;
+$REGULAR_COUNT = 0;
 $NOT_INCLUDED = [];
 
 $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi', 'hadishasanpouri', 'rana'];
@@ -100,7 +102,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
             <input class="text-sm py-2 px-3 font-semibold sm:w-60 border-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="invoice_time" id="invoice_time">
         </form>
         <div class="flex justify-center items-center gap-2">
-            <a title="چاپ کردن گزارش" class="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-md cursor-pointer" onClick="window.print()">
+            <a title="چاپ کردن گزارش" class="bg-blue-500 hover:bg-blue-600 px-3 rounded-md cursor-pointer w-12" onClick="window.print()">
                 <img class="w-6 h-6 sm:w-12 sm:h-11" src="./assets/img/print.svg" alt="print icon" />
             </a>
             <img onclick="calculateTotal()" title="گزارش فروشات امروز" class="w-8 h-8 sm:w-12 sm:h-11 cursor-pointer" src="./assets/img/chasier.svg" alt="chasier icon">
@@ -146,10 +148,12 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
 
                             if ($factor['isPartner']) {
                                 $PARTNER += $factor['total'];
+                                $PARTNER_COUNT++;
                             } else {
                                 $REGULAR += $factor['total'];
+                                $REGULAR_COUNT++;
                             } ?>
-                            <tr class="even:bg-gray-100 factor_row" data-total="<?= $factor['total'] ?? 'xxx' ?>" data-status="<?= $factor['status'] ?? 'xxx' ?>">
+                            <tr class="<?= $factor['partner'] ? 'bg-green-200' : 'even:bg-gray-100' ?> factor_row" data-total="<?= $factor['total'] ?? 'xxx' ?>" data-status="<?= $factor['status'] ?? 'xxx' ?>">
                                 <td class="text-center align-middle">
                                     <span class="flex justify-center items-center gap-2 bg-blue-500 rounded-sm text-white sm:w-24 py-2 mx-auto cursor-pointer" title="کپی کردن شماره فاکتور" data-billNumber="<?= $factor['shomare'] ?>" onClick="copyBillNumberSingle(this)">
                                         <span class="factorNumberContainer"><?= $factor['shomare'] ?></span>
@@ -158,14 +162,14 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                 </td>
                                 <td class="text-center align-middle hide_while_print">
                                     <div class="flex items-center gap-2">
-                                    <?php if ($factor['exists_in_bill']) : ?>
-                                        <a href="../factor/complete.php?factor_number=<?= $factor['bill_id'] ?>">
-                                            <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده فاکتور" src="./assets/img/bill.svg" />
-                                        </a>
-                                    <?php endif; ?>
-                                    <?php if ($factor['printed']) : ?>
-                                        <img class="w-6 cursor-pointer d-block" title="چاپ شده" src="./assets/img/printed.svg" />
-                                    <?php endif; ?>
+                                        <?php if ($factor['exists_in_bill']) : ?>
+                                            <a href="../factor/complete.php?factor_number=<?= $factor['bill_id'] ?>">
+                                                <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده فاکتور" src="./assets/img/bill.svg" />
+                                            </a>
+                                        <?php endif; ?>
+                                        <?php if ($factor['printed']) : ?>
+                                            <img class="w-6 cursor-pointer d-block" title="چاپ شده" src="./assets/img/printed.svg" />
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                                 <td class="text-center align-middle font-semibold">
@@ -222,22 +226,24 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                 <?php
                 if (count($countFactorByUser)) :
                     foreach ($countFactorByUser as $index => $row) : $index++; ?>
-                        <div class="relative bg-gray-100 hover:bg-gray-200 p-5 shadow rounded-lg m-3 mb-10 cursor-pointer">
-                            <div class="flex justify-between">
-                                <div class="w-16 h-16 overflow-hidden rounded-full bg-gray-100 hover:bg-gray-200 p-2" style="position: absolute; top: -50%;">
-                                    <img class="rounded-full" src="<?= getUserProfile($row['user']) ?>" alt="ananddavis" />
+                        <div class="group">
+                            <div class="relative bg-gray-100 group-hover:hover:bg-gray-200 p-5 shadow rounded-lg m-3 mb-10 cursor-pointer">
+                                <div class="flex justify-between">
+                                    <div class="w-16 h-16 overflow-hidden rounded-full bg-gray-100 group-hover:bg-gray-200 p-2" style="position: absolute; top: -50%;">
+                                        <img onclick="userReport(this)" data-id="<?= $row['user'] ?>" class="rounded-full" src="<?= getUserProfile($row['user']) ?>" alt="ananddavis" />
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <div class="grow text-left">
-                                    <img style="z-index: 10000;" src="../../public/icons/<?= getRankingBadge($index) ?>" alt="first" />
-                                </div>
-                                <div class="grow">
-                                    <h4 class="text-left font-semibold text-sm"><?= getUserInfo($row['user']) ?></h4>
-                                </div>
-                                <div class="grow">
-                                    <div class="text-sm text-left font-semibold">فاکتورها
-                                        <span class="profile__key"><?= $row['count_shomare']; ?></span>
+                                <div class="flex justify-between items-center">
+                                    <div class="grow text-left">
+                                        <img style="z-index: 10000;" src="../../public/icons/<?= getRankingBadge($index) ?>" alt="first" />
+                                    </div>
+                                    <div class="grow">
+                                        <h4 class="text-left font-semibold text-sm"><?= getUserInfo($row['user']) ?></h4>
+                                    </div>
+                                    <div class="grow">
+                                        <div class="text-sm text-left font-semibold">فاکتورها
+                                            <span class="profile__key"><?= $row['count_shomare']; ?></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -252,7 +258,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
             </div>
         </div>
         <div onclick="toggleDollarModal()" id="dollarContainerModal" class="hide_while_print hidden fixed flex inset-0 bg-gray-900/75 justify-center items-center">
-            <div class="bg-white p-4 rounded w-96">
+            <div class="bg-white p-4 rounded w-1/3">
                 <div class="flex justify-between items-center">
                     <h2 class="font-semibold text-xl mb-2">گزارش مجموع فروشات روزانه</h2>
                     <img class="cursor-pointer" src="./assets/img/close.svg" alt="close icon">
@@ -260,25 +266,34 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                 <table class="w-full">
                     <tbody>
                         <tr>
-                            <td class="p-2 bg-sky-800 text-white font-semibold text-xs">جمع کل :</td>
+                            <td class="p-2 bg-sky-800 text-white font-semibold text-xs">جمع کل :
+                                (<?= count($factors) ?>)
+                            </td>
                             <td id="total_price" class="p-2 bg-sky-800 text-white font-semibold text-xs">
                                 <?= displayAsMoney($TOTAL); ?>
                             </td>
                         </tr>
                         <tr>
-                            <td class="p-2 bg-sky-800 text-white font-semibold text-xs">جمع همکار :</td>
+                            <td class="p-2 bg-sky-800 text-white font-semibold text-xs">
+                                جمع همکار :
+                                (<?= $PARTNER_COUNT ?>)
+                            </td>
                             <td id="total_partner" class="p-2 bg-sky-800 text-white font-semibold text-xs">
                                 <?= displayAsMoney($PARTNER); ?>
                             </td>
                         </tr>
                         <tr>
-                            <td class="p-2 bg-sky-800 text-white font-semibold text-xs">جمع مصرف کننده :</td>
+                            <td class="p-2 bg-sky-800 text-white font-semibold text-xs">جمع مصرف کننده :
+                                (<?= $REGULAR_COUNT ?>)
+                            </td>
                             <td id="total_consumer" class="p-2 bg-sky-800 text-white font-semibold text-xs">
                                 <?= displayAsMoney($REGULAR); ?>
                             </td>
                         </tr>
                         <tr>
-                            <td class="p-2 bg-sky-800 text-white font-semibold text-xs"> شماره فاکتور های لحاظ نشده :</td>
+                            <td class="p-2 bg-sky-800 text-white font-semibold text-xs"> شماره فاکتور های لحاظ نشده :
+                                (<?= count($NOT_INCLUDED) ?>)
+                            </td>
                             <td id="total_notIncluded" class="p-2 bg-sky-800 text-white font-semibold text-xs">
                                 <?= implode(' , ', $NOT_INCLUDED); ?>
                             </td>

@@ -16,7 +16,9 @@
         </thead>
         <tbody>
             <?php
-            foreach ($sorted as $index => $element) : ?>
+            foreach ($sorted as $index => $element) :
+                $YADAK_SHOP = [];
+            ?>
                 <tr>
                     <td class="relative px-1 hover:cursor-pointer" data-part="<?= $goods[$index]['partnumber'] ?>" onmouseleave="hideToolTip(this)" onmouseover="showToolTip(this)">
                         <div class="relative">
@@ -170,7 +172,22 @@
                                                             <tbody>
                                                                 <?php
                                                                 foreach ($stockInfo[$index] as $item) {
-                                                                    if ($item !== 0 && $item['brandName'] === $brand && $item['remaining_qty'] > 0) { ?>
+                                                                    if ($item !== 0 && $item['brandName'] === $brand && $item['remaining_qty'] > 0) {
+
+                                                                        if ($item['stockId'] == 9) {
+                                                                            // Check if the brandName exists, and add to it; otherwise, initialize it
+                                                                            if (isset($YADAK_SHOP[$item['brandName']])) {
+                                                                                $YADAK_SHOP[$item['brandName']] += $item['remaining_qty'];
+                                                                            } else {
+                                                                                $YADAK_SHOP[$item['brandName']] = $item['remaining_qty'];
+                                                                            }
+                                                                        } else {
+                                                                            // If the stockId is not 9 and the brandName is set but its value is 0, explicitly set it to 0
+                                                                            if (!isset($YADAK_SHOP[$item['brandName']])) {
+                                                                                $YADAK_SHOP[$item['brandName']] = 0;
+                                                                            }
+                                                                        }
+                                                                ?>
                                                                         <tr class="<?= $item['seller_name'] == 'کاربر دستوری' ? 'bg-red-500' : 'bg-gray-600' ?>">
                                                                             <td class="p-2 text-xs text-right"><?= $item['seller_name'] ?></td>
                                                                             <td class="p-2 text-xs text-right"><?= $item['remaining_qty'] ?></td>
@@ -193,13 +210,45 @@
                             </thead>
                             <tbody>
                                 <tr class="py-3">
-                                    <?php foreach ($exist[$index] as $brand => $amount) :
+                                    <?php
+                                    foreach ($exist[$index] as $brand => $amount) :
+                                        $count = 0;
                                         if ($amount > 0) : ?>
-                                            <td class="<?= $brand == 'GEN' || $brand == 'MOB' ? $brand : 'brand-default' ?> whitespace-nowrap text-white px-3 py-2 text-center">
+                                            <td class="<?= $brand == 'GEN' || $brand == 'MOB' ? $brand : 'brand-default' ?> whitespace-nowrap text-white px-3 py-2 text-center relative">
                                                 <?= $amount; ?>
+                                                <?php
+                                                if (isset($YADAK_SHOP[$brand]) && $YADAK_SHOP[$brand] != 0):
+                                                ?>
+                                                    <span class="text-xs font-semibold absolute top-full left-1/2 transform -translate-x-1/2 rounded-full bg-green-600 px-2 py-1 flex justify-center items-center">
+                                                        <?php
+                                                        if (isset($YADAK_SHOP[$brand]) && $YADAK_SHOP[$brand] == $amount) {
+                                                        ?>
+                                                            <svg width="10px" height="10px" viewBox="0 -1.5 11 11" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000">
+                                                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                                <g id="SVGRepo_iconCarrier">
+                                                                    <title>done_mini [#ffffff]</title>
+                                                                    <desc>Created with Sketch.</desc>
+                                                                    <defs> </defs>
+                                                                    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                                        <g id="Dribbble-Light-Preview" transform="translate(-304.000000, -366.000000)" fill="#ffffff">
+                                                                            <g id="icons" transform="translate(56.000000, 160.000000)">
+                                                                                <polygon id="done_mini-[#ffffff]" points="259 207.6 252.2317 214 252.2306 213.999 252.2306 214 248 210 249.6918 208.4 252.2306 210.8 257.3082 206"> </polygon>
+                                                                            </g>
+                                                                        </g>
+                                                                    </g>
+                                                                </g>
+                                                            </svg>
+                                                        <?php
+                                                        } else {
+                                                            echo $YADAK_SHOP[$brand];
+                                                        }
+                                                        ?>
+                                                    </span>
                                             </td>
-                                    <?php endif;
-                                    endforeach; ?>
+                                <?php endif;
+                                            endif;
+                                        endforeach; ?>
                                 </tr>
                             </tbody>
                         </table>
