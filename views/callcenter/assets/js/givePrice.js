@@ -307,50 +307,51 @@ function copyItemsWith(elem) {
 // A function to copy content to clipboard
 function copyItemsWithout(elem) {
   try {
-    // Get the text field
-    let parentElement = document.getElementById("priceReport");
+    // Get the table parent element
+    const parentElement = document.getElementById("priceReport");
 
-    let tdElements = parentElement.getElementsByTagName("td");
-    let tdTextContent = [];
+    if (!parentElement) {
+      console.error("Element with ID 'priceReport' not found.");
+      return;
+    }
 
-    const elementLength = tdElements.length;
-
+    const tdElements = parentElement.getElementsByTagName("td");
+    const tdTextContent = [];
     const forbiddenPrices = ["موجود نیست", "نیاز به بررسی", "نیاز به قیمت"];
 
-    for (let i = 0; i < elementLength; i++) {
-      const elementText = tdElements[i].textContent.trim();
-      if (elementText !== "content_copy") {
+    // Extract text content from table cells
+    for (let td of tdElements) {
+      const elementText = td.textContent.trim();
+      if (elementText && elementText !== "content_copy") {
         tdTextContent.push(elementText);
       }
     }
 
+    // Create chunks of two elements (code and price)
     const chunkSize = 2;
-    tdTextContent = tdTextContent.filter((td) => td.length > 0);
-
-    let finalResult = [];
-    const size = tdTextContent.length;
-    for (let i = 0; i < size; i += chunkSize) {
-      finalResult.push(tdTextContent.slice(i, i + chunkSize));
+    const chunks = [];
+    for (let i = 0; i < tdTextContent.length; i += chunkSize) {
+      chunks.push(tdTextContent.slice(i, i + chunkSize));
     }
 
-    const filteredResult = finalResult.filter((item) =>
-      forbiddenPrices.includes(item[1])
-    );
+    // Filter chunks where the price matches forbidden prices
+    const filteredCodes = chunks
+      .filter(
+        (chunk) => chunk.length === 2 && forbiddenPrices.includes(chunk[1])
+      )
+      .map((chunk) => chunk[0]); // Extract only the codes
 
-    // Copy the text inside the text field
-    let text = "";
-    for (let item of filteredResult) {
-      text += item.join(" : ");
-      text += "\n";
-    }
-    copyToClipboard(text.trim());
-    // Alert the copied text
+    // Copy the filtered codes to clipboard
+    const textToCopy = filteredCodes.join("\n");
+    copyToClipboard(textToCopy.trim());
+
+    // Change the icon to indicate success
     elem.src = `./assets/img/complete.svg`;
     setTimeout(() => {
       elem.src = `./assets/img/forbidden.svg`;
     }, 1500);
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.error("An error occurred:", error);
   }
 }
 
