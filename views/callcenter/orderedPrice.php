@@ -311,7 +311,6 @@ if ($isValidCustomer) :
 
                 // Helper function to format digits as money
                 function formatMoney(value) {
-                    // Convert the value to a string, add commas for thousands, and add a currency unit (e.g., ریال or تومان)
                     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ';
                 }
 
