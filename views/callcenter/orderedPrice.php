@@ -312,7 +312,7 @@ if ($isValidCustomer) :
                 // Helper function to format digits as money
                 function formatMoney(value) {
                     // Convert the value to a string, add commas for thousands, and add a currency unit (e.g., ریال or تومان)
-                    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' تومان';
+                    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ';
                 }
 
                 // Loop through each name and corresponding description
@@ -335,7 +335,7 @@ if ($isValidCustomer) :
                     }
 
                     // Append formatted text to the final array (without HTML tags)
-                    final.push(`${persianName} : ${description}`);
+                    final.push(`${persianName} :\n ${description}\n\nقیمت ها در واحد هزار تومان می باشد.\nتمام قطعات اصلی برند جنیون پارت می باشند.`);
                 }
 
                 // Copy the plain text to clipboard
