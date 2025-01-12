@@ -311,6 +311,7 @@ if ($isValidCustomer) :
 
                 // Helper function to format digits as money
                 function formatMoney(value) {
+                    // Convert the value to a string, add commas for thousands, and add a currency unit (e.g., ریال or تومان)
                     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ';
                 }
 
@@ -334,11 +335,11 @@ if ($isValidCustomer) :
                     }
 
                     // Append formatted text to the final array (without HTML tags)
-                    final.push(`${persianName} :\n ${description}\n\nقیمت ها در واحد هزار تومان می باشد.\nتمام قطعات اصلی برند جنیون پارت می باشند.`);
+                    final.push(`${persianName} :\n ${description}`);
                 }
 
                 // Copy the plain text to clipboard
-                copyToClipboard(final.join('\n'));
+                copyToClipboard(final.join('\n') + `\n\nقیمت ها در واحد هزار تومان می باشد.\nتمام قطعات اصلی برند جنیون پارت می باشند.`);
                 element.innerHTML = `done`;
                 setTimeout(() => {
                     element.innerHTML = `content_copy`;
