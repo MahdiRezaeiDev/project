@@ -306,10 +306,14 @@ if ($isValidCustomer) :
             function copyPriceDetails(element) {
                 // Select all elements with data attributes for names and descriptions
                 const names = document.querySelectorAll('[data-persianName]');
-
-
                 const descriptions = document.querySelectorAll('[data-description]');
                 const final = [];
+
+                // Helper function to format digits as money
+                function formatMoney(value) {
+                    // Convert the value to a string, add commas for thousands, and add a currency unit (e.g., ریال or تومان)
+                    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' تومان';
+                }
 
                 // Loop through each name and corresponding description
                 for (let index = 0; index < descriptions.length; index++) {
@@ -325,6 +329,9 @@ if ($isValidCustomer) :
                     let description = replaceBrandsWithPersian(descriptions[index].getAttribute('data-description'));
                     if (description == 'موجود نیست' || description == 'نیاز به بررسی') {
                         description = '-';
+                    } else {
+                        // Check if the description contains digits and format them as money
+                        description = description.replace(/\d+/g, (match) => formatMoney(match));
                     }
 
                     // Append formatted text to the final array (without HTML tags)
@@ -338,6 +345,7 @@ if ($isValidCustomer) :
                     element.innerHTML = `content_copy`;
                 }, 1500);
             }
+
 
             function openDollarModal(basePrice, tenPercent, mobis, mobisTenPercent, korea, koreaTenPercent, ) {
                 const container = document.getElementById('Modal');
