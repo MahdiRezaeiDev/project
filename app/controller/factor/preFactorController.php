@@ -104,36 +104,10 @@ foreach ($goodDetails as $partNumber => $goodDetail) {
     $goodDetails[$partNumber]['finalPrice'] = getFinalSanitizedPrice($goodDetail['givenPrice'], $goodDetails[$partNumber]['brands']);
 }
 
-$specificItemsQuantity = [
-    '51712' => 2,
-    '54813' => 2,
-    '55513' => 2,
-    '58411' => 2,
-    '230602' => 4,
-    '234102' => 4,
-    '210203' => 4,
-    '230412' => 4,
-    '210202'=> 5,
-    '230603' => 6,
-    '234103' => 6,
-    '230413' => 6,
-    '230603F' => 8,
-    '210203F' => 4,
-];
-
 $factorItems = [];
 
 foreach ($goodDetails as $partNumber => $goodDetail) {
-    $ICN = substr($partNumber, 0, 5);
-    $ICN_BIG = substr($partNumber, 0, 6);
-    $quantity = 1;
-    if (array_key_exists($ICN, $specificItemsQuantity)) {
-        $quantity = $specificItemsQuantity[$ICN];
-    } else if (array_key_exists($ICN_BIG, $specificItemsQuantity)) {
-        $quantity = $specificItemsQuantity[$ICN_BIG];
-    } else {
-        $quantity = 1;
-    }
+    $quantity = getGoodItemAmount($partNumber);
     $factorItems[] = [
         "id" => $goodDetail['goods']['id'],
         "partName" => getItemName($goodDetail['goods'], getFinalPriceBrands($goodDetail['finalPrice'])),
@@ -170,6 +144,89 @@ $incompleteBillDetails = createBillItemsTable(
     json_encode($factorItems)
 );
 
+function getGoodItemAmount($partNumber)
+{
+    $quantity = 1;
+
+    // Exact part numbers with fixed quantities (exceptions)
+    $exceptionCodes = [
+        '2102025150' => 1
+    ];
+
+    // Exact complete codes with fixed quantities
+    $completeCodes = [
+        '1884111051' => 4,
+        '2741023700' => 6,
+    ];
+
+    // Specific substrings-based quantities
+    $specificItemsQuantity = [
+        '51712' => 2,
+        '54813' => 2,
+        '55513' => 2,
+        '58411' => 2,
+        '230602' => 4,
+        '222242' => 16,
+        '222243' => 24,
+        '234102' => 4,
+        '210203' => 4,
+        '230412' => 4,
+        '210202' => 5,
+        '273012' => 4,
+        '273013' => 6,
+        '230603' => 6,
+        '234103' => 6,
+        '230413' => 6,
+        '273002' => 4,
+        '2730137' => 1, // Longer code
+        '2730103' => 4,
+        '230603F' => 8,
+        '210203F' => 4,
+        '18858100' => 4,
+    ];
+
+    // Regular expression-based patterns and their corresponding quantities
+    $patternQuantities = [
+        '/^23060[0-9]9$/' => 1,  // Matches "23060-9"
+        '/^21020[0-9]9$/' => 1,  // Matches "21020-9"
+    ];
+
+    // STEP 1: Check for exact matches in exceptions
+    if (array_key_exists($partNumber, $exceptionCodes)) {
+        return $exceptionCodes[$partNumber];
+    }
+
+    // STEP 2: Check for exact matches in complete codes
+    if (array_key_exists($partNumber, $completeCodes)) {
+        return $completeCodes[$partNumber];
+    }
+
+    // STEP 3: Check for specific substring-based matches
+    // Sort specificItemsQuantity keys by length in descending order to prioritize longer keys
+    $sortedSpecificItemsQuantity = $specificItemsQuantity;
+    uksort($sortedSpecificItemsQuantity, function ($a, $b) {
+        return strlen($b) - strlen($a); // Longer keys first
+    });
+
+    $ICN = substr($partNumber, 0, 5);  // First 5 characters
+    $ICN_BIG = substr($partNumber, 0, 6);  // First 6 characters
+
+    foreach ($sortedSpecificItemsQuantity as $key => $value) {
+        if (strpos($partNumber, $key) === 0) { // Match from the start of the part number
+            return $value;
+        }
+    }
+
+    // STEP 4: Check for pattern-based matches using regular expressions
+    foreach ($patternQuantities as $pattern => $value) {
+        if (preg_match($pattern, $partNumber)) {
+            return $value;
+        }
+    }
+
+    // STEP 5: Default quantity if no match is found
+    return $quantity;
+}
 
 function getIdealGood($goods, $partNumber)
 {
@@ -184,5 +241,6 @@ function getIdealGood($goods, $partNumber)
     return $goods[$partNumber];
 }
 
-// header('location: /views/factor/checkIncompleteSell.php?factor_number=' . $incompleteBillId);
-header('location: /yadakshop-app/views/factor/incomplete.php?factor_number=' . $incompleteBillId);
+
+header('location: /views/factor/checkIncompleteSell.php?factor_number=' . $incompleteBillId);
+// header('location: /yadakshop-app/views/factor/incomplete.php?factor_number=' . $incompleteBillId);
