@@ -242,5 +242,5 @@ function getIdealGood($goods, $partNumber)
 }
 
 
-header('location: /views/factor/checkIncompleteSell.php?factor_number=' . $incompleteBillId);
-// header('location: /yadakshop-app/views/factor/incomplete.php?factor_number=' . $incompleteBillId);
+// header('location: /views/factor/checkIncompleteSell.php?factor_number=' . $incompleteBillId);
+header('location: /yadakshop-app/views/factor/incomplete.php?factor_number=' . $incompleteBillId);
