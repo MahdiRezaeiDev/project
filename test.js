@@ -38,8 +38,8 @@ function getGoodItemAmount(partNumber) {
 
     // Regular expression-based patterns and their corresponding quantities
     const patternQuantities = [
-        { pattern: /^23060\d9$/, quantity: 1 }, // Matches "23060-9"
-        { pattern: /^21020\d9$/, quantity: 1 }  // Matches "21020-9"
+        { pattern: /^23060[\w]{2}9[\w]*$/, quantity: 1 }, // Matches "23060-any-2-alphanumeric-characters-9-any-more-characters"
+        { pattern: /^21020[\w]{2}9[\w]*$/, quantity: 1 }  // Matches "21020-any-2-alphanumeric-characters-9-any-more-characters"
     ];
 
     // STEP 1: Check for exact matches in exceptions
@@ -52,7 +52,14 @@ function getGoodItemAmount(partNumber) {
         return completeCodes[partNumber];
     }
 
-    // STEP 3: Check for specific substring-based matches
+    // STEP 3: Check for pattern-based matches using regular expressions (longer patterns first)
+    for (const { pattern, quantity } of patternQuantities) {
+        if (pattern.test(partNumber)) {
+            return quantity; // Matches specific pattern (quantity 1)
+        }
+    }
+
+    // STEP 4: Check for specific substring-based matches
     const sortedKeys = Object.keys(specificItemsQuantity).sort((a, b) => b.length - a.length); // Sort by length (desc)
     for (const key of sortedKeys) {
         if (partNumber.startsWith(key)) {
@@ -60,22 +67,8 @@ function getGoodItemAmount(partNumber) {
         }
     }
 
-    // STEP 4: Check for pattern-based matches using regular expressions
-    for (const { pattern, quantity } of patternQuantities) {
-        if (pattern.test(partNumber)) {
-            return quantity;
-        }
-    }
-
     // STEP 5: Default quantity if no match is found
     return quantity;
 }
 
-console.log(getGoodItemAmount('230609'));      // Output: 1 (matches regex /^23060\d9$/)
-console.log(getGoodItemAmount('210209'));      // Output: 1 (matches regex /^21020\d9$/)
-console.log(getGoodItemAmount('230603F'));     // Output: 8 (matches specificItemsQuantity key)
-console.log(getGoodItemAmount('2102025150'));  // Output: 1 (matches exceptionCodes key)
-console.log(getGoodItemAmount('2730137'));     // Output: 1 (matches specificItemsQuantity key)
-console.log(getGoodItemAmount('273013'));      // Output: 6 (prioritizes longer matches)
-console.log(getGoodItemAmount('unknown'));     // Output: 1 (default)
-console.log(getGoodItemAmount('1884111051'));     // Output: 1 (default)
+console.log(getGoodItemAmount("210202G811"));

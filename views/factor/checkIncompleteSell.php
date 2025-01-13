@@ -398,8 +398,6 @@ require_once './components/factor.php';
     }
 
     function getGoodItemAmount(partNumber) {
-        console.log('here we are');
-
         let quantity = 1;
 
         // Exact part numbers with fixed quantities (exceptions)
@@ -439,13 +437,13 @@ require_once './components/factor.php';
 
         // Regular expression-based patterns and their corresponding quantities
         const patternQuantities = [{
-                pattern: /^23060\d9$/,
+                pattern: /^23060[\w]{2}9[\w]*$/,
                 quantity: 1
-            }, // Matches "23060-9"
+            }, // Matches "23060-any-2-alphanumeric-characters-9-any-more-characters"
             {
-                pattern: /^21020\d9$/,
+                pattern: /^21020[\w]{2}9[\w]*$/,
                 quantity: 1
-            } // Matches "21020-9"
+            } // Matches "21020-any-2-alphanumeric-characters-9-any-more-characters"
         ];
 
         // STEP 1: Check for exact matches in exceptions
@@ -458,7 +456,18 @@ require_once './components/factor.php';
             return completeCodes[partNumber];
         }
 
-        // STEP 3: Check for specific substring-based matches
+        // STEP 3: Check for pattern-based matches using regular expressions (longer patterns first)
+        for (const {
+                pattern,
+                quantity
+            }
+            of patternQuantities) {
+            if (pattern.test(partNumber)) {
+                return quantity; // Matches specific pattern (quantity 1)
+            }
+        }
+
+        // STEP 4: Check for specific substring-based matches
         const sortedKeys = Object.keys(specificItemsQuantity).sort((a, b) => b.length - a.length); // Sort by length (desc)
         for (const key of sortedKeys) {
             if (partNumber.startsWith(key)) {
@@ -466,20 +475,10 @@ require_once './components/factor.php';
             }
         }
 
-        // STEP 4: Check for pattern-based matches using regular expressions
-        for (const {
-                pattern,
-                quantity
-            }
-            of patternQuantities) {
-            if (pattern.test(partNumber)) {
-                return quantity;
-            }
-        }
-
         // STEP 5: Default quantity if no match is found
         return quantity;
     }
+
 
     function filterPartNumber(message) {
         if (!message) {
