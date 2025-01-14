@@ -424,7 +424,6 @@ function updateRegisteredFactorNumber($factorNumber, $customer)
     }
 }
 
-
 if (isset($_POST['action']) && $_POST['action'] === 'print') {
     $factorNumber = $_POST['factorNumber'];
     updatePrintedStatus($factorNumber);

@@ -104,23 +104,23 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
             $ALLOWED_BRANDS = addRelatedBrands($ALLOWED_BRANDS);
         }
 
-        // if (!isset($item->original_price) || $item->original_price == 'موجود نیست') {
-        //     array_push($lowQuantity, [...[
-        //         'quantityId' => $item->id,
-        //         'id' => $item->id,
-        //         'goodId' => $item->id,
-        //         'partNumber' => $goodNamePart,
-        //         'stockId' => null,
-        //         'purchase_Description' => '',
-        //         'stockName' => '',
-        //         'brandName' => mb_convert_encoding($goodNameBrand, 'UTF-8', 'UTF-8'),
-        //         'sellerName' => '',
-        //         'quantity' => $item->quantity,
-        //         'pos1' => '',
-        //         'pos2' => '',
-        //     ], 'required' => $item->quantity]);
-        //     continue;
-        // }
+        if (!isset($item->original_price) || $item->original_price == 'موجود نیست') {
+            array_push($lowQuantity, [...[
+                'quantityId' => $item->id,
+                'id' => $item->id,
+                'goodId' => $item->id,
+                'partNumber' => $goodNamePart,
+                'stockId' => null,
+                'purchase_Description' => '',
+                'stockName' => '',
+                'brandName' => mb_convert_encoding($goodNameBrand, 'UTF-8', 'UTF-8'),
+                'sellerName' => '',
+                'quantity' => $item->quantity,
+                'pos1' => '',
+                'pos2' => '',
+            ], 'required' => $item->quantity]);
+            continue;
+        }
 
         $goods = getGoodsSpecification($goodNamePart, $ALLOWED_BRANDS);
 
@@ -475,7 +475,6 @@ function fetchCodesWithInfo($existingGoods, $allowedBrands, $completeCode)
 
     return $CODES_INFORMATION;
 }
-
 
 function getTotalQuantity($goods = [], $brandsName = [])
 {

@@ -807,22 +807,11 @@ require_once './components/factor.php';
             const ItemBrand = brandSection[brandSection.length - 1].trim();
             AllBrands.push('اصلی', 'چین', 'کره', 'متفرقه', 'تایوان', 'شرکتی');
 
-            // if (!AllBrands.includes(ItemBrand.trim())) {
-            //     return false;
-            // }
-
-            // if (ItemBrand === '' || ItemBrand === null) {
-            //     return false;
-            // }
-
-            // if (item.partName === '' || item.price_per === '' || item.quantity === '') {
-            //     return false;
-            // }
             if (brandSection.length < 2) {
                 return false;
             }
-            return true;
         }
+        return true;
     }
 
     // This function checks wheter the phone numbers is a valid number and correct the format

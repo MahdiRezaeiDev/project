@@ -447,8 +447,6 @@ require_once './components/factor.php'; ?>
             axios.post(BRANDS_ENDPOINT, params).then(response => {
                 const data = response.data;
                 const key = Object.keys(data)[0];
-                console.log(data);
-                return;
                 if (key) {
                     ItemsBrands[key] = data[key]['prices'];
                     let originalPrice = data[key]['original'];
@@ -759,6 +757,14 @@ require_once './components/factor.php'; ?>
             displayModal('فاکتور مشتری خالی بوده نمیتواند.')
             return false;
         }
+
+        // Validate factor items' correctness
+        if (factorItems.length > 0 && !checkIfFactorItemsValid()) {
+            displayModal('لطفا موجودیت و صحت برند قطعات را بررسی نمایید.');
+            element.disabled = false;
+            return false;
+        }
+
 
         var params = new URLSearchParams();
         params.append('updateCompleteFactor', 'updateCompleteFactor');

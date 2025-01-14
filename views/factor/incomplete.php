@@ -389,8 +389,6 @@ require_once './components/factor.php';
 
     // Edit the item property by clicking on it and giving a new value
     function editCell(cell, property, itemId, originalValue) {
-        console.log('here we are');
-
         const newValue = cell.value;
 
         if (property == 'price_per') {
@@ -446,8 +444,6 @@ require_once './components/factor.php';
             axios.post(BRANDS_ENDPOINT, params).then(response => {
                 const data = response.data;
                 const key = Object.keys(data)[0];
-                console.log(data);
-                return;
                 if (key) {
                     ItemsBrands[key] = data[key]['prices'];
                     let originalPrice = data[key]['original'];
@@ -939,8 +935,8 @@ require_once './components/factor.php';
             if (brandSection.length < 2) {
                 return false;
             }
-            return true;
         }
+        return true;
     }
 
     // This function checks wheter the phone numbers is a valid number and correct the format
