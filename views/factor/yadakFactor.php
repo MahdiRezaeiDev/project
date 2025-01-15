@@ -74,7 +74,7 @@ if (!file_exists($profile)) {
 <script src="./assets/js/displayFactor/factor.js"></script>
 <script>
     const time = '<?= $BillInfo['created_at']; ?>';
-    const now = moment(time).locale('fa').format('h:Ma');
+    const now = moment(time).locale('fa').format('h:ma');
 
     displayFinanceBill();
     displayFinanceCustomer();
