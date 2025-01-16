@@ -799,6 +799,21 @@ require_once './components/factor.php'; ?>
             });
     }
 
+    function checkIfFactorItemsValid() {
+        for (const item of factorItems) {
+            let brandSection = item.partName.split('-');
+            brandSection = brandSection.filter((item) => item.trim() != '');
+
+            const ItemBrand = brandSection[brandSection.length - 1].trim();
+            AllBrands.push('اصلی', 'چین', 'کره', 'متفرقه', 'تایوان', 'شرکتی');
+
+            if (brandSection.length < 2) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     // A function to check if the necessary information is provided to update the incomplete factor
     function checkIfReadyToUpdate(property) {
         if (customerInfo[property] === '' || customerInfo[property] === null) {
