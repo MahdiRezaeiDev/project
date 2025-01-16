@@ -758,12 +758,12 @@ require_once './components/factor.php'; ?>
             return false;
         }
 
-        // Validate factor items' correctness
-        if (factorItems.length > 0 && !checkIfFactorItemsValid()) {
-            displayModal('لطفا موجودیت و صحت برند قطعات را بررسی نمایید.');
-            element.disabled = false;
-            return false;
-        }
+        // // Validate factor items' correctness
+        // if (factorItems.length > 0 && !checkIfFactorItemsValid()) {
+        //     displayModal('لطفا موجودیت و صحت برند قطعات را بررسی نمایید.');
+        //     element.disabled = false;
+        //     return false;
+        // }
 
 
         var params = new URLSearchParams();
