@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 require_once '../../../config/constants.php';
 require_once '../../../database/db_connect.php';
 require_once '../../../utilities/callcenter/DollarRateHelper.php';
-require_once '../../../utilities/callcenter/GivenPriceHelper.php';
+require_once '../../../utilities/callcenter/TemporaryHelper.php';
 
 if (isset($_POST['completeCode'])) {
     $completeCode = $_POST['completeCode'];

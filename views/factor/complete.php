@@ -2,7 +2,7 @@
 $pageTitle = "ویرایش فاکتور";
 $iconUrl = 'factor.svg';
 require_once './components/header.php';
-require_once '../../utilities/callcenter/GivenPriceHelper.php';
+require_once '../../utilities/callcenter/TemporaryHelper.php';
 require_once '../../app/controller/factor/LoadFactorItemBrands.php';
 require_once '../../utilities/callcenter/DollarRateHelper.php';
 require_once '../../app/controller/factor/CompleteFactorController.php';
@@ -758,7 +758,7 @@ require_once './components/factor.php'; ?>
             return false;
         }
 
-        // // Validate factor items' correctness
+        // Validate factor items' correctness
         // if (factorItems.length > 0 && !checkIfFactorItemsValid()) {
         //     displayModal('لطفا موجودیت و صحت برند قطعات را بررسی نمایید.');
         //     element.disabled = false;

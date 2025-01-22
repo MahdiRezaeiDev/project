@@ -2,7 +2,7 @@
 $pageTitle = "ویرایش فاکتور";
 $iconUrl = 'factor.svg';
 require_once './components/header.php';
-require_once '../../utilities/callcenter/GivenPriceHelper.php';
+require_once '../../utilities/callcenter/TemporaryHelper.php';
 require_once '../../utilities/inventory/InventoryHelpers.php';
 require_once '../../app/controller/factor/LoadFactorItemBrands.php';
 require_once '../../utilities/callcenter/DollarRateHelper.php';

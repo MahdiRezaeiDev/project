@@ -227,7 +227,9 @@ function getExistingBrands($stockInfo)
         $brands = [];
         foreach ($stockInfo as $stock) {
             foreach ($stock as $item) {
-                $brands[] = strtoupper($item['brandName']);
+                if($item['seller_name'] !== 'کاربر دستوری') {
+                    $brands[] = strtoupper($item['brandName']);
+                }
             }
         }
         return addRelatedBrands($brands);
