@@ -243,6 +243,30 @@ function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, 
     $destination = $factorNumber % 2 == 0 ? "http://sells.yadak.center/" : "http://sells2.yadak.center/";
 
     sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete);
+    sendPurchaseReportMessage($lowQuantity);
+}
+
+function sendPurchaseReportMessage($lowQuantity)
+{
+    $postData = array(
+        "sendMessage" => "PurchaseReport",
+        "lowQuantity" => json_encode($lowQuantity),
+    );
+
+    // Initialize cURL session
+    $ch = curl_init();
+
+    // Set cURL options
+    curl_setopt($ch, CURLOPT_URL, "http://sells2.yadak.center/");
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    // Execute cURL request
+    $result = curl_exec($ch);
+
+    // Close cURL session
+    curl_close($ch);
 }
 
 function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete)
