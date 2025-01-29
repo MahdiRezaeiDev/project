@@ -104,7 +104,7 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
             $ALLOWED_BRANDS = addRelatedBrands($ALLOWED_BRANDS);
         }
 
-        if (!isset($item->original_price) || $item->original_price == 'موجود نیست') {
+        if (!isset($item->original_price) || empty($item->original_price) || $item->original_price == 'موجود نیست') {
             array_push($lowQuantity, [...[
                 'quantityId' => $item->id,
                 'id' => $item->id,
