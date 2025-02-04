@@ -82,7 +82,8 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
                     'FAKE GEN',
                     'IACE',
                     'MB',
-                    'PH'
+                    'PH',
+                    'CAP'
                 ],
                 'CHINA' => [
                     'OEMAX',
