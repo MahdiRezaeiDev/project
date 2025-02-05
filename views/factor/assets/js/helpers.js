@@ -147,3 +147,23 @@ function convertToEnglishNumbers(value) {
   }
   return customText;
 }
+
+function saveAsPDF() {
+  const content = document.getElementById("bill_body_pdf");
+  const opt = {
+    filename: "customer_bill.pdf",
+    image: {
+      type: "jpeg",
+      quality: 0.98,
+    },
+    html2canvas: {
+      scale: 2,
+    },
+    jsPDF: {
+      unit: "in",
+      format: "letter",
+      orientation: "portrait",
+    },
+  };
+  html2pdf().set(opt).from(content).save();
+}

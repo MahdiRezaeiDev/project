@@ -35,7 +35,7 @@ require_once '../../layouts/callcenter/sidebar.php';
     const BillInfo = <?= json_encode($BillInfo) ?>;
     const billItems = <?= ($billItems) ?>;
 </script>
-<div class="bill partnerBill mb-3" style="min-height: 210mm;">
+<div id="bill_body_pdf" class="bill partnerBill mb-3" style="min-height: 210mm;">
     <?php
     require_once './components/bill/header.php';
     require_once './components/bill/body.php';

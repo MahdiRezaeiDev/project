@@ -20,7 +20,7 @@ require_once '../../layouts/callcenter/sidebar.php';
     const BillInfo = <?= json_encode($BillInfo) ?>;
     const billItems = <?= ($billItems) ?>;
 </script>
-<div class="rtl bill">
+<div id="bill_body_pdf" class="rtl bill">
     <?php
     require_once './components/bill/header.php';
     require_once './components/bill/body.php';

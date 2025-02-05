@@ -64,7 +64,7 @@ if (!file_exists($profile)) {
     require './components/finance/generalDetails.php';
     ?>
 </div>
-<div class="bill mb-3" style="min-height: 210mm;">
+<div id="bill_body_pdf" class="bill mb-3" style="min-height: 210mm;">
     <?php
     require './components/inventory/header.php';
     require './components/inventory/body.php';

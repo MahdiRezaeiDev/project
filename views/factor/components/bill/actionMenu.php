@@ -26,7 +26,7 @@
         <p class="action_tooltip">اشتراک گذاری</p>
     </li>
     <li style="position: relative;">
-        <img class="action_button pdf" src="./assets/img/pdf.svg" onclick="handleSaveAsPdfClick()" alt="print icon">
+        <img class="action_button pdf" src="./assets/img/pdf.svg" onclick="saveAsPDF()" alt="print icon">
         <p class="action_tooltip">پی دی اف</p>
     </li>
 </ul>
