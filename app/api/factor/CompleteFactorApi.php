@@ -58,8 +58,8 @@ function sendSMS($customer, $factor, $factorItems, $factorNumber)
     $ch = curl_init();
 
     // Set cURL options
-    // curl_setopt($ch, CURLOPT_URL, "http://sells.yadak.shop/");
-    curl_setopt($ch, CURLOPT_URL, "http://yadak.test/");
+    curl_setopt($ch, CURLOPT_URL, "http://sells.yadak.shop/");
+    // curl_setopt($ch, CURLOPT_URL, "http://yadak.test/");
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
