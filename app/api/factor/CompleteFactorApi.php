@@ -64,8 +64,7 @@ function sendSMS($customer, $factor, $factorItems, $factorNumber)
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     // Execute cURL request
-    $result = curl_exec($ch);
-    print_r($result);
+    curl_exec($ch);
     // Close cURL session
     curl_close($ch);
     exit();
@@ -94,6 +93,7 @@ if (isset($_POST['updateCompleteFactor'])) {
         UpdateCompletedBill($factorInfo, $customer_id);
         CreateBillItems($factorInfo, $factorItems);
         getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorInfo->billNO, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date, true);
+        sendSMS($customerInfo, $factorInfo, $factorItems, $factorNumber);
     } catch (Exception $e) {
         // An error occurred, rollback the transaction
         PDO_CONNECTION->rollback();
