@@ -139,7 +139,7 @@
                             <span>${formatAsMoney((Number(item.price_per)))}</span>
                         </td>
                         <td class="text-sm text-center">
-                            <span>${formatAsMoney((Number(item.price_per)))}</span>
+                            <span>${formatAsMoney(payPrice)}</span>
                         </td>
                     </tr>`;
             counter++;
