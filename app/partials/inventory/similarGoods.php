@@ -241,7 +241,11 @@ function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, 
     }
 
 
-    $destination = $factorNumber % 2 == 0 ? "http://sells.yadak.center/" : "http://sells2.yadak.center/";
+    if ($isComplete) {
+        $destination = "http://delivery.yadak.center/";
+    } else {
+        $destination = $factorNumber % 2 == 0 ? "http://sells.yadak.center/" : "http://sells2.yadak.center/";
+    }
 
     sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete);
     sendPurchaseReportMessage($lowQuantity);
