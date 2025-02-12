@@ -262,7 +262,7 @@ function sendPurchaseReportMessage($lowQuantity)
     $ch = curl_init();
 
     // Set cURL options
-    curl_setopt($ch, CURLOPT_URL, "http://products.yadak.center/");
+    curl_setopt($ch, CURLOPT_URL, "http://delivery.yadak.center/");
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
