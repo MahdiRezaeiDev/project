@@ -186,7 +186,7 @@ require_once '../../layouts/inventory/sidebar.php';
                             const ALL_ALLOWED_BRANDS = getFinalBrands(GOOD_NAME_BRAND);
                             const goods = await getSimilarCodes(GOOD_NAME_PART, ALL_ALLOWED_BRANDS, true);
 
-                            const INVENTORY_GOODS = goods ? goods['goods'] : [];
+                            let INVENTORY_GOODS = goods ? goods['goods'] : [];
                             const INVENTORY_CODES = goods ? goods['codes'] : [];
 
                             let billItemQuantity = item.quantity;
@@ -208,6 +208,10 @@ require_once '../../layouts/inventory/sidebar.php';
                                  در فاکتور استفاده گردید.
                                 </p>`;
                             }
+
+                            INVENTORY_GOODS = INVENTORY_GOODS.filter((good) => {
+                                return good.seller_name != 'کاربر دستوری';
+                            })
 
                             let index = 0; // Counter to track the current index
                             for (const good of INVENTORY_GOODS) {
