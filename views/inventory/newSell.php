@@ -201,6 +201,10 @@ require_once '../../layouts/inventory/sidebar.php';
                                 </p>`;
                             }
 
+                            INVENTORY_GOODS = INVENTORY_GOODS.filter((good) => {
+                                return good.seller_name != 'کاربر دستوری';
+                            });
+
                             if (!INVENTORY_CODES.includes(GOOD_NAME_PART) && INVENTORY_GOODS.length != 0) {
                                 ERROR_BOX.innerHTML += `<p class="p-2 text-green-500 text-xs font-semibold shadow">
                                 کد مشابه 
@@ -208,10 +212,6 @@ require_once '../../layouts/inventory/sidebar.php';
                                  در فاکتور استفاده گردید.
                                 </p>`;
                             }
-
-                            INVENTORY_GOODS = INVENTORY_GOODS.filter((good) => {
-                                return good.seller_name != 'کاربر دستوری';
-                            })
 
                             let index = 0; // Counter to track the current index
                             for (const good of INVENTORY_GOODS) {

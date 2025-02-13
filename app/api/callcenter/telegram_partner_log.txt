@@ -1,3 +1,6 @@
 {"logAction":"log","message_content":"This message is sent only for text purpose.","receivers":"[\"mrs riahi nadia yadakshop\"]"}
 {"logAction":"log","message_content":"\u0628\u0631\u0631\u0633\u06cc \u0627\u0631\u0633\u0627\u0644 \u067e\u06cc\u0627\u0645","receivers":"[\"mrs riahi nadia yadakshop\"]"}
 {"logAction":"log","message_content":"check success message","receivers":"[\"mrs riahi nadia yadakshop\"]"}
+{"logAction":"log","message_content":"salam","receivers":"[\"mrs riahi nadia\"]"}
+{"logAction":"log","message_content":"test","receivers":"[\"mrs riahi nadia\"]"}
+{"logAction":"log","message_content":"sss","receivers":"[\"mrs riahi nadia\"]"}
