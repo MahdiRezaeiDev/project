@@ -40,6 +40,7 @@ if (filter_has_var(INPUT_POST, 'editOperation')) {
 
 if (filter_has_var(INPUT_POST, 'pattern')) :
     $pattern = $_POST['pattern'];
+    $key = $_POST['key'];
 
     $sql = "SELECT 
             estelam.*, 
@@ -102,8 +103,8 @@ if (filter_has_var(INPUT_POST, 'pattern')) :
         <?php
         endif; ?>
         <tr id="row-<?= $id ?>" style="background-color:<?= $bgColor ?>">
-            <td class="text-md font-semibold p-3 hover:cursor-pointer text-blue-400 uppercase" onclick="searchByCustomer(this)" data-customer='<?= $partNumber ?>'><?= $partNumber ?></td>
-            <td class="text-md font-semibold p-3 hover:cursor-pointer text-blue-400" onclick="searchByCustomer(this)" data-customer='<?= $sellerName ?>'><?= $sellerName ?></td>
+            <td class="text-md font-semibold p-3 hover:cursor-pointer text-blue-400 uppercase" data-key="<?= $key ?>" onclick="searchByCustomer(this)" data-customer='<?= $partNumber ?>'><?= $partNumber ?></td>
+            <td class="text-md font-semibold p-3 hover:cursor-pointer text-blue-400" data-key="<?= $key ?>" onclick="searchByCustomer(this)" data-customer='<?= $sellerName ?>'><?= $sellerName ?></td>
             <td class="text-md font-semibold p-3" id="price-<?= $id ?>"><?= $price ?></td>
             <td>
                 <?php
