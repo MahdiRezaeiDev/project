@@ -65,7 +65,7 @@ require_once '../../layouts/callcenter/sidebar.php';
         </div>
         <h2 class="text-xl font-semibold">آخرین قیمت های گرفته شده از بازار</h2>
     </div>
-    <div class="h-full">
+    <div class="h-screen">
         <div class="overflow-y-auto mb-5" id="container1">
             <table class="w-full">
                 <tr class="bg-gray-600">
