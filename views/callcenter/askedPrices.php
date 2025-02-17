@@ -67,107 +67,13 @@ require_once '../../layouts/callcenter/sidebar.php';
     </div>
     <div class="h-screen grid gap-2 grid-cols-1" id="parentContainer">
         <div class="overflow-y-auto" id="container1">
-            <table class="w-full">
-                <tr class="bg-gray-600">
-                    <th class="text-white text-right font-semibold p-1 py-2">کد فنی</th>
-                    <th class="text-white text-right font-semibold p-1 py-2">فروشنده</th>
-                    <th class="text-white text-right font-semibold p-1 py-2">قیمت</th>
-                    <th class="text-white text-right font-semibold p-1 py-2">کاربر</th>
-                    <th class="text-white text-center font-semibold p-1 py-2">زمان ثبت</th>
-                    <th class="text-white text-right font-semibold p-1 py-2">عملیات</th>
-                </tr>
-                <tbody id="container1-result">
-                    <?php
-                    $currentGroup = null;
-                    $bgColors = ['rgb(254 243 199)', 'rgb(220 252 231)']; // Array of background colors for date groups
-                    $bgColorIndex = 0;
-
-                    foreach (getAskedPrices() as $row) :
-                        $id = $row['id'];
-                        $time = $row['time'];
-                        $partNumber = $row['codename'];
-                        $sellerName = $row['seller_name'];
-                        $price = $row['price'];
-                        $userId = $row['user_id'];
-                        $username = $row['username'];
-
-                        // Explode the time value to separate date and time
-                        $dateTime = explode(' ', $time);
-                        $date = $dateTime[0];
-
-                        // Check if the group has changed
-                        if ($date !== $currentGroup) :
-                            // Update the current group
-                            $currentGroup = $date;
-
-                            // Get the background color for the current group
-                            $bgColor = $bgColors[$bgColorIndex % count($bgColors)];
-                            $bgColorIndex++;
-                    ?>
-                            <!-- // Display a row for the new group with the background color -->
-                            <tr class="bg-sky-800">
-                                <td class="text-white font-semibold p-1 py-2" colspan="6"><?= displayTimePassed($date) . ' - ' . jdate('Y/m/d', strtotime($date)) ?></td>
-                            </tr>
-                        <?php
-                        endif;
-                        // Display the row for current entry with the same background color as the group
-                        ?>
-                        <tr id="row-<?= $id ?>" style="background-color:<?= $bgColor ?>">
-                            <td class="text-sm font-semibold p-1 py-2 hover:cursor-pointer text-blue-400 uppercase" data-key="container1" onclick="searchByCustomer(this)" data-customer='<?= $partNumber ?>'><?= $partNumber ?></td>
-                            <td class="text-sm font-semibold p-1 py-2 hover:cursor-pointer text-blue-400" data-key="container1" onclick="searchByCustomer(this)" data-customer='<?= $sellerName ?>'><?= $sellerName ?></td>
-                            <td class="text-sm font-semibold p-1 py-2" id="price-<?= $id ?>"><?= $price ?></td>
-                            <td>
-                                <?php
-                                $profile = "../../public/userimg/" . $row['user_id'] . ".jpg";
-                                if (!file_exists($profile)) {
-                                    $profile = "../../public/userimg/default.png";
-                                }
-                                ?>
-                                <img title="<?= $row['name'] . ' ' . $row['family'] ?>" class="w-8 h-8 rounded-full" src="<?= $profile ?>" alt="user profile" />
-                            </td>
-                            <td class="text-sm font-semibold p-1 py-2">
-                                <p class="text-sm text-center font-semibold p-1 py-2" style="direction: ltr !important;">
-                                    <?= jdate('Y/m/d   H:i', strtotime($time)); ?>
-                                </p>
-                            </td>
-                            <td>
-                                <i onclick="editItem(this)" data-price="<?= $price ?>" data-item='<?= $id ?>' class="material-icons hover:cursor-pointer text-indigo-600">edit</i>
-                                <i onclick="deleteItem(this)" data-item='<?= $id ?>' class="material-icons hover:cursor-pointer text-red-600">delete</i>
-                            </td>
-                        </tr>
-                    <?php
-                    endforeach;
-                    ?>
-                </tbody>
-            </table>
+            <div id="container1-result"></div>
         </div>
         <div class="hidden overflow-y-auto" id="container2">
-            <table class="w-full">
-                <tr class="bg-gray-600">
-                    <th class="text-white text-right font-semibold p-1 py-2">کد فنی</th>
-                    <th class="text-white text-right font-semibold p-1 py-2">فروشنده</th>
-                    <th class="text-white text-right font-semibold p-1 py-2">قیمت</th>
-                    <th class="text-white text-right font-semibold p-1 py-2">کاربر</th>
-                    <th class="text-white text-center font-semibold p-1 py-2">زمان ثبت</th>
-                    <th class="text-white text-right font-semibold p-1 py-2">عملیات</th>
-                </tr>
-                <tbody id="container2-result">
-                </tbody>
-            </table>
+            <div id="container2-result"></div>
         </div>
         <div class="hidden overflow-y-auto" id="container3">
-            <table class="w-full">
-                <tr class="bg-gray-600">
-                    <th class="text-white text-right font-semibold p-1 py-2">کد فنی</th>
-                    <th class="text-white text-right font-semibold p-1 py-2">فروشنده</th>
-                    <th class="text-white text-right font-semibold p-1 py-2">قیمت</th>
-                    <th class="text-white text-right font-semibold p-1 py-2">کاربر</th>
-                    <th class="text-white text-center font-semibold p-1 py-2">زمان ثبت</th>
-                    <th class="text-white text-right font-semibold p-1 py-2">عملیات</th>
-                </tr>
-                <tbody id="container3-result">
-                </tbody>
-            </table>
+            <div id="container3-result"></div>
         </div>
     </div>
 </div>
@@ -175,6 +81,9 @@ require_once '../../layouts/callcenter/sidebar.php';
     const searchBoxes = document.getElementsByClassName('searchBoxes');
     const deleteModal = document.getElementById('deleteModal');
     const editModal = document.getElementById('editModal');
+
+    const SinglePrice = "../../app/api/callcenter/AskedPricesApi.php";
+    const MultiPrice = "../../app/api/callcenter/AskedPriceMultiApi.php";
 
     let toBeModified = null;
     let itemPrice = null;
@@ -194,11 +103,13 @@ require_once '../../layouts/callcenter/sidebar.php';
     function searchByCustomer(element) {
         const customer_name = element.getAttribute('data-customer');
         const key = element.getAttribute('data-key');
+        
         document.getElementById(key + '-search').value = customer_name;
         searchBazar(customer_name, key);
     }
 
     function searchBazar(pattern, element) {
+        
         let counter = 1;
         let filled = [];
 
@@ -246,16 +157,16 @@ require_once '../../layouts/callcenter/sidebar.php';
             }
 
             const resultContainer = document.getElementById(key + '-result');
-            getResults(key, value, resultContainer);
-        });
+            let destination = SinglePrice;
 
-        if (filled.length == 0) {
-            window.location.reload();
-        }
+            if (filled.length > 1) {
+                destination = MultiPrice;
+            }
+            getResults(key, value, resultContainer, destination);
+        });
     }
 
-
-    function getResults(key, pattern, container) {
+    function getResults(key, pattern, container, destination) {
         pattern = pattern.replace(/\s/g, "");
         pattern = pattern.replace(/-/g, "");
         pattern = pattern.replace(/_/g, "");
@@ -270,7 +181,7 @@ require_once '../../layouts/callcenter/sidebar.php';
         params.append('pattern', pattern);
         params.append('key', key);
 
-        axios.post("../../app/api/callcenter/AskedPricesApi.php", params)
+        axios.post(destination, params)
             .then(function(response) {
                 if (response.data.length)
                     container.innerHTML = response.data;
@@ -287,14 +198,17 @@ require_once '../../layouts/callcenter/sidebar.php';
     }
 
     function editItem(element) {
+
         const id = element.getAttribute('data-item');
         const price = element.getAttribute('data-price');
+
         const priceInput = document.getElementById('price');
+
 
         toBeModified = id;
         editModal.style.display = 'flex';
         itemPrice = document.getElementById('price-' + toBeModified).innerHTML;
-        priceInput.value = itemPrice;
+        priceInput.value = price;
     }
 
     function deleteItem(element) {
@@ -382,6 +296,8 @@ require_once '../../layouts/callcenter/sidebar.php';
                 console.log(error);
             });
     }
+
+    getResults('container1','',document.getElementById('container1-result'),SinglePrice);
 </script>
 <?php
 require_once './components/footer.php';

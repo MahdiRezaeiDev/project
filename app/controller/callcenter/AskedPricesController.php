@@ -11,7 +11,7 @@ function getAskedPrices()
             JOIN yadakshop.users ON estelam.user = users.id
             JOIN yadakshop.seller ON estelam.seller = seller.id
             ORDER BY estelam.time DESC
-            LIMIT 100";
+            LIMIT 300";
 
     // Prepare the statement
     $stmt = PDO_CONNECTION->prepare($sql);

@@ -82,11 +82,8 @@ if (filter_has_var(INPUT_POST, 'pattern')) :
             <th class="text-white text-right font-semibold p-1 py-2">کد فنی</th>
             <th class="text-white text-right font-semibold p-1 py-2">فروشنده</th>
             <th class="text-white text-right font-semibold p-1 py-2">قیمت</th>
-            <th class="text-white text-right font-semibold p-1 py-2">کاربر</th>
-            <th class="text-white text-center font-semibold p-1 py-2">زمان ثبت</th>
-            <th class="text-white text-right font-semibold p-1 py-2">عملیات</th>
         </tr>
-        <tbody>
+        <tbody id="">
             <?php
             if ($results):
                 foreach ($results as $row) :
@@ -134,25 +131,6 @@ if (filter_has_var(INPUT_POST, 'pattern')) :
                             <?php if ($isValid): ?>
                                 <p class="text-white bg-sky-600 p-2 inline-block"><?= $finalPrice ?></p>
                             <?php endif; ?>
-                        </td>
-                        <td>
-                            <?php
-                            $profile = "../../public/userimg/" . $row['user_id'] . ".jpg";
-                            if (!file_exists("../" . $profile)) {
-                                $profile = "../../public/userimg/default.png";
-                            }
-                            ?>
-                            <img title="<?= $row['name'] . ' ' . $row['family'] ?>" class="w-8 h-8 rounded-full" src="<?= $profile ?>" alt="user profile" />
-
-                        </td>
-                        <td class="text-sm font-semibold px-1 py-2">
-                            <p class="text-sm text-center font-semibold px-1 py-2" style="direction: ltr !important;">
-                                <?= jdate('Y/m/d H:i', strtotime($time)); ?>
-                            </p>
-                        </td>
-                        <td>
-                            <i onclick="editItem(this)" data-price="<?= $price ?>" data-item='<?= $id ?>' class="material-icons hover:cursor-pointer text-indigo-600">edit</i>
-                            <i onclick="deleteItem(this)" data-item='<?= $id ?>' class="material-icons hover:cursor-pointer text-red-600">delete</i>
                         </td>
                     </tr>
                 <?php
