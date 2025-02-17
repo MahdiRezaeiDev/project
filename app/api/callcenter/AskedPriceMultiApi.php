@@ -137,8 +137,6 @@ if (filter_has_var(INPUT_POST, 'pattern')) :
                                         <?= $appliedRate ?>%
                                     </div>
                                 </div>
-
-
                             <?php endif; ?>
                         </td>
                     </tr>
