@@ -41,7 +41,7 @@ require_once '../../layouts/callcenter/sidebar.php';
             برای ویرایش اطلاعات فورم ذیل را به دقت پر نمایید
         </p>
         <div class="py-3">
-            <input onkeyup="updatePrice(this.value)" class="border p-2 min-w-full rounded-md" type="text" name="price" id="price">
+            <input onkeyup="updatePrice(this.value)" class="border p-1 py-2 min-w-full rounded-md" type="text" name="price" id="price">
         </div>
         <div class="py-5">
             <button onclick="confirmEdit()" class="border-4 border-blue-500/75 rounded-lg  bg-blue-500 text-white py-2 px-5">ویرایش</button>
@@ -49,7 +49,7 @@ require_once '../../layouts/callcenter/sidebar.php';
         </div>
     </div>
 </div>
-<div class=" bg-white px-5">
+<div class="bg-white px-5">
     <div class="flex items-center justify-between mb-5">
         <div class="relative flex items-center">
             <input class="searchBoxes border-2 border-gray-400 px-3 py-2 text-sm w-72" placeholder="جستجو ..." type="text" name="search" id="container1-search" onkeyup="searchBazar(this.value, this)">
@@ -65,16 +65,16 @@ require_once '../../layouts/callcenter/sidebar.php';
         </div>
         <h2 class="text-xl font-semibold">آخرین قیمت های گرفته شده از بازار</h2>
     </div>
-    <div class="h-screen">
-        <div class="overflow-y-auto mb-5" id="container1">
+    <div class="h-screen grid gap-2 grid-cols-1" id="parentContainer">
+        <div class="overflow-y-auto" id="container1">
             <table class="w-full">
                 <tr class="bg-gray-600">
-                    <th class="text-white text-right font-semibold p-3">کد فنی</th>
-                    <th class="text-white text-right font-semibold p-3">فروشنده</th>
-                    <th class="text-white text-right font-semibold p-3">قیمت</th>
-                    <th class="text-white text-right font-semibold p-3">کاربر ثبت کننده</th>
-                    <th class="text-white text-center font-semibold p-3">زمان ثبت</th>
-                    <th class="text-white text-right font-semibold p-3">عملیات</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">کد فنی</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">فروشنده</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">قیمت</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">کاربر</th>
+                    <th class="text-white text-center font-semibold p-1 py-2">زمان ثبت</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">عملیات</th>
                 </tr>
                 <tbody id="container1-result">
                     <?php
@@ -106,16 +106,16 @@ require_once '../../layouts/callcenter/sidebar.php';
                     ?>
                             <!-- // Display a row for the new group with the background color -->
                             <tr class="bg-sky-800">
-                                <td class="text-white font-semibold p-3" colspan="6"><?= displayTimePassed($date) . ' - ' . jdate('Y/m/d', strtotime($date)) ?></td>
+                                <td class="text-white font-semibold p-1 py-2" colspan="6"><?= displayTimePassed($date) . ' - ' . jdate('Y/m/d', strtotime($date)) ?></td>
                             </tr>
                         <?php
                         endif;
                         // Display the row for current entry with the same background color as the group
                         ?>
                         <tr id="row-<?= $id ?>" style="background-color:<?= $bgColor ?>">
-                            <td class="text-md font-semibold p-3 hover:cursor-pointer text-blue-400 uppercase" data-key="container1" onclick="searchByCustomer(this)" data-customer='<?= $partNumber ?>'><?= $partNumber ?></td>
-                            <td class="text-md font-semibold p-3 hover:cursor-pointer text-blue-400" data-key="container1" onclick="searchByCustomer(this)" data-customer='<?= $sellerName ?>'><?= $sellerName ?></td>
-                            <td class="text-md font-semibold p-3" id="price-<?= $id ?>"><?= $price ?></td>
+                            <td class="text-sm font-semibold p-1 py-2 hover:cursor-pointer text-blue-400 uppercase" data-key="container1" onclick="searchByCustomer(this)" data-customer='<?= $partNumber ?>'><?= $partNumber ?></td>
+                            <td class="text-sm font-semibold p-1 py-2 hover:cursor-pointer text-blue-400" data-key="container1" onclick="searchByCustomer(this)" data-customer='<?= $sellerName ?>'><?= $sellerName ?></td>
+                            <td class="text-sm font-semibold p-1 py-2" id="price-<?= $id ?>"><?= $price ?></td>
                             <td>
                                 <?php
                                 $profile = "../../public/userimg/" . $row['user_id'] . ".jpg";
@@ -125,8 +125,8 @@ require_once '../../layouts/callcenter/sidebar.php';
                                 ?>
                                 <img title="<?= $row['name'] . ' ' . $row['family'] ?>" class="w-8 h-8 rounded-full" src="<?= $profile ?>" alt="user profile" />
                             </td>
-                            <td class="text-md font-semibold p-3">
-                                <p class="text-sm text-center font-semibold p-3" style="direction: ltr !important;">
+                            <td class="text-sm font-semibold p-1 py-2">
+                                <p class="text-sm text-center font-semibold p-1 py-2" style="direction: ltr !important;">
                                     <?= jdate('Y/m/d   H:i', strtotime($time)); ?>
                                 </p>
                             </td>
@@ -141,29 +141,29 @@ require_once '../../layouts/callcenter/sidebar.php';
                 </tbody>
             </table>
         </div>
-        <div class="hidden overflow-y-auto mb-5" id="container2">
+        <div class="hidden overflow-y-auto" id="container2">
             <table class="w-full">
                 <tr class="bg-gray-600">
-                    <th class="text-white text-right font-semibold p-3">کد فنی</th>
-                    <th class="text-white text-right font-semibold p-3">فروشنده</th>
-                    <th class="text-white text-right font-semibold p-3">قیمت</th>
-                    <th class="text-white text-right font-semibold p-3">کاربر ثبت کننده</th>
-                    <th class="text-white text-center font-semibold p-3">زمان ثبت</th>
-                    <th class="text-white text-right font-semibold p-3">عملیات</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">کد فنی</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">فروشنده</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">قیمت</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">کاربر</th>
+                    <th class="text-white text-center font-semibold p-1 py-2">زمان ثبت</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">عملیات</th>
                 </tr>
                 <tbody id="container2-result">
                 </tbody>
             </table>
         </div>
-        <div class="hidden overflow-y-auto mb-5" id="container3">
+        <div class="hidden overflow-y-auto" id="container3">
             <table class="w-full">
                 <tr class="bg-gray-600">
-                    <th class="text-white text-right font-semibold p-3">کد فنی</th>
-                    <th class="text-white text-right font-semibold p-3">فروشنده</th>
-                    <th class="text-white text-right font-semibold p-3">قیمت</th>
-                    <th class="text-white text-right font-semibold p-3">کاربر ثبت کننده</th>
-                    <th class="text-white text-center font-semibold p-3">زمان ثبت</th>
-                    <th class="text-white text-right font-semibold p-3">عملیات</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">کد فنی</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">فروشنده</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">قیمت</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">کاربر</th>
+                    <th class="text-white text-center font-semibold p-1 py-2">زمان ثبت</th>
+                    <th class="text-white text-right font-semibold p-1 py-2">عملیات</th>
                 </tr>
                 <tbody id="container3-result">
                 </tbody>
@@ -223,19 +223,26 @@ require_once '../../layouts/callcenter/sidebar.php';
             const key = item.key;
             const value = item.value;
             const elementContainer = document.getElementById(key);
+            const parentContainer = document.getElementById('parentContainer');
 
-            elementContainer.style.display = 'block'; // Ensure it's visible
-
-            // Reset any previous height styles
-            elementContainer.style.height = '';
+            elementContainer.style.display = 'block';
 
             // Apply the correct height dynamically
             if (filled.length === 1) {
-                elementContainer.style.height = '100%';
+                parentContainer.classList.remove('grid-cols-1');
+                parentContainer.classList.remove('grid-cols-2');
+                parentContainer.classList.remove('grid-cols-3');
+                parentContainer.classList.add('grid-cols-1');
             } else if (filled.length === 2) {
-                elementContainer.style.height = '50%';
+                parentContainer.classList.remove('grid-cols-1');
+                parentContainer.classList.remove('grid-cols-2');
+                parentContainer.classList.remove('grid-cols-3');
+                parentContainer.classList.add('grid-cols-2');
             } else if (filled.length >= 3) {
-                elementContainer.style.height = '33.33%';
+                parentContainer.classList.remove('grid-cols-1');
+                parentContainer.classList.remove('grid-cols-2');
+                parentContainer.classList.remove('grid-cols-3');
+                parentContainer.classList.add('grid-cols-3');
             }
 
             const resultContainer = document.getElementById(key + '-result');
@@ -360,7 +367,7 @@ require_once '../../layouts/callcenter/sidebar.php';
                                                                                 برای ویرایش اطلاعات فورم ذیل را به دقت پر نمایید
                                                                             </p>
                                                                             <div class="py-3">
-                                                                                <input onkeyup="updatePrice(this.value)" class="border p-2 min-w-full rounded-md" type="text" name="price" id="price">
+                                                                                <input onkeyup="updatePrice(this.value)" class="border p-1 py-2 min-w-full rounded-md" type="text" name="price" id="price">
                                                                             </div>
                                                                             <div class="py-5">
                                                                                 <button onclick="confirmEdit()" class="border-4 border-blue-500/75 rounded-lg  bg-blue-500 text-white py-2 px-5">ویرایش</button>

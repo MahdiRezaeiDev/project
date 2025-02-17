@@ -98,14 +98,14 @@ if (filter_has_var(INPUT_POST, 'pattern')) :
             $bgColor = $bgColors[$bgColorIndex % count($bgColors)];
             $bgColorIndex++; ?>
             <tr class="bg-sky-800">
-                <td class="text-white font-semibold p-3" colspan="6"><?= displayTimePassed($time) . ' - ' . jdate('Y/m/d', strtotime($time)) ?></td>
+                <td class="text-white font-semibold px-1 py-2" colspan="6"><?= displayTimePassed($time) . ' - ' . jdate('Y/m/d', strtotime($time)) ?></td>
             </tr>
         <?php
         endif; ?>
         <tr id="row-<?= $id ?>" style="background-color:<?= $bgColor ?>">
-            <td class="text-md font-semibold p-3 hover:cursor-pointer text-blue-400 uppercase" data-key="<?= $key ?>" onclick="searchByCustomer(this)" data-customer='<?= $partNumber ?>'><?= $partNumber ?></td>
-            <td class="text-md font-semibold p-3 hover:cursor-pointer text-blue-400" data-key="<?= $key ?>" onclick="searchByCustomer(this)" data-customer='<?= $sellerName ?>'><?= $sellerName ?></td>
-            <td class="text-md font-semibold p-3" id="price-<?= $id ?>"><?= $price ?></td>
+            <td class="text-sm font-semibold px-1 py-2 hover:cursor-pointer text-blue-400 uppercase" data-key="<?= $key ?>" onclick="searchByCustomer(this)" data-customer='<?= $partNumber ?>'><?= $partNumber ?></td>
+            <td class="text-sm font-semibold px-1 py-2 hover:cursor-pointer text-blue-400" data-key="<?= $key ?>" onclick="searchByCustomer(this)" data-customer='<?= $sellerName ?>'><?= $sellerName ?></td>
+            <td class="text-sm font-semibold px-1 py-2" id="price-<?= $id ?>"><?= $price ?></td>
             <td>
                 <?php
                 $profile = "../../public/userimg/" . $row['user_id'] . ".jpg";
@@ -116,8 +116,8 @@ if (filter_has_var(INPUT_POST, 'pattern')) :
                 <img title="<?= $row['name'] . ' ' . $row['family'] ?>" class="w-8 h-8 rounded-full" src="<?= $profile ?>" alt="user profile" />
 
             </td>
-            <td class="text-md font-semibold p-3">
-                <p class="text-sm text-center font-semibold p-3" style="direction: ltr !important;">
+            <td class="text-sm font-semibold px-1 py-2">
+                <p class="text-sm text-center font-semibold px-1 py-2" style="direction: ltr !important;">
                     <?= jdate('Y/m/d H:i', strtotime($time)); ?>
                 </p>
             </td>
