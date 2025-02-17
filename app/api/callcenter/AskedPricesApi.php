@@ -60,7 +60,7 @@ if (filter_has_var(INPUT_POST, 'pattern')) :
         ORDER BY 
             estelam.time DESC
         LIMIT 
-            300";
+            100";
 
     // Prepare the statement
     $stmt = PDO_CONNECTION->prepare($sql);
