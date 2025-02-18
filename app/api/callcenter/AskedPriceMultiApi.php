@@ -94,11 +94,13 @@ if (filter_has_var(INPUT_POST, 'pattern')) :
                     $price = $row['price'];
                     $userId = $row['user_id'];
 
+                    $finalPrice = null;
+                    $isValid = false;
+
                     if (checkDateIfOkay(null, $time) && $price !== 'موجود نیست') {
                         $finalPrice = applyDollarRate($price, $time);
                     }
 
-                    $isValid = false;
 
                     if (preg_match('/\d/', $finalPrice)) {
                         $isValid = true;
