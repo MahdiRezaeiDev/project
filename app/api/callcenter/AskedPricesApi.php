@@ -96,6 +96,8 @@ if (filter_has_var(INPUT_POST, 'pattern')) :
                     $sellerName = $row['seller_name'];
                     $price = $row['price'];
                     $userId = $row['user_id'];
+                    
+                    $finalPrice = null;
 
                     if (checkDateIfOkay(null, $time) && $price !== 'موجود نیست') {
                         $finalPrice = applyDollarRate($price, $time);
