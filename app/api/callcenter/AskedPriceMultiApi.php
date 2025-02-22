@@ -101,7 +101,6 @@ if (filter_has_var(INPUT_POST, 'pattern')) :
                         $finalPrice = applyDollarRate($price, $time);
                     }
 
-
                     if (preg_match('/\d/', $finalPrice)) {
                         $isValid = true;
                     }

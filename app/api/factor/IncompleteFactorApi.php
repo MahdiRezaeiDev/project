@@ -202,7 +202,7 @@ function getCustomerId($customer)
 function createCustomer($customer)
 {
     try {
-        $name = $customer->name ?? "";
+        $name = $customer->displayName ?? "";
         $family = $customer->family ?? "";
         $phone = $customer->phone ?? "";
         $address = $customer->address ?? "";
@@ -234,7 +234,7 @@ function createCustomer($customer)
 function updateCustomer($customer)
 {
     try {
-        $name = $customer->name ?? "";
+        $name = $customer->displayName ?? "";
         $family = $customer->family ?? "";
         $phone = $customer->phone ?? "";
         $address = $customer->address ?? "";

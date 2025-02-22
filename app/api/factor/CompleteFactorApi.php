@@ -162,7 +162,7 @@ function getCustomerId($customer)
 function createCustomer($customer)
 {
     // Extract customer details with fallback to empty strings if properties are not set
-    $name = $customer->name ?? "";
+    $name = $customer->displayName ?? "";
     $family = $customer->family ?? "";
     $phone = $customer->phone ?? "";
     $address = $customer->address ?? "";
@@ -197,7 +197,7 @@ function createCustomer($customer)
 function updateCustomer($customer)
 {
     // Extract customer details with fallback to empty strings if properties are not set
-    $name = $customer->name ?? "";
+    $name = $customer->displayName ?? "";
     $family = $customer->family ?? "";
     $phone = $customer->phone ?? "";
     $address = $customer->address ?? "";
