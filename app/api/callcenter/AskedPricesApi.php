@@ -129,15 +129,15 @@ if (filter_has_var(INPUT_POST, 'pattern')) :
                         <td class="text-sm font-semibold px-1 py-2 hover:cursor-pointer text-blue-400 uppercase" data-key="<?= $key ?>" onclick="searchByCustomer(this)" data-customer='<?= $partNumber ?>'><?= $partNumber ?></td>
                         <td class="text-sm font-semibold px-1 py-2 hover:cursor-pointer text-blue-400" data-key="<?= $key ?>" onclick="searchByCustomer(this)" data-customer='<?= $sellerName ?>'><?= $sellerName ?></td>
                         <td class="text-sm font-semibold p-1 py-2 flex items-center gap-2" id="price-<?= $id ?>">
-                            <p class="px-3 bg-white p-2">
+                            <p class="px-3 p-2">
                                 <?= $price ?>
                             </p>
                             <?php if ($isValid): ?>
                                 <div class="flex items-stretch text-white">
-                                    <div class=" text-gray-600 font-normal p-2 flex items-center justify-center">
+                                    <div class="bg-sky-600 p-2 flex items-center justify-center">
                                         <?= $finalPrice ?>
                                     </div>
-                                    <div class="text-gray-900 font-normal p-2 flex items-center justify-center">
+                                    <div class="text-gray-600 font-normal p-2 flex items-center justify-center">
                                         <?= $appliedRate ?>%
                                     </div>
                                 </div>
