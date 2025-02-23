@@ -159,6 +159,46 @@ function applyDollarRate($price, $priceDate)
     return $modifiedString;
 }
 
+function applyDollarRateNotRounded($price, $priceDate)
+{
+    $priceDate = date('Y-m-d', strtotime($priceDate));
+    $rate = 0;
+    foreach ($GLOBALS['rateSpecification'] as $rate) {
+        if ($priceDate <= $rate['created_at']) {
+            $rate = $rate['rate'];
+            break;
+        }
+    }
+
+    $GLOBALS['appliedRate'] = $rate;
+    // Split the input string into words using space as the delimiter
+    $words = explode(' ', $price);
+
+    // Iterate through the words and modify numbers with optional forward slashes
+    foreach ($words as &$word) {
+        // Define a regular expression pattern to match numbers with optional forward slashes
+        $pattern = '/(\d+(?:\/\d+)?)/';
+
+        // Check if the word matches the pattern
+        if (preg_match($pattern, $word)) {
+            // Extract the matched number, removing any forward slashes
+            $number = preg_replace('/\//', '', $word);
+
+
+            if (ctype_digit($number)) {
+                // Increase the matched number by 2%
+                $modifiedNumber = number_format($number + (($number * $rate) / 100), 1);
+                // Replace the word with the modified number
+                $word = str_replace($number, $modifiedNumber, $word);
+            }
+        }
+    }
+    // Reconstruct the modified string by joining the words with spaces
+    $modifiedString = implode(' ', $words);
+
+    return $modifiedString;
+}
+
 function checkDateIfOkay($applyDate, $priceDate)
 {
     $priceDate = date('Y-m-d', strtotime($priceDate));
@@ -227,7 +267,7 @@ function getExistingBrands($stockInfo)
         $brands = [];
         foreach ($stockInfo as $stock) {
             foreach ($stock as $item) {
-                if($item['seller_name'] !== 'کاربر دستوری') {
+                if ($item['seller_name'] !== 'کاربر دستوری') {
                     $brands[] = strtoupper($item['brandName']);
                 }
             }

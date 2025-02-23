@@ -98,7 +98,7 @@ if (filter_has_var(INPUT_POST, 'pattern')) :
                     $isValid = false;
 
                     if (checkDateIfOkay(null, $time) && $price !== 'موجود نیست') {
-                        $finalPrice = applyDollarRate($price, $time);
+                        $finalPrice = applyDollarRateNotRounded($price, $time);
                     }
 
                     if (preg_match('/\d/', $finalPrice)) {

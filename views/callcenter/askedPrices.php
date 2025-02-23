@@ -108,69 +108,68 @@ require_once '../../layouts/callcenter/sidebar.php';
         searchBazar(customer_name, key);
     }
 
-    function searchBazar(pattern, element) {
+    let previousValues = {
+        container1: "",
+        container2: "",
+        container3: ""
+    }; // Track previous values per input
 
+    function searchBazar() {
         let counter = 1;
         let filled = [];
 
         for (let element of searchBoxes) {
-            const value = element.value;
+            const value = element.value.trim();
             const key = 'container' + counter;
 
             if (value.length) {
                 filled.push({
                     key,
                     value
-                });
-                element.style.display = 'block'; // Show element
+                }); // Track filled inputs
+                document.getElementById(key).classList.remove('hidden');
             } else {
-                const containerElement = document.getElementById(key);
-                containerElement.style.display = 'none'; // Hide element
+                document.getElementById(key).classList.add('hidden');
             }
-            counter += 1;
+
+            counter++;
         }
 
-        filled.forEach((item, index) => {
-            const key = item.key;
-            const value = item.value;
-            const elementContainer = document.getElementById(key);
-            const parentContainer = document.getElementById('parentContainer');
+        // Update grid layout dynamically
+        const parentContainer = document.getElementById('parentContainer');
+        parentContainer.classList.remove('grid-cols-1', 'grid-cols-2', 'grid-cols-3');
+        parentContainer.classList.add(`grid-cols-${Math.min(filled.length, 3)}`);
 
-            elementContainer.style.display = 'block';
-
-            // Apply the correct height dynamically
-            if (filled.length === 1) {
-                parentContainer.classList.remove('grid-cols-1');
-                parentContainer.classList.remove('grid-cols-2');
-                parentContainer.classList.remove('grid-cols-3');
-                parentContainer.classList.add('grid-cols-1');
-            } else if (filled.length === 2) {
-                parentContainer.classList.remove('grid-cols-1');
-                parentContainer.classList.remove('grid-cols-2');
-                parentContainer.classList.remove('grid-cols-3');
-                parentContainer.classList.add('grid-cols-2');
-            } else if (filled.length >= 3) {
-                parentContainer.classList.remove('grid-cols-1');
-                parentContainer.classList.remove('grid-cols-2');
-                parentContainer.classList.remove('grid-cols-3');
-                parentContainer.classList.add('grid-cols-3');
+        // Trigger getResults only for inputs whose values have changed
+        filled.forEach(({
+            key,
+            value
+        }) => {
+            if (previousValues[key] !== value) { // Only search if value has changed
+                const resultContainer = document.getElementById(key + '-result');
+                let destination = filled.length > 1 ? MultiPrice : SinglePrice;
+                getResults(key, value, resultContainer, destination);
             }
-
-            const resultContainer = document.getElementById(key + '-result');
-            let destination = SinglePrice;
-
-            if (filled.length > 1) {
-                destination = MultiPrice;
-            }
-            getResults(key, value, resultContainer, destination);
         });
+
+        // If no inputs have values, show "No results"
+        if (filled.length === 0) {
+            const noResultsContainer = document.getElementById('noResultsContainer');
+            noResultsContainer.innerHTML = `<tr class="bg-sky-100">
+                                            <td colspan="14" class="py-5 text-center text-rose-500 font-semibold"> 
+                                                نتیجه ای پیدا نشد.
+                                            </td>
+                                        </tr>`;
+        }
     }
 
+
     function getResults(key, pattern, container, destination) {
+        previousValues[key] = pattern;
+        container.classList.remove('hidden');
         pattern = pattern.replace(/\s/g, "");
         pattern = pattern.replace(/-/g, "");
         pattern = pattern.replace(/_/g, "");
-
         container.innerHTML = `<tr class=''>
                                 <td colspan='14' class='py-10 text-center'> 
                                     <img class=' block w-10 mx-auto h-auto' src='./assets/img/loading.png' alt='loading'>
