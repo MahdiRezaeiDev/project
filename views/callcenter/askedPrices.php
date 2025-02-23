@@ -52,15 +52,15 @@ require_once '../../layouts/callcenter/sidebar.php';
 <div class="bg-white px-5">
     <div class="flex items-center justify-between mb-5">
         <div class="relative flex items-center">
-            <input class="searchBoxes border-2 border-gray-400 px-3 py-2 text-sm w-72" placeholder="جستجو ..." type="text" name="search" id="container1-search" onkeyup="searchBazar(this.value, this)">
+            <input class="searchBoxes border-2 border-gray-400 px-3 py-2 text-sm w-72" placeholder="جستجو ..." type="text" name="search" id="container1-search" onchange="searchBazar(this.value, this)">
             <i class="absolute left-2 material-icons text-red-500 hover:cursor-pointer" data-key="container1" onclick="searchByCustomer(this)" data-customer=''>close</i>
         </div>
         <div class="relative flex items-center">
-            <input class="searchBoxes border-2 border-gray-400 px-3 py-2 text-sm w-72" placeholder="جستجو ..." type="text" name="search" id="container2-search" onkeyup="searchBazar(this.value, this)">
+            <input class="searchBoxes border-2 border-gray-400 px-3 py-2 text-sm w-72" placeholder="جستجو ..." type="text" name="search" id="container2-search" onchange="searchBazar(this.value, this)">
             <i class="absolute left-2 material-icons text-red-500 hover:cursor-pointer" data-key="container2" onclick="searchByCustomer(this)" data-customer=''>close</i>
         </div>
         <div class="relative flex items-center">
-            <input class="searchBoxes border-2 border-gray-400 px-3 py-2 text-sm w-72" placeholder="جستجو ..." type="text" name="search" id="container3-search" onkeyup="searchBazar(this.value, this)">
+            <input class="searchBoxes border-2 border-gray-400 px-3 py-2 text-sm w-72" placeholder="جستجو ..." type="text" name="search" id="container3-search" onchange="searchBazar(this.value, this)">
             <i class="absolute left-2 material-icons text-red-500 hover:cursor-pointer" data-key="container3" onclick="searchByCustomer(this)" data-customer=''>close</i>
         </div>
         <h2 class="text-xl font-semibold">آخرین قیمت های گرفته شده از بازار</h2>
@@ -103,13 +103,13 @@ require_once '../../layouts/callcenter/sidebar.php';
     function searchByCustomer(element) {
         const customer_name = element.getAttribute('data-customer');
         const key = element.getAttribute('data-key');
-        
+
         document.getElementById(key + '-search').value = customer_name;
         searchBazar(customer_name, key);
     }
 
     function searchBazar(pattern, element) {
-        
+
         let counter = 1;
         let filled = [];
 
@@ -297,7 +297,7 @@ require_once '../../layouts/callcenter/sidebar.php';
             });
     }
 
-    getResults('container1','',document.getElementById('container1-result'),SinglePrice);
+    getResults('container1', '', document.getElementById('container1-result'), SinglePrice);
 </script>
 <?php
 require_once './components/footer.php';
