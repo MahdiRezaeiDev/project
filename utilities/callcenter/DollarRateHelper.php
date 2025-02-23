@@ -187,7 +187,12 @@ function applyDollarRateNotRounded($price, $priceDate)
 
             if (ctype_digit($number)) {
                 // Increase the matched number by 2%
-                $modifiedNumber = number_format($number + (($number * $rate) / 100), 1);
+                $modifiedNumber = $number + (($number * $rate) / 100);
+                if (floor($modifiedNumber) == $modifiedNumber) {
+                    $modifiedNumber = number_format($modifiedNumber, 0); // Display without decimals
+                } else {
+                    $modifiedNumber = number_format($modifiedNumber, 1); // Display with 2 decimal places
+                }
                 // Replace the word with the modified number
                 $word = str_replace($number, $modifiedNumber, $word);
             }
