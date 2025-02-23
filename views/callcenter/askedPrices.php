@@ -52,15 +52,15 @@ require_once '../../layouts/callcenter/sidebar.php';
 <div class="bg-white px-5">
     <div class="flex items-center justify-between mb-5">
         <div class="relative flex items-center">
-            <input class="searchBoxes border-2 border-gray-400 px-3 py-2 text-sm w-72" placeholder="جستجو ..." type="text" name="search" id="container1-search" onchange="searchBazar(this.value, this)">
+            <input class="searchBoxes border-2 border-gray-400 px-3 py-2 text-sm w-72" placeholder="جستجو ..." type="text" name="search" id="container1-search" onkeyup="searchBazar(this.value, this)">
             <i class="absolute left-2 material-icons text-red-500 hover:cursor-pointer" data-key="container1" onclick="searchByCustomer(this)" data-customer=''>close</i>
         </div>
         <div class="relative flex items-center">
-            <input class="searchBoxes border-2 border-gray-400 px-3 py-2 text-sm w-72" placeholder="جستجو ..." type="text" name="search" id="container2-search" onchange="searchBazar(this.value, this)">
+            <input class="searchBoxes border-2 border-gray-400 px-3 py-2 text-sm w-72" placeholder="جستجو ..." type="text" name="search" id="container2-search" onkeyup="searchBazar(this.value, this)">
             <i class="absolute left-2 material-icons text-red-500 hover:cursor-pointer" data-key="container2" onclick="searchByCustomer(this)" data-customer=''>close</i>
         </div>
         <div class="relative flex items-center">
-            <input class="searchBoxes border-2 border-gray-400 px-3 py-2 text-sm w-72" placeholder="جستجو ..." type="text" name="search" id="container3-search" onchange="searchBazar(this.value, this)">
+            <input class="searchBoxes border-2 border-gray-400 px-3 py-2 text-sm w-72" placeholder="جستجو ..." type="text" name="search" id="container3-search" onkeyup="searchBazar(this.value, this)">
             <i class="absolute left-2 material-icons text-red-500 hover:cursor-pointer" data-key="container3" onclick="searchByCustomer(this)" data-customer=''>close</i>
         </div>
         <h2 class="text-xl font-semibold">آخرین قیمت های گرفته شده از بازار</h2>
@@ -114,52 +114,54 @@ require_once '../../layouts/callcenter/sidebar.php';
         container3: ""
     }; // Track previous values per input
 
-    function searchBazar() {
-        let counter = 1;
-        let filled = [];
+    function searchBazar(value) {
+        if (value.length > 6) {
+            let counter = 1;
+            let filled = [];
 
-        for (let element of searchBoxes) {
-            const value = element.value.trim();
-            const key = 'container' + counter;
+            for (let element of searchBoxes) {
+                const value = element.value.trim();
+                const key = 'container' + counter;
 
-            if (value.length) {
-                filled.push({
-                    key,
-                    value
-                }); // Track filled inputs
-                document.getElementById(key).classList.remove('hidden');
-            } else {
-                document.getElementById(key).classList.add('hidden');
+                if (value.length) {
+                    filled.push({
+                        key,
+                        value
+                    }); // Track filled inputs
+                    document.getElementById(key).classList.remove('hidden');
+                } else {
+                    document.getElementById(key).classList.add('hidden');
+                }
+
+                counter++;
             }
 
-            counter++;
-        }
+            // Update grid layout dynamically
+            const parentContainer = document.getElementById('parentContainer');
+            parentContainer.classList.remove('grid-cols-1', 'grid-cols-2', 'grid-cols-3');
+            parentContainer.classList.add(`grid-cols-${Math.min(filled.length, 3)}`);
 
-        // Update grid layout dynamically
-        const parentContainer = document.getElementById('parentContainer');
-        parentContainer.classList.remove('grid-cols-1', 'grid-cols-2', 'grid-cols-3');
-        parentContainer.classList.add(`grid-cols-${Math.min(filled.length, 3)}`);
+            // Trigger getResults only for inputs whose values have changed
+            filled.forEach(({
+                key,
+                value
+            }) => {
+                if (previousValues[key] !== value) { // Only search if value has changed
+                    const resultContainer = document.getElementById(key + '-result');
+                    let destination = filled.length > 1 ? MultiPrice : SinglePrice;
+                    getResults(key, value, resultContainer, destination);
+                }
+            });
 
-        // Trigger getResults only for inputs whose values have changed
-        filled.forEach(({
-            key,
-            value
-        }) => {
-            if (previousValues[key] !== value) { // Only search if value has changed
-                const resultContainer = document.getElementById(key + '-result');
-                let destination = filled.length > 1 ? MultiPrice : SinglePrice;
-                getResults(key, value, resultContainer, destination);
-            }
-        });
-
-        // If no inputs have values, show "No results"
-        if (filled.length === 0) {
-            const noResultsContainer = document.getElementById('noResultsContainer');
-            noResultsContainer.innerHTML = `<tr class="bg-sky-100">
+            // If no inputs have values, show "No results"
+            if (filled.length === 0) {
+                const noResultsContainer = document.getElementById('noResultsContainer');
+                noResultsContainer.innerHTML = `<tr class="bg-sky-100">
                                             <td colspan="14" class="py-5 text-center text-rose-500 font-semibold"> 
                                                 نتیجه ای پیدا نشد.
                                             </td>
                                         </tr>`;
+            }
         }
     }
 
