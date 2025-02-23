@@ -134,10 +134,10 @@ if (filter_has_var(INPUT_POST, 'pattern')) :
                             </p>
                             <?php if ($isValid): ?>
                                 <div class="flex items-stretch text-white">
-                                    <div class="bg-sky-600 p-2 flex items-center justify-center">
+                                    <div class=" text-gray-600 font-normal p-2 flex items-center justify-center">
                                         <?= $finalPrice ?>
                                     </div>
-                                    <div class="bg-rose-500 p-2 flex items-center justify-center">
+                                    <div class="text-gray-900 font-normal p-2 flex items-center justify-center">
                                         <?= $appliedRate ?>%
                                     </div>
                                 </div>
