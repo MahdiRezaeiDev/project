@@ -56,6 +56,12 @@ if (!isset($dbname)) {
             </a>
         </li>
         <li>
+            <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'attendance.php' ? 'bg-gray-400' : '' ?> items-center gap-2" href="<?= $append ?>attendance.php">
+                <img src="../../layouts/callcenter/icons/attendance.svg" alt="dashboard icon">
+                مدیریت حضور و غیاب
+            </a>
+        </li>
+        <li>
             <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'defineExchangeRate.php' ? 'bg-gray-400' : '' ?> items-center gap-2" href="<?= $append ?>defineExchangeRate.php">
                 <img src="../../layouts/callcenter/icons/dollar.svg" alt="dashboard icon">
                 تعریف دلار جدید
