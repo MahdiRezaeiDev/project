@@ -90,15 +90,16 @@ $users = getUsers();
                                                 foreach ($START_HOUR as $index => $item): ?>
                                                     <tr class="text-sm text-gray-800">
                                                         <td class="text-sm text-center p-1 bg-sky-200"><?= $index + 1 ?></td>
-                                                        <td class="text-sm text-center p-1 bg-green-200"><?= date('h:i A', strtotime($item['timestamp'])) ?? '' ?></td>
+                                                        <td class="text-sm text-center p-1 bg-green-200"><?= date('h:i A', strtotime($item['timestamp'])) ?></td>
                                                         <td class="text-sm text-center p-1 bg-rose-300">
                                                             <?php
-                                                                if(count($END_HOUR)) {
-                                                                echo date('h:i A', strtotime($END_HOUR[$index]['timestamp']));
-                                                                } else {
-                                                                echo '' ;
-                                                                }
-                                                             ?>
+
+                                                            if (array_key_exists($index, $END_HOUR)) {
+                                                               echo date('h:i A', strtotime($END_HOUR[$index]['timestamp']));
+                                                            } else {
+                                                                echo '';
+                                                            }
+                                                            ?>
                                                         </td>
                                                         <td class="text-sm text-center p-1 bg-sky-200">
                                                             <span
@@ -107,7 +108,7 @@ $users = getUsers();
                                                                 data-start_id="<?= $item['id'] ?>"
                                                                 data-end_id="<?= $END_HOUR[$index]['id'] ?>"
                                                                 data-start="<?= date('h:i', strtotime($item['timestamp'])) ?>"
-                                                                data-end="<?= date('h:i',strtotime($END_HOUR[$index]['timestamp'])) ?>"
+                                                                data-end="<?= date('h:i', strtotime($END_HOUR[$index]['timestamp'])) ?>"
                                                                 onclick="editWorkHour(this)"
                                                                 class="text-blue-500 hover:text-blue-700 cursor-pointer">
                                                                 ویرایش ساعات کاری

@@ -25,33 +25,77 @@
             <a href="../callcenter/factor.php" class="text-blue-500 underline">ثبت فاکتور جدید</a>
         </div>
     </div>
+    <?php
+    $presentCount = count($myAttendanceReportStart);
+    $absentCount = count($myAttendanceReportEnd);
+    $isPresent = ($presentCount > $absentCount);
+    $isAbsent = ($presentCount == $absentCount);
+    ?>
     <div
+        <?php if ($isAbsent) : ?>
         onclick="setWorkingHour('start')"
+        <?php endif; ?>
         class="p-4 transition-shadow bg-green-700 text-white rounded-lg shadow-sm hover:shadow-lg cursor-pointer">
-        <div class="flex items-start justify-between">
-            <div class="flex flex-col space-y-2">
-                <span class="font-semibold text-xl">ثبت ساعت ورود</span>
-                <span class="text-lg font-semibold clock"></span>
+        <?php if ($isAbsent) : ?>
+            <div class="flex items-start justify-between">
+                <div class="flex flex-col space-y-2">
+                    <span class="font-semibold text-xl">ثبت ساعت ورود</span>
+                    <span class="text-lg font-semibold clock"></span>
+                </div>
+                <img class="rounded-md w-16 h-16" src="<?= ('../../public/icons/start.svg') ?>" alt="">
             </div>
-            <img class="rounded-md w-16 h-16" src="<?= ('../../public/icons/start.svg') ?>" alt="">
-        </div>
-        <div>
-            <p class="text-xs">برای ثبت ساعت ورود خود اینجا کلیک نمایید.</p>
-        </div>
+            <div>
+                <p class="text-xs">برای ثبت ساعت ورود خود اینجا کلیک نمایید.</p>
+            </div>
+        <?php else : ?>
+            <div class="flex items-start justify-between">
+                <div class="flex flex-col space-y-2">
+                    <span class="font-semibold text-xl">
+                        ساعت ورود شما ثبت شده است.
+                    </span>
+                    <span class="text-lg font-semibold">
+                        <?= date('h:i A', strtotime($myAttendanceReportStart[$presentCount - 1]['timestamp'])) ?>
+                    </span>
+                </div>
+                <img class="rounded-md w-16 h-16" src="<?= ('../../public/icons/start.svg') ?>" alt="">
+            </div>
+            <div>
+                <p class="text-xs">ساعت ورود شما ثبت شده است.</p>
+            </div>
+        <?php endif; ?>
     </div>
     <div
+        <?php if ($isPresent) : ?>
         onclick="setWorkingHour('leave')"
+        <?php endif; ?>
         class="p-4 transition-shadow bg-rose-700 rounded-lg shadow-sm hover:shadow-lg text-white cursor-pointer">
-        <div class="flex items-start justify-between">
-            <div class="flex flex-col space-y-2">
-                <span class="font-semibold">ثبت ساعت خروج</span>
-                <span class="text-lg font-semibold clock"></span>
+        <?php if ($isPresent) : ?>
+            <div class="flex items-start justify-between">
+                <div class="flex flex-col space-y-2">
+                    <span class="font-semibold text-xl">ثبت ساعت خروج</span>
+                    <span class="text-lg font-semibold clock"></span>
+                </div>
+                <img class="rounded-md w-16 h-16" src="<?= ('../../public/icons/leave.svg') ?>" alt="">
             </div>
-            <img class="rounded-md w-16 h-16" src="<?= ('../../public/icons/leave.svg') ?>" alt="">
-        </div>
-        <div>
-            <p class="text-xs">برای ثبت ساعت خروج خود اینجا کلیک نمایید.</p>
-        </div>
+            <div>
+                <p class="text-xs">برای ثبت ساعت خروج خود اینجا کلیک نمایید.</p>
+            </div>
+        <?php else : ?>
+            <div class="flex items-start justify-between">
+                <div class="flex flex-col space-y-2">
+                    <span class="font-semibold text-xl">
+                        ساعت خروج شما ثبت شده است.
+                    </span>
+                    <span class="text-lg font-semibold">
+                        <?= date('h:i A', strtotime($myAttendanceReportEnd[$absentCount - 1]['timestamp'])) ?>
+                    </span>
+                </div>
+                <img class="rounded-md w-16 h-16" src="<?= ('../../public/icons/leave.svg') ?>" alt="">
+            </div>
+            <div>
+                <p class="text-xs">ساعت خروج شما ثبت شده است.</p>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 <script>
@@ -67,6 +111,7 @@
         axios.post(ENDPOINT, params).then((response) => {
             if (response.data.status === 'success') {
                 alert(response.data.message);
+                location.reload();
             } else {
                 alert(response.data.message);
             }
