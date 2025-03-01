@@ -21,6 +21,9 @@ $dateTime = jdate('Y-m-d'); ?>
     </div>
 </section>
 
+<script>
+    
+</script>
 <?php
 require_once './components/footer.php';
 ?>

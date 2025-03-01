@@ -49,18 +49,37 @@ if (!isset($dbname)) {
                 تعریف رابطه اجناس
             </a>
         </li>
-        <li>
-            <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'usersManagement.php' ? 'bg-gray-400' : '' ?> items-center gap-2" href="<?= $append ?>usersManagement.php">
-                <img src="../inventory/assets/icons/manage.svg" alt="dashboard icon">
-                مدیریت کاربران
+        <?php if (in_array($_SESSION['username'], ['mahdi', 'niyayesh', 'babak'])): ?>
+        <li class="dropdown">
+            <a class="flex justify-between items-center gap-2 p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'attendanceReport.php' ? 'bg-gray-400' : '' ?>">
+                <span class="flex items-center gap-2">
+                    <img src="../../layouts/callcenter/icons/attendance.svg" alt="save icon">
+                    مدیریت کاربران
+                </span>
+                <img src="./assets/icons/left_arrow.svg" alt="left arrow">
             </a>
+            <ul class="drop_down_menu_aside bg-gray-800 border border-gray-800">
+                <li>
+                    <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="usersManagement.php">
+                        <img src="../inventory/assets/icons/manage.svg" alt="save icon">
+                        مدیریت کاربران
+                    </a>
+                </li>
+                <li>
+                    <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="attendanceReport.php">
+                        <img src="../../layouts/callcenter/icons/attendance.svg" alt="save icon">
+                        گزارش حضور و غیاب
+                    </a>
+                </li>
+                <li>
+                    <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="attendance.php">
+                        <img src="../../layouts/callcenter/icons/attendance.svg" alt="save icon">
+                        مدیریت حضور و غیاب
+                    </a>
+                </li>
+            </ul>
         </li>
-        <li>
-            <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'attendance.php' ? 'bg-gray-400' : '' ?> items-center gap-2" href="<?= $append ?>attendance.php">
-                <img src="../../layouts/callcenter/icons/attendance.svg" alt="dashboard icon">
-                مدیریت حضور و غیاب
-            </a>
-        </li>
+        <?php endif; ?>
         <li>
             <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'defineExchangeRate.php' ? 'bg-gray-400' : '' ?> items-center gap-2" href="<?= $append ?>defineExchangeRate.php">
                 <img src="../../layouts/callcenter/icons/dollar.svg" alt="dashboard icon">

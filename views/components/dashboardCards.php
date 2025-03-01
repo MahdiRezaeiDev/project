@@ -25,7 +25,9 @@
             <a href="../callcenter/factor.php" class="text-blue-500 underline">ثبت فاکتور جدید</a>
         </div>
     </div>
-    <div class="p-4 transition-shadow bg-green-700 text-white rounded-lg shadow-sm hover:shadow-lg cursor-pointer">
+    <div
+        onclick="setWorkingHour('start')"
+        class="p-4 transition-shadow bg-green-700 text-white rounded-lg shadow-sm hover:shadow-lg cursor-pointer">
         <div class="flex items-start justify-between">
             <div class="flex flex-col space-y-2">
                 <span class="font-semibold text-xl">ثبت ساعت ورود</span>
@@ -37,7 +39,9 @@
             <p class="text-xs">برای ثبت ساعت ورود خود اینجا کلیک نمایید.</p>
         </div>
     </div>
-    <div class="p-4 transition-shadow bg-rose-700 rounded-lg shadow-sm hover:shadow-lg text-white cursor-pointer">
+    <div
+        onclick="setWorkingHour('leave')"
+        class="p-4 transition-shadow bg-rose-700 rounded-lg shadow-sm hover:shadow-lg text-white cursor-pointer">
         <div class="flex items-start justify-between">
             <div class="flex flex-col space-y-2">
                 <span class="font-semibold">ثبت ساعت خروج</span>
@@ -51,6 +55,26 @@
     </div>
 </div>
 <script>
+    const ENDPOINT = '../../app/api/callcenter/AttendanceApi.php';
+
+    function setWorkingHour(action) {
+        const user_id = '<?= $_SESSION['id'] ?>';
+        const params = new URLSearchParams();
+        params.append('action', 'setWorkingHour');
+        params.append('user_id', user_id);
+        params.append('preform', action);
+
+        axios.post(ENDPOINT, params).then((response) => {
+            if (response.data.status === 'success') {
+                alert(response.data.message);
+            } else {
+                alert(response.data.message);
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+    }
+
     function updateClock() {
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, '0');
