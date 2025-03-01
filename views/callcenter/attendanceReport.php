@@ -90,8 +90,8 @@ $users = getUsers();
                                                 foreach ($START_HOUR as $index => $item): ?>
                                                     <tr class="text-sm text-gray-800">
                                                         <td class="text-sm text-center p-1 bg-sky-200"><?= $index + 1 ?></td>
-                                                        <td class="text-sm text-center p-1 bg-green-200"><?= date('h:i A', strtotime($item['timestamp'])) ?></td>
-                                                        <td class="text-sm text-center p-1 bg-rose-300"><?= date('h:i A', strtotime($END_HOUR[$index]['timestamp'])) ?></td>
+                                                        <td class="text-sm text-center p-1 bg-green-200"><?= date('h:i A', strtotime($item['timestamp'])) ?? '' ?></td>
+                                                        <td class="text-sm text-center p-1 bg-rose-300"><?= date('h:i A', strtotime($END_HOUR[$index]['timestamp'])) ?? '' ?></td>
                                                         <td class="text-sm text-center p-1 bg-sky-200">
                                                             <span
                                                                 data-user="<?= $user['name'] . ' ' . $user['family'] ?>"
