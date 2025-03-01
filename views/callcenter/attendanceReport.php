@@ -1,4 +1,7 @@
 <?php
+
+use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Round;
+
 $pageTitle = "مدیریت حضور و غیاب";
 $iconUrl = 'callcenter.svg';
 require_once './components/header.php';
@@ -69,7 +72,7 @@ $users = getUsers();
                                 <th class="px-6 py-3  font-semibold text-gray-800 text-right">
                                     <?= $user['name'] . ' ' . $user['family'] ?>
                                 </th>
-                                <td class="px-6 py-3 text-center  font-semibold text-right text-gray-800">
+                                <td class="px-6 py-3 text-center  font-semibold text-gray-800">
                                     <?php
                                     $START_HOUR = getUserAttendanceReport('start', $user['selectedUser']);
                                     $END_HOUR = getUserAttendanceReport('leave', $user['selectedUser']);
@@ -86,16 +89,37 @@ $users = getUsers();
                                             </thead>
                                             <tbody>
                                                 <?php
+                                                $Rule = getUserAttendanceRule($user['selectedUser']);
+                                                $startTime = $Rule['start_hour'];
+                                                $endTime = $Rule['end_hour'];
 
                                                 foreach ($START_HOUR as $index => $item): ?>
-                                                    <tr class="text-sm text-gray-800">
+                                                    <tr class="text-sm text-gray-800 border-b">
                                                         <td class="text-sm text-center p-1 bg-sky-200"><?= $index + 1 ?></td>
-                                                        <td class="text-sm text-center p-1 bg-green-200"><?= date('h:i A', strtotime($item['timestamp'])) ?></td>
+                                                        <td class="text-sm text-center p-1 bg-green-200">
+                                                            <?= date('H:i', strtotime($item['timestamp'])) ?>
+                                                            <?php
+                                                            if (strtotime($item['timestamp']) > strtotime($startTime)) {
+                                                                $delay = round((strtotime($item['timestamp']) - strtotime($startTime)) / 60);
+
+                                                                if ($delay > 0) {
+                                                                    echo '<p class="text-xs text-white py-2 bg-gray-400">تاخیر ' . $delay . ' دقیقه</p>';
+                                                                }
+                                                            }
+                                                            ?>
+                                                        </td>
                                                         <td class="text-sm text-center p-1 bg-rose-300">
                                                             <?php
 
                                                             if (array_key_exists($index, $END_HOUR)) {
-                                                               echo date('h:i A', strtotime($END_HOUR[$index]['timestamp']));
+                                                                echo date('H:i', strtotime($END_HOUR[$index]['timestamp']));
+                                                                $calculate = round((strtotime($endTime) - strtotime($END_HOUR[$index]['timestamp'])) / 60);
+                                                                if (strtotime($END_HOUR[$index]['timestamp']) < strtotime($endTime)) {
+
+                                                                    echo '<p class="text-xs text-white py-2 bg-gray-400">تعجیل ' . $calculate . ' دقیقه</p>';
+                                                                } else {
+                                                                    echo '<p class="text-xs text-white py-2 bg-gray-400">اضافه کار ' . abs($calculate) . ' دقیقه</p>';
+                                                                }
                                                             } else {
                                                                 echo '';
                                                             }

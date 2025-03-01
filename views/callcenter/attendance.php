@@ -38,7 +38,6 @@ $users = getUsers();
             <i class="material-icons font-semibold text-orange-400">security</i>
             مدیریت حضور و غیاب
         </h2>
-        <a href="./createUserProfile.php" class="bg-gray-600 text-white py-2 px-3 rounded-sm text-sm">ثبت کاربر جدید</a>
     </div>
     <div class="bg-white rounded-lg p-5 shadow-md hover:shadow-xl">
         <div class="border border-dashed border-gray-800 flex flex-col items-center h-full rounded-lg">

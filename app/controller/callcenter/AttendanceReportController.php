@@ -29,3 +29,14 @@ function getUserAttendanceReport($action, $user_id)
     $attendance_report = $stmt->fetchAll(PDO::FETCH_ASSOC);
     return $attendance_report;
 }
+
+
+function getUserAttendanceRule($user_id)
+{
+    $sql = "SELECT * FROM yadakshop.attendance_settings WHERE user_id = :user_id";
+    $stmt = PDO_CONNECTION->prepare($sql);
+    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $attendance_rule = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $attendance_rule;
+}

@@ -10,6 +10,7 @@ function getCallCenterUsers()
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 $myAttendanceReportStart = getUserAttendanceReport('start', $_SESSION['id']);
 $myAttendanceReportEnd = getUserAttendanceReport('leave', $_SESSION['id']);
 
