@@ -83,11 +83,11 @@ $isAbsent = ($presentCount == $absentCount);
 </div>
 
 <div
-    <?php if ($isPresent) : ?>
+    <?php if ($isPresent || $absentCount == 0) : ?>
     onclick="setWorkingHour('leave')"
     <?php endif; ?>
     class="p-4 transition-shadow bg-rose-700 rounded-lg shadow-sm hover:shadow-lg text-white cursor-pointer">
-    <?php if ($isPresent) : ?>
+    <?php if ($isPresent || $absentCount == 0) : ?>
         <div class="flex items-start justify-between">
             <div class="flex flex-col space-y-2">
                 <span class="font-semibold text-xl">ثبت ساعت خروج</span>
