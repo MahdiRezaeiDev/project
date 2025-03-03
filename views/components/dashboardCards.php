@@ -41,6 +41,7 @@ $presentCount = count($myAttendanceReportStart);
 $absentCount = count($myAttendanceReportEnd);
 $isPresent = ($presentCount > $absentCount);
 $isAbsent = ($presentCount == $absentCount);
+
 ?>
 
 <div
@@ -83,7 +84,7 @@ $isAbsent = ($presentCount == $absentCount);
 </div>
 
 <div
-    <?php if ($isPresent || $absentCount == 0) : ?>
+    <?php if ($isPresent) : ?>
     onclick="setWorkingHour('leave')"
     <?php endif; ?>
     class="p-4 transition-shadow bg-rose-700 rounded-lg shadow-sm hover:shadow-lg text-white cursor-pointer">
