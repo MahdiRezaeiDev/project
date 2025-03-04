@@ -6,6 +6,7 @@ require_once '../../app/controller/callcenter/AttendanceReportController.php';
 require_once '../../layouts/callcenter/nav.php';
 require_once '../../layouts/callcenter/sidebar.php';
 $users = getUsers();
+$today = date('Y-m-d');
 ?>
 <div id="modal" class="hidden fixed inset-0 bg-black opacity-70 justify-center items-center">
     <section class="bg-white rounded p-5" style="width: 500px;">
@@ -34,18 +35,30 @@ $users = getUsers();
     </section>
 </div>
 <div class="bg-white rounded-lg shadow-md">
-    <div class="flex items-center justify-between p-2">
+    <div class="flex items-center justify-between p-5">
         <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
             <i class="material-icons font-semibold text-orange-400">security</i>
             <?= jdate('l J F'); ?> -
             <?= jdate('Y/m/d')  ?>
         </h2>
-        <input class="text-sm py-2 px-3 font-semibold sm:w-60 border-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="invoice_time" id="invoice_time">
+        <div class="flex items-start gap-2">
+            <select class="text-xs py-2 px-3 font-semibold sm:w-60 border-2" name="user" id="reportedUser">
+                <option class="text-xs" value="0">همه کاربران</option>
+                <?php foreach ($users as $user) : ?>
+                    <option class="text-xs" value="<?= $user['selectedUser'] ?>"><?= $user['name'] . ' ' . $user['family'] ?></option>
+                <?php endforeach; ?>
+            </select>
+            <div>
+                <input class="text-sm py-2 px-3 font-semibold sm:w-60 border-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="invoice_time" id="invoice_time">
+                <p class="text-xs text-gray-500">تاریخ شروع گزارش را انتخاب نمایید.</p>
+            </div>
+            <button onclick="getReport()" class="bg-sky-700 text-white rounded px-4 py-2">گزارش</button>
+        </div>
     </div>
     <div class="bg-white rounded-lg p-5 shadow-md hover:shadow-xl">
         <div class="border border-dashed border-gray-800 flex flex-col items-center h-full rounded-lg">
             <div class="overflow-x-auto shadow-md sm:rounded-lg w-full h-full">
-                <table class="w-full text-sm text-left rtl:text-right text-gray-800 h-full">
+                <table id="reportTable" class="w-full text-sm text-left rtl:text-right text-gray-800 h-full">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-200">
                         <tr>
                             <th scope="col" class="font-semibold text-sm text-right text-gray-800 px-6 py-3">
@@ -72,6 +85,9 @@ $users = getUsers();
                             <th scope="col" class="font-semibold text-center text-sm text-gray-800 px-6 py-3">
                                 پنج شنبه
                             </th>
+                            <th scope="col" class="font-semibold text-center text-sm text-gray-800 px-6 py-3">
+                                جمعه
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,7 +101,8 @@ $users = getUsers();
                                     <?= $user['name'] . ' ' . $user['family'] ?>
                                 </th>
                                 <?php
-                                for ($counter = 0; $counter < 6; $counter++):
+
+                                for ($counter = 0; $counter < 7; $counter++):
                                     require './components/attendance/timeTable.php';
                                 endfor; ?>
                             </tr>
@@ -105,7 +122,8 @@ $users = getUsers();
     const START_ID = document.getElementById('start_id');
     const END_ID = document.getElementById('end_id');
     const message = document.getElementById('message');
-    const ENDPOINT = '../../app/api/callcenter/AttendanceApi.php';
+    const END_POINT = '../../app/api/callcenter/AttendanceApi.php';
+    const REPORT_END_POINT = '../../app/api/callcenter/AttendanceReportApi.php';
 
     function editWorkHour(element) {
         openModal();
@@ -134,7 +152,7 @@ $users = getUsers();
             end_id
         });
 
-        axios.post(ENDPOINT, params)
+        axios.post(END_POINT, params)
             .then(data => {
                 if (data.status == 200) {
                     message.innerText = data.data.message;
@@ -166,6 +184,42 @@ $users = getUsers();
         modal.classList.add('flex');
     }
 
+    function getReport() {
+        const startDate = document.getElementById('invoice_time').getAttribute('data-gdate');
+        const user = document.getElementById('reportedUser').value;
+
+        const param = new URLSearchParams();
+        param.append('date', startDate);
+        param.append('user', user);
+
+        axios({
+            url: REPORT_END_POINT, // No need to append query parameters here
+            method: 'POST',
+            data: param, // Send the parameters in the `data` field for POST
+            responseType: 'blob', // Set responseType to 'blob' to handle binary data (like files)
+        }).then((response) => {
+            // Create a URL for the blob (file)
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+
+            // Create a link element to trigger the download
+            const link = document.createElement('a');
+            link.href = url;
+
+            // Set filename from content-disposition header (if available)
+            const filename = response.headers['content-disposition']?.split('filename=')[1] || 'report.xlsx';
+
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click(); // Trigger download
+
+            // Cleanup
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        }).catch((e) => {
+            console.log('Download failed', e);
+        });
+    }
+
     $(function() {
         $("#invoice_time").persianDatepicker({
             months: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"],
@@ -194,22 +248,11 @@ $users = getUsers();
             },
             onShow: function() {},
             onHide: function() {},
-            onSelect: function() {
-                const date = ($("#invoice_time").attr("data-gdate"));
-                var params = new URLSearchParams();
-                params.append('getFactor', 'getFactor');
-                params.append('date', date);
-                axios.post("../../app/partials/factors/factor.php", params)
-                    .then(function(response) {
-                        resultBox.innerHTML = response.data;
-                    })
-                    .catch(function(error) {
-                        console.log(error);
-                    });
-            },
+            onSelect: function() {},
             onRender: function() {}
         });
     });
 </script>
+
 <?php
 require_once './components/footer.php';

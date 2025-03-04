@@ -1,8 +1,6 @@
 <td class="py-3 text-center  font-semibold text-gray-800">
     <?php
     $date = strtotime("+$counter days", $startDate);
-
-    // Convert to Jalali date
     $reportDate = date("Y-m-d", $date);
 
     $START_HOUR = getUserAttendanceReport('start', $user['selectedUser'], $reportDate);
@@ -29,7 +27,7 @@
                             <?= date('H:i', strtotime($item['timestamp'])) ?>
                             <?php
                             if (strtotime($item['timestamp']) > strtotime($startTime)) {
-                                $delay = round((strtotime($item['timestamp']) - strtotime($startTime)) / 60);
+                                $delay = floor((strtotime($item['timestamp']) - strtotime($startTime)) / 60);
 
                                 if ($delay > 0) {
                                     echo '<p class="text-xs text-white py-1 bg-gray-400">' . $delay . ' دقیقه</p>';
@@ -42,12 +40,14 @@
 
                             if (array_key_exists($index, $END_HOUR)) {
                                 echo date('H:i', strtotime($END_HOUR[$index]['timestamp']));
-                                $calculate = round((strtotime($endTime) - strtotime($END_HOUR[$index]['timestamp'])) / 60);
+                                $calculate = floor((strtotime($endTime) - strtotime($END_HOUR[$index]['timestamp'])) / 60);
                                 if (strtotime($END_HOUR[$index]['timestamp']) > strtotime($endTime)) {
                                     echo '<p class="text-xs text-white py-1 bg-gray-400">اضافه کار ' . abs($calculate) . ' دقیقه</p>';
+                                } else {
+                                    echo '<p class="text-xs text-white py-2"></p>';
                                 }
                             } else {
-                                echo '';
+                                echo '<p class="text-xs text-white py-2"></p>';
                             }
                             ?>
                         </td>
@@ -59,21 +59,22 @@
                                 data-end_id="<?= $END_HOUR[$index]['id'] ?>"
                                 data-start="<?= date('h:i', strtotime($item['timestamp'])) ?>"
                                 data-end="<?= date('h:i', strtotime($END_HOUR[$index]['timestamp'])) ?>"
-                                onclick="editWorkHour(this)"
-                                class="text-blue-500 hover:text-blue-700 cursor-pointer">
-                                <img class="w-4 h-4" src="./assets/icons/edit.svg" alt="">
+                                onclick="editWorkHour(this)">
+                                <img class="w-4 h-4 mx-auto cursor-pointer" title="ویرایش" src="./assets/icons/edit.svg" alt="edit icon">
                             </span>
                         </td>
                     </tr>
             <?php
                 endforeach;
             } else {
-                $today = date('Y-m-d'); // Get today's date
-
-                if (strtotime($reportDate ) > strtotime($today)) {
-                    echo '<tr><td colspan="4" class="text-center text-green-700">ثبت نشده</td></tr>';
+                if ($counter == 6) {
+                    echo '<tr><td colspan="4" class="text-center text-red-500">تعطیل</td></tr>';
                 } else {
-                    echo '<tr><td colspan="4" class="text-center text-red-500">غایب</td></tr>';
+                    if (strtotime($reportDate) > strtotime($today)) {
+                        echo '<tr><td colspan="4" class="text-center text-green-700">ثبت نشده</td></tr>';
+                    } else {
+                        echo '<tr><td colspan="4" class="text-center text-red-500">غایب</td></tr>';
+                    }
                 }
             }
             ?>

@@ -35,8 +35,6 @@ function getUserAttendanceReport($action, $user_id, $date)
     return $attendance_report;
 }
 
-
-
 function getUserAttendanceRule($user_id)
 {
     $sql = "SELECT * FROM yadakshop.attendance_settings WHERE user_id = :user_id";
@@ -46,7 +44,6 @@ function getUserAttendanceRule($user_id)
     $attendance_rule = $stmt->fetch(PDO::FETCH_ASSOC);
     return $attendance_rule;
 }
-
 
 function getStartOfTheWeek()
 {

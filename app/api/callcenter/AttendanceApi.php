@@ -111,7 +111,6 @@ function updateEndHour($id, $end)
     $stmt->execute();
 }
 
-
 function getUserAttendanceReport($action, $user_id)
 {
     $sql = "SELECT * FROM yadakshop.attendance_logs 
