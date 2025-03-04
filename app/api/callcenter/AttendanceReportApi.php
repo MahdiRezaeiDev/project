@@ -56,10 +56,15 @@ for ($index = 0; $index < $daysAmount; $index++) {
     // Merge and Set Headers
     $sheet->mergeCells("$startColumn" . "1:$endColumn" . "1");
     $sheet->setCellValue("$startColumn" . "1", $persianDate);
-    $sheet->getStyle("$startColumn" . "1")->getAlignment()->setHorizontal('center');
+    $sheet->getStyle("$startColumn" . "1")->getAlignment()->setHorizontal('center')->setVertical('center');
+    $sheet->getRowDimension(1)->setRowHeight(30);  // Adjust header row height
 
     array_push($subHeaders, 'ورود', 'تاخیر', 'خروج', 'اضافه کار');
 }
+
+// Set the column width for "نام نام خانوادگی" to make it wider and center it
+$sheet->getColumnDimension('A')->setWidth(25); // Adjust the width (for example, 25)
+$sheet->getStyle('A1')->getAlignment()->setHorizontal('center')->setVertical('center'); // Center "نام نام خانوادگی"
 
 $sheet->fromArray([$headers], NULL, 'A1');
 $sheet->fromArray([$subHeaders], NULL, 'B2');
@@ -84,8 +89,16 @@ foreach ($users as $user) {
         array_push($usersData, $entry, $delay, $exit, $extra);
     }
     $sheet->fromArray([$usersData], NULL, "A{$row}");
+    
+    // Adjust row height and center the text for the user data
+    $sheet->getStyle("A{$row}:E{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
+    $sheet->getRowDimension($row)->setRowHeight(25);  // Adjust row height for user data
+    
     $row++;
 }
+
+// Center the subheader cells (ورود تاخیر خروج اضافه کار) text
+$sheet->getStyle('B2:E2')->getAlignment()->setHorizontal('center')->setVertical('center');
 
 // Clear any previous output (important to prevent headers from being sent early)
 ob_clean();
