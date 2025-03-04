@@ -52,7 +52,7 @@ $today = date('Y-m-d');
                 <input class="text-sm py-2 px-3 font-semibold sm:w-60 border-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="invoice_time" id="invoice_time">
                 <p class="text-xs text-gray-500">تاریخ شروع گزارش را انتخاب نمایید.</p>
             </div>
-            <button onclick="getReport()" class="bg-sky-700 text-white rounded px-4 py-2">گزارش</button>
+            <button onclick="getReport(this)" class="bg-sky-700 text-white rounded px-4 py-2 disabled:cursor-not-allowed">گزارش</button>
         </div>
     </div>
     <div class="bg-white rounded-lg p-5 shadow-md hover:shadow-xl">
@@ -184,7 +184,7 @@ $today = date('Y-m-d');
         modal.classList.add('flex');
     }
 
-    function getReport() {
+    function getReport(element) {
         const startDate = document.getElementById('invoice_time').getAttribute('data-gdate');
         const user = document.getElementById('reportedUser').value;
 
@@ -192,6 +192,8 @@ $today = date('Y-m-d');
         param.append('date', startDate);
         param.append('user', user);
 
+        element.innerText = 'لطفا صبور باشید...';
+        element.disabled = true;
         axios({
             url: REPORT_END_POINT, // No need to append query parameters here
             method: 'POST',
@@ -215,6 +217,8 @@ $today = date('Y-m-d');
             // Cleanup
             link.remove();
             window.URL.revokeObjectURL(url);
+            element.innerText = 'گزارش';
+            element.disabled = false;
         }).catch((e) => {
             console.log('Download failed', e);
         });
