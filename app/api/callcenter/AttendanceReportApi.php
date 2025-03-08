@@ -80,58 +80,44 @@ foreach ($users as $user) {
         // Get all start and leave records for the user on this specific date
         $startRecords = getUserAttendanceReport('start', $user['selectedUser'], $reportDate);
         $leaveRecords = getUserAttendanceReport('leave', $user['selectedUser'], $reportDate);
+
         $Rule = getUserAttendanceRule($user['selectedUser']);
         $startTime = $Rule['start_hour'];
         $endTime = $Rule['end_hour'];
 
-        // Initialize strings to hold multiple records
-        $entryText = '';
-        $delayText = '';
-        $exitText = '';
-        $extraText = '';
-
-        // Display all start records (append to the text variable with new line)
+        // Display all start records (each in a new row)
         if (count($startRecords) > 0) {
             foreach ($startRecords as $start) {
-                $entryText .= date('H:i', strtotime($start['timestamp'])) . "\n";
-                $delayText .= (strtotime($start['timestamp']) > strtotime($startTime)) ? round((strtotime($start['timestamp']) - strtotime($startTime)) / 60) . ' دقیقه' : '-' . "\n";
+                $entry = date('H:i', strtotime($start['timestamp']));
+                $delay = (strtotime($start['timestamp']) > strtotime($startTime)) ? round((strtotime($start['timestamp']) - strtotime($startTime)) / 60) . ' دقیقه' : '-';
+                $sheet->fromArray([$user['name'] . ' ' . $user['family'], $entry, $delay, '', ''], NULL, "A{$row}");
+                $sheet->getStyle("A{$row}:E{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
+                $sheet->getRowDimension($row)->setRowHeight(25);  // Adjust row height for user data
+                $row++;
             }
         } else if (strtotime($reportDate) > strtotime($today)) {
-            $entryText .= 'ثبت نشده' . "\n";
-            $delayText .= '-' . "\n";
+            $sheet->fromArray([$user['name'] . ' ' . $user['family'], 'ثبت نشده', '-', '', ''], NULL, "A{$row}");
+            $sheet->getStyle("A{$row}:E{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
+            $sheet->getRowDimension($row)->setRowHeight(25);  // Adjust row height for user data
+            $row++;
         } else {
-            $entryText .= 'غایب' . "\n";
-            $delayText .= '-' . "\n";
+            $sheet->fromArray([$user['name'] . ' ' . $user['family'], 'غایب', '-', '', ''], NULL, "A{$row}");
+            $sheet->getStyle("A{$row}:E{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
+            $sheet->getRowDimension($row)->setRowHeight(25);  // Adjust row height for user data
+            $row++;
         }
 
-        // Display all leave records (append to the text variable with new line)
+        // Display all leave records (each in a new row)
         if (count($leaveRecords) > 0) {
             foreach ($leaveRecords as $leave) {
-                $exitText .= date('H:i', strtotime($leave['timestamp'])) . "\n";
-                $extraText .= (strtotime($leave['timestamp']) > strtotime($endTime)) ? round((strtotime($leave['timestamp']) - strtotime($endTime)) / 60) . ' دقیقه' : '-' . "\n";
+                $exit = date('H:i', strtotime($leave['timestamp']));
+                $extra = (strtotime($leave['timestamp']) > strtotime($endTime)) ? round((strtotime($leave['timestamp']) - strtotime($endTime)) / 60) . ' دقیقه' : '-';
+                $sheet->fromArray([$user['name'] . ' ' . $user['family'], '', '-', $exit, $extra], NULL, "A{$row}");
+                $sheet->getStyle("A{$row}:E{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
+                $sheet->getRowDimension($row)->setRowHeight(25);  // Adjust row height for user data
+                $row++;
             }
         }
-
-        // Add the records in the same row with new lines in the same cell
-        $usersData = [
-            $user['name'] . ' ' . $user['family'],
-            rtrim($entryText, "\n"),
-            rtrim($delayText, "\n"),
-            rtrim($exitText, "\n"),
-            rtrim($extraText, "\n")
-        ];
-        
-        $sheet->fromArray([$usersData], NULL, "A{$row}");
-
-        // Apply wrap text for multi-line cells and center the content
-        $sheet->getStyle("A{$row}:E{$row}")
-              ->getAlignment()->setHorizontal('center')
-              ->setVertical('center');
-        $sheet->getStyle("A{$row}:E{$row}")
-              ->getAlignment()->setWrapText(true);  // Allow line breaks in the cell
-
-        $sheet->getRowDimension($row)->setRowHeight(40);  // Adjust row height for readability
-        $row++;
     }
 }
 
