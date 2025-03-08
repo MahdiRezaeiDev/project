@@ -72,29 +72,67 @@ $row = 3;
 
 foreach ($users as $user) {
     $usersData = [$user['name'] . ' ' . $user['family']];
+    
     for ($counter = 0; $counter < $daysAmount; $counter++) {
         $date = strtotime("+$counter days", $startDate);
         $reportDate = date("Y-m-d", $date);
-        $start = getUserAttendanceReport('start', $user['selectedUser'], $reportDate);
-        $leave = getUserAttendanceReport('leave', $user['selectedUser'], $reportDate);
+
+        // Get all start and leave records for the user on this specific date
+        $startRecords = getUserAttendanceReport('start', $user['selectedUser'], $reportDate);
+        $leaveRecords = getUserAttendanceReport('leave', $user['selectedUser'], $reportDate);
         $Rule = getUserAttendanceRule($user['selectedUser']);
         $startTime = $Rule['start_hour'];
         $endTime = $Rule['end_hour'];
 
-        $entry = count($start) > 0 ? date('H:i', strtotime($start[0]['timestamp'])) : (strtotime($reportDate) > strtotime($today) ? 'ثبت نشده' : 'غایب');
-        $exit = count($leave) > 0 ? date('H:i', strtotime($leave[0]['timestamp'])) : '';
-        $delay = count($start) > 0 && strtotime($start[0]['timestamp']) > strtotime($startTime) ? round((strtotime($start[0]['timestamp']) - strtotime($startTime)) / 60) . ' دقیقه' : '-';
-        $extra = count($leave) > 0 && strtotime($leave[0]['timestamp']) > strtotime($endTime) ? round((strtotime($leave[0]['timestamp']) - strtotime($endTime)) / 60) . ' دقیقه' : '-';
+        // Initialize strings to hold multiple records
+        $entryText = '';
+        $delayText = '';
+        $exitText = '';
+        $extraText = '';
 
-        array_push($usersData, $entry, $delay, $exit, $extra);
+        // Display all start records (append to the text variable with new line)
+        if (count($startRecords) > 0) {
+            foreach ($startRecords as $start) {
+                $entryText .= date('H:i', strtotime($start['timestamp'])) . "\n";
+                $delayText .= (strtotime($start['timestamp']) > strtotime($startTime)) ? round((strtotime($start['timestamp']) - strtotime($startTime)) / 60) . ' دقیقه' : '-' . "\n";
+            }
+        } else if (strtotime($reportDate) > strtotime($today)) {
+            $entryText .= 'ثبت نشده' . "\n";
+            $delayText .= '-' . "\n";
+        } else {
+            $entryText .= 'غایب' . "\n";
+            $delayText .= '-' . "\n";
+        }
+
+        // Display all leave records (append to the text variable with new line)
+        if (count($leaveRecords) > 0) {
+            foreach ($leaveRecords as $leave) {
+                $exitText .= date('H:i', strtotime($leave['timestamp'])) . "\n";
+                $extraText .= (strtotime($leave['timestamp']) > strtotime($endTime)) ? round((strtotime($leave['timestamp']) - strtotime($endTime)) / 60) . ' دقیقه' : '-' . "\n";
+            }
+        }
+
+        // Add the records in the same row with new lines in the same cell
+        $usersData = [
+            $user['name'] . ' ' . $user['family'],
+            rtrim($entryText, "\n"),
+            rtrim($delayText, "\n"),
+            rtrim($exitText, "\n"),
+            rtrim($extraText, "\n")
+        ];
+        
+        $sheet->fromArray([$usersData], NULL, "A{$row}");
+
+        // Apply wrap text for multi-line cells and center the content
+        $sheet->getStyle("A{$row}:E{$row}")
+              ->getAlignment()->setHorizontal('center')
+              ->setVertical('center');
+        $sheet->getStyle("A{$row}:E{$row}")
+              ->getAlignment()->setWrapText(true);  // Allow line breaks in the cell
+
+        $sheet->getRowDimension($row)->setRowHeight(40);  // Adjust row height for readability
+        $row++;
     }
-    $sheet->fromArray([$usersData], NULL, "A{$row}");
-    
-    // Adjust row height and center the text for the user data
-    $sheet->getStyle("A{$row}:E{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
-    $sheet->getRowDimension($row)->setRowHeight(25);  // Adjust row height for user data
-    
-    $row++;
 }
 
 // Center the subheader cells (ورود تاخیر خروج اضافه کار) text

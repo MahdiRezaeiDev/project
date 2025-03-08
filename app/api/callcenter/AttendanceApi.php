@@ -67,7 +67,7 @@ function setWorkingHour()
         $stmt->execute();
 
         if ($stmt->rowCount() === 1) {
-            echo json_encode(['status' => 'success', 'message' => 'ساعت شروع کار با موفقیت به روز رسانی شد']);
+            echo json_encode(['status' => 'success', 'message' => 'ساعت کار با موفقیت به روز رسانی شد']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'خطا در به روز رسانی ساعت شروع کار']);
         }

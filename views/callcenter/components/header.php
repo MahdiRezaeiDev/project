@@ -3,7 +3,8 @@ require_once '../../config/constants.php';
 require_once '../../database/db_connect.php';
 require_once '../../app/middleware/Authentication.php';
 require_once '../../app/middleware/Authorize.php';
-require_once '../../utilities/jdf.php';?>
+require_once '../../utilities/jdf.php';
+?>
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
@@ -28,3 +29,6 @@ require_once '../../utilities/jdf.php';?>
 </head>
 
 <body class="pt-16">
+    <?php
+    require_once '../../utilities/attendance/attendanceHelper.php';
+    ?>

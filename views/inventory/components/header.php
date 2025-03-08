@@ -29,3 +29,6 @@ require_once '../../utilities/jdf.php';
 </head>
 
 <body class="pt-14">
+    <?php
+    require_once '../../utilities/attendance/attendanceHelper.php';
+    ?>

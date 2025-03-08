@@ -32,3 +32,6 @@ require_once '../../utilities/jdf.php';
 </head>
 
 <body class="min-h-screen bg-gray-50 pt-14">
+    <?php
+    require_once '../../utilities/attendance/attendanceHelper.php';
+    ?>
