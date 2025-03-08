@@ -23,27 +23,18 @@ $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 $today = date('Y-m-d');
 
-// Convert both dates to DateTime objects for easy manipulation
 $givenDateObj = new DateTime($givenDate);
 $todayObj = new DateTime($today);
-
-// Calculate the difference
 $interval = $givenDateObj->diff($todayObj);
-
-// Get the number of days
 $dayDifference = $interval->days + 1;
-
-// Get Days from GET Request (Default to 7 days if not set)
 $daysAmount = isset($dayDifference) && is_numeric($dayDifference) ? (int)$dayDifference : 7;
 
 if ($daysAmount == 0) {
     $daysAmount = 1;
 }
 
-// Calculate Start Date (Last N days up to today)
 $startDate = strtotime("-" . ($daysAmount - 1) . " days", strtotime($today));
 
-// Set Headers
 $headers = ['نام نام خانوادگی'];
 $subHeaders = [];
 
@@ -53,31 +44,32 @@ for ($index = 0; $index < $daysAmount; $index++) {
     $startColumn = Coordinate::stringFromColumnIndex($index * 4 + 2);
     $endColumn = Coordinate::stringFromColumnIndex($index * 4 + 5);
 
-    // Merge and Set Headers
     $sheet->mergeCells("$startColumn" . "1:$endColumn" . "1");
     $sheet->setCellValue("$startColumn" . "1", $persianDate);
     $sheet->getStyle("$startColumn" . "1")->getAlignment()->setHorizontal('center')->setVertical('center');
-    $sheet->getRowDimension(1)->setRowHeight(30);  // Adjust header row height
+    $sheet->getRowDimension(1)->setRowHeight(30);
 
     array_push($subHeaders, 'ورود', 'تاخیر', 'خروج', 'اضافه کار');
 }
 
-// Set the column width for "نام نام خانوادگی" to make it wider and center it
-$sheet->getColumnDimension('A')->setWidth(25); // Adjust the width (for example, 25)
-$sheet->getStyle('A1')->getAlignment()->setHorizontal('center')->setVertical('center'); // Center "نام نام خانوادگی"
+$sheet->getColumnDimension('A')->setWidth(25);
+$sheet->getStyle('A1')->getAlignment()->setHorizontal('center')->setVertical('center');
 
 $sheet->fromArray([$headers], NULL, 'A1');
 $sheet->fromArray([$subHeaders], NULL, 'B2');
 $row = 3;
 
 foreach ($users as $user) {
-    $usersData = [$user['name'] . ' ' . $user['family']];
-    
     for ($counter = 0; $counter < $daysAmount; $counter++) {
         $date = strtotime("+$counter days", $startDate);
         $reportDate = date("Y-m-d", $date);
 
-        // Get all start and leave records for the user on this specific date
+        $startColumnIndex = 2 + ($counter * 4);
+        $entryColumn = Coordinate::stringFromColumnIndex($startColumnIndex);
+        $delayColumn = Coordinate::stringFromColumnIndex($startColumnIndex + 1);
+        $exitColumn = Coordinate::stringFromColumnIndex($startColumnIndex + 2);
+        $extraColumn = Coordinate::stringFromColumnIndex($startColumnIndex + 3);
+
         $startRecords = getUserAttendanceReport('start', $user['selectedUser'], $reportDate);
         $leaveRecords = getUserAttendanceReport('leave', $user['selectedUser'], $reportDate);
 
@@ -85,55 +77,64 @@ foreach ($users as $user) {
         $startTime = $Rule['start_hour'];
         $endTime = $Rule['end_hour'];
 
-        // Display all start records (each in a new row)
         if (count($startRecords) > 0) {
             foreach ($startRecords as $start) {
                 $entry = date('H:i', strtotime($start['timestamp']));
                 $delay = (strtotime($start['timestamp']) > strtotime($startTime)) ? round((strtotime($start['timestamp']) - strtotime($startTime)) / 60) . ' دقیقه' : '-';
-                $sheet->fromArray([$user['name'] . ' ' . $user['family'], $entry, $delay, '', ''], NULL, "A{$row}");
-                $sheet->getStyle("A{$row}:E{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
-                $sheet->getRowDimension($row)->setRowHeight(25);  // Adjust row height for user data
+                $sheet->setCellValue("A{$row}", $user['name'] . ' ' . $user['family']);
+                $sheet->setCellValue("{$entryColumn}{$row}", $entry);
+                $sheet->setCellValue("{$delayColumn}{$row}", $delay);
+                $sheet->setCellValue("{$exitColumn}{$row}", '');
+                $sheet->setCellValue("{$extraColumn}{$row}", '');
+                $sheet->getStyle("A{$row}:{$extraColumn}{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
+                $sheet->getRowDimension($row)->setRowHeight(25);
                 $row++;
             }
         } else if (strtotime($reportDate) > strtotime($today)) {
-            $sheet->fromArray([$user['name'] . ' ' . $user['family'], 'ثبت نشده', '-', '', ''], NULL, "A{$row}");
-            $sheet->getStyle("A{$row}:E{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
-            $sheet->getRowDimension($row)->setRowHeight(25);  // Adjust row height for user data
+            $sheet->setCellValue("A{$row}", $user['name'] . ' ' . $user['family']);
+            $sheet->setCellValue("{$entryColumn}{$row}", 'ثبت نشده');
+            $sheet->setCellValue("{$delayColumn}{$row}", '-');
+            $sheet->setCellValue("{$exitColumn}{$row}", '');
+            $sheet->setCellValue("{$extraColumn}{$row}", '');
+            $sheet->getStyle("A{$row}:{$extraColumn}{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
+            $sheet->getRowDimension($row)->setRowHeight(25);
             $row++;
         } else {
-            $sheet->fromArray([$user['name'] . ' ' . $user['family'], 'غایب', '-', '', ''], NULL, "A{$row}");
-            $sheet->getStyle("A{$row}:E{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
-            $sheet->getRowDimension($row)->setRowHeight(25);  // Adjust row height for user data
+            $sheet->setCellValue("A{$row}", $user['name'] . ' ' . $user['family']);
+            $sheet->setCellValue("{$entryColumn}{$row}", 'غایب');
+            $sheet->setCellValue("{$delayColumn}{$row}", '-');
+            $sheet->setCellValue("{$exitColumn}{$row}", '');
+            $sheet->setCellValue("{$extraColumn}{$row}", '');
+            $sheet->getStyle("A{$row}:{$extraColumn}{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
+            $sheet->getRowDimension($row)->setRowHeight(25);
             $row++;
         }
 
-        // Display all leave records (each in a new row)
         if (count($leaveRecords) > 0) {
             foreach ($leaveRecords as $leave) {
                 $exit = date('H:i', strtotime($leave['timestamp']));
                 $extra = (strtotime($leave['timestamp']) > strtotime($endTime)) ? round((strtotime($leave['timestamp']) - strtotime($endTime)) / 60) . ' دقیقه' : '-';
-                $sheet->fromArray([$user['name'] . ' ' . $user['family'], '', '-', $exit, $extra], NULL, "A{$row}");
-                $sheet->getStyle("A{$row}:E{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
-                $sheet->getRowDimension($row)->setRowHeight(25);  // Adjust row height for user data
+                $sheet->setCellValue("A{$row}", $user['name'] . ' ' . $user['family']);
+                $sheet->setCellValue("{$entryColumn}{$row}", '');
+                $sheet->setCellValue("{$delayColumn}{$row}", '-');
+                $sheet->setCellValue("{$exitColumn}{$row}", $exit);
+                $sheet->setCellValue("{$extraColumn}{$row}", $extra);
+                $sheet->getStyle("A{$row}:{$extraColumn}{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
+                $sheet->getRowDimension($row)->setRowHeight(25);
                 $row++;
             }
         }
     }
 }
 
-// Center the subheader cells (ورود تاخیر خروج اضافه کار) text
 $sheet->getStyle('B2:E2')->getAlignment()->setHorizontal('center')->setVertical('center');
 
-// Clear any previous output (important to prevent headers from being sent early)
 ob_clean();
-
-// Set file download headers
 $filename = "attendance_report_" . date('Y-m-d') . ".xlsx";
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 header("Content-Disposition: attachment;filename=$filename");
 header('Cache-Control: max-age=0');
 
-// Output the file to the browser
 $writer = new Xlsx($spreadsheet);
 $writer->save('php://output');
 
