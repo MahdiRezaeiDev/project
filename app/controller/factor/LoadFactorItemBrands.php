@@ -104,7 +104,7 @@ function getDetails($completeCode)
         }
         $brands = [...array_unique(array_merge(...$brands))];
         $goodDetails[$partNumber]['brands'] = addRelatedBrands($brands);
-        $goodDetails[$partNumber]['finalPrice'] = getFinalSanitizedPrice($goodDetail['givenPrice'], $goodDetails[$partNumber]['brands']);
+        $goodDetails[$partNumber]['finalPrice'] = getFinalSanitizedPrice($goodDetail['givenPrice'], $goodDetails[$partNumber]['brands'], 0);
     }
 
 

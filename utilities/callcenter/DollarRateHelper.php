@@ -361,7 +361,7 @@ function addRelatedBrands($brands)
     return array_unique($brands);
 }
 
-function getFinalSanitizedPrice($givenPrices, $existing_brands, $applyDiscount)
+function getFinalSanitizedPrice($givenPrices, $existing_brands, $applyDiscount = 0)
 {
     $addedBrands = [];
     $filteredPrices = [];
