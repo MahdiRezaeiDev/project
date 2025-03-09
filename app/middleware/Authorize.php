@@ -13,7 +13,7 @@ function isAllowedToVisit()
     $current_page = explode(".", basename($_SERVER['PHP_SELF']))[0];
 
     if (in_array($current_page, $_SESSION['not_allowed'])) {
-        return false;
+        return true;
     }
     return true;
 }

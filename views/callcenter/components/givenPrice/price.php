@@ -1,6 +1,6 @@
 <!-- Given Price section -->
 <?php
-$sanitizedPrice = getFinalSanitizedPrice($givenPrice, $existing_brands);
+$sanitizedPrice = getFinalSanitizedPrice($givenPrice, $existing_brands, $discount);
 ?>
 <div class="w-full bg-white <?= $priceSize; ?> overflow-auto shadow-md p-2">
     <table class="w-full text-sm font-light">
@@ -10,7 +10,7 @@ $sanitizedPrice = getFinalSanitizedPrice($givenPrice, $existing_brands);
                 <td class=" text-white bold text-left text-sm py-3 px-2">کد فنی</td>
                 <td class="text-white bold text-left text-sm py-3 px-2">مشتری</td>
                 <td class="text-white bold text-left text-sm py-3 px-2 w-28">قیمت</td>
-                <?php if (in_array($_SESSION['username'], ['mahdi', 'niyayesh','babak'])) : ?>
+                <?php if (in_array($_SESSION['username'], ['mahdi', 'niyayesh', 'babak'])) : ?>
                     <td class=" text-white bold text-left text-sm py-3 px-2"></td>
                 <?php endif; ?>
             </tr>
@@ -34,7 +34,7 @@ $sanitizedPrice = getFinalSanitizedPrice($givenPrice, $existing_brands);
                     <td style='direction: ltr !important;' onclick="setPrice(this)" data-target="<?= $relation_id ?>" data-code="<?= $code ?>" data-price="<?= $sanitizedPrice ?>" data-part="<?= $partNumber ?>" scope="col" class="text-sm text-left text-white px-2 py-2">
                         <?= $sanitizedPrice == '' ? 'نیاز به بررسی' :  $sanitizedPrice ?>
                     </td>
-                    <?php if (in_array($_SESSION['username'], ['mahdi', 'niyayesh','babak'])) : ?>
+                    <?php if (in_array($_SESSION['username'], ['mahdi', 'niyayesh', 'babak'])) : ?>
                         <td>
                         </td>
                     <?php endif; ?>
@@ -63,7 +63,7 @@ $sanitizedPrice = getFinalSanitizedPrice($givenPrice, $existing_brands);
                         <td style='direction: ltr !important;' onclick="setPrice(this)" data-target="<?= $relation_id ?>" data-code="<?= $code ?>" data-price="<?= $finalPriceForm ?>" data-part="<?= $partNumber ?>" scope="col" class="text-sm text-left text-white px-2 py-2">
                             <?= $target['price'] === null ? 'ندارد' :  $finalPriceForm ?>
                         </td>
-                        <?php if (in_array($_SESSION['username'], ['mahdi', 'niyayesh','babak'])) : ?>
+                        <?php if (in_array($_SESSION['username'], ['mahdi', 'niyayesh', 'babak'])) : ?>
                             <td>
                             </td>
                         <?php endif; ?>
@@ -87,14 +87,14 @@ $sanitizedPrice = getFinalSanitizedPrice($givenPrice, $existing_brands);
                             <td style="direction: ltr !important;" onclick="setPrice(this)" data-target="<?= $relation_id ?>" data-code="<?= $code ?>" data-price="<?= $price['price'] ?>" data-part="<?= $partNumber ?>" scope="col" class="text-sm text-left px-2 py-1 <?= array_key_exists("ordered", $price) || $price['customerID'] == 1 ? 'text-white' : '' ?>">
                                 <?= $price['price'] === null ? 'ندارد' : strtoupper($price['price']); ?>
                             </td>
-                            <?php if (in_array($_SESSION['username'], ['mahdi', 'niyayesh','babak'])) : ?>
+                            <?php if (in_array($_SESSION['username'], ['mahdi', 'niyayesh', 'babak'])) : ?>
                                 <td data-part="<?= $partNumber ?>" data-code="<?= $code ?>" onclick="deleteGivenPrice(this)" data-brands='<?= json_encode($existing_brands) ?>' data-del='<?= $price['id'] ?>' data-target="<?= $relation_id ?>" scope="col" class="text-sm text-left px-2 py-1 <?= array_key_exists("ordered", $price) || $price['customerID'] == 1 ? 'text-white' : '' ?>">
                                     <i id="deleteGivenPrice" class="material-icons" title="حذف قیمت">close</i>
                                 </td>
                             <?php endif; ?>
                         </tr>
                         <tr class="w-full mb-1 border-b-2 <?= array_key_exists("ordered", $price) || $price['customerID'] == 1 ? 'bg-red-500' : 'bg-indigo-300' ?>" data-price='<?= $price['price'] ?>'>
-                            <td class="<?php array_key_exists("ordered", $price) ? 'text-white' : '' ?> text-gray-800  py-1 px-2 tiny-text" colspan="<?= (in_array($_SESSION['username'], ['mahdi', 'niyayesh','babak'])) ? 4 : 3 ?>" scope="col">
+                            <td class="<?php array_key_exists("ordered", $price) ? 'text-white' : '' ?> text-gray-800  py-1 px-2 tiny-text" colspan="<?= (in_array($_SESSION['username'], ['mahdi', 'niyayesh', 'babak'])) ? 4 : 3 ?>" scope="col">
                                 <div class="flex items-center w-full <?= array_key_exists("ordered", $price) || $price['customerID'] == 1 ? 'text-white' : 'text-gray-800' ?>">
                                     <i class="px-1 material-icons tiny-text <?= array_key_exists("ordered", $price) || $price['customerID'] == 1 ? 'text-white' : 'text-gray-800' ?>">access_time</i>
                                     <?= timeFormatter($price['created_at']); ?>
@@ -115,7 +115,7 @@ $sanitizedPrice = getFinalSanitizedPrice($givenPrice, $existing_brands);
     </table>
     <br>
     <?php
-     if (in_array($_SESSION['username'], ['mahdi', 'niyayesh','babak'])): ?>
+    if (in_array($_SESSION['username'], ['mahdi', 'niyayesh', 'babak'])): ?>
         <div class="bg-gray-200 rounded-md m-1">
             <form class="px-2 py-4" action="" method="post" onsubmit="event.preventDefault()">
                 <?php

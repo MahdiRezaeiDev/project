@@ -19,6 +19,11 @@ require_once '../../layouts/callcenter/sidebar.php';
                 <textarea onchange="filterCode(this)" rows="9" id="code" name="code" required class="border-2 border-gray-300 focus:border-gray-500 p-3 outline-none  text-sm mt-1 shadow-sm block w-full uppercase" style="direction: ltr !important;" placeholder="لطفا کد های مود نظر خود را در خط های مجزا قرار دهید"></textarea>
             </div>
         </div>
+        <div class="py-4 flex items-center gap-2 cursor-pointer">
+            <input type="hidden" name="discount" value="0">
+            <input id="discount" type="checkbox" name="discount" value="1">
+            <label for="discount" class="text-sm">اعمال تخفیف</label>
+        </div>
 
         <div class="flex items-center justify-between py-3 text-right sm:rounded-bl-md sm:rounded-br-md">
             <div class="flex gap-2 items-center">

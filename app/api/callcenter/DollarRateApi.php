@@ -22,16 +22,18 @@ if (isset($_POST['updateItem'])) {
 
     $id = $_POST['id'];
     $rate = $_POST['rate'];
+    $discount = $_POST['discount'];
     $date = $_POST['date'];
 
-    echo updateItem($id, $rate, $date);
+    echo updateItem($id, $rate, $discount, $date);
 }
 
 if (isset($_POST['createItem'])) {
     $rate = $_POST['rate'];
+    $discount = $_POST['discount'];
     $date = $_POST['date'];
 
-    echo createItem($rate, $date);
+    echo createItem($rate, $discount, $date);
 }
 
 
@@ -57,13 +59,14 @@ function getItem($rate_id)
     return $result;
 }
 
-function updateItem($id, $rate, $date)
+function updateItem($id, $rate, $discount, $date)
 {
-    $sql = "UPDATE shop.dollarrate SET rate = :rate, created_at = :created_at WHERE id = :id";
+    $sql = "UPDATE shop.dollarrate SET rate = :rate, discount = :discount, created_at = :created_at WHERE id = :id";
     $stmt = PDO_CONNECTION->prepare($sql);
 
     // Bind parameters to statement
     $stmt->bindValue(':rate', $rate, PDO::PARAM_STR);
+    $stmt->bindValue(':discount', $discount, PDO::PARAM_STR);
     $stmt->bindValue(':created_at', $date, PDO::PARAM_STR);
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
 
@@ -75,13 +78,14 @@ function updateItem($id, $rate, $date)
 }
 
 
-function createItem($rate, $date)
+function createItem($rate, $discount, $date)
 {
-    $sql = "INSERT INTO shop.dollarrate (rate, created_at) VALUES (:rate, :created_at)";
+    $sql = "INSERT INTO shop.dollarrate (rate, discount, created_at) VALUES (:rate, :discount, :created_at)";
     $stmt = PDO_CONNECTION->prepare($sql);
 
     // Bind parameters to statement
     $stmt->bindValue(':rate', $rate, PDO::PARAM_STR);
+    $stmt->bindValue(':discount', $discount, PDO::PARAM_STR);
     $stmt->bindValue(':created_at', $date, PDO::PARAM_STR);
 
     // Execute the statement

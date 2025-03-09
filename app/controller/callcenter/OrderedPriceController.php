@@ -8,7 +8,7 @@ $customer_info = null;
 $finalResult = null;
 $brands = [];
 $givenPrices = [];
-
+$discount = $_POST['discount'];
 
 if (filter_has_var(INPUT_POST, 'givenPrice') && filter_has_var(INPUT_POST, 'user')) {
     // check if a customer is already specified or not !!!! 1 is the ID of the ordered customer!!!
@@ -64,7 +64,7 @@ function setup_loading($customer, $completeCode, $notification = null)
 
     $sql = "SELECT id, partnumber FROM yadakshop.nisha WHERE partnumber LIKE :partNumber";
     $stmt = PDO_CONNECTION->prepare($sql);
-    
+
     foreach ($explodedCodes as $code) {
         $param = $code . '%';
         $stmt->bindParam(':partNumber', $param, PDO::PARAM_STR);
@@ -135,4 +135,3 @@ function setup_loading($customer, $completeCode, $notification = null)
         'relation_id' => $codeRelationId
     ]);
 }
-

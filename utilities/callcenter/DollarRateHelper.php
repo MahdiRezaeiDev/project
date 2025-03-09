@@ -1,5 +1,6 @@
 <?php
 $appliedRate = 0;
+$appliedDiscount = 0;
 $applyDate = null;
 $additionRate = null;
 
@@ -10,7 +11,7 @@ $rateSpecification  = getDollarRateInfo();
 
 function getDollarRateInfo()
 {
-    $statement = "SELECT rate, created_at FROM shop.dollarrate WHERE status = 1";
+    $statement = "SELECT rate, discount, created_at FROM shop.dollarrate WHERE status = 1";
     $stmt = PDO_CONNECTION->prepare($statement);
     $stmt->execute();
     $rate = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -111,18 +112,21 @@ function convertToPersian($number)
     return $persianNumber;
 }
 
-function applyDollarRate($price, $priceDate)
+function applyDollarRate($price, $priceDate, $applyDiscount = 0)
 {
     $priceDate = date('Y-m-d', strtotime($priceDate));
     $rate = 0;
-    foreach ($GLOBALS['rateSpecification'] as $rate) {
-        if ($priceDate <= $rate['created_at']) {
-            $rate = $rate['rate'];
+    $discount = 0;
+    foreach ($GLOBALS['rateSpecification'] as $option) {
+        if ($priceDate <= $option['created_at']) {
+            $rate = $option['rate'];
+            $discount = $option['discount'];
             break;
         }
     }
 
     $GLOBALS['appliedRate'] = $rate;
+    $GLOBALS['appliedDiscount'] = $discount;
     // Split the input string into words using space as the delimiter
     $words = explode(' ', $price);
 
@@ -147,6 +151,12 @@ function applyDollarRate($price, $priceDate)
                 } else {
                     $roundedNumber = round($modifiedNumber);
                 }
+
+                if ($applyDiscount) {
+                    $discountAmount =  (($number * $discount) / 100);
+                    $roundedNumber -= $discountAmount;
+                }
+
 
                 // Replace the word with the modified number
                 $word = str_replace($number, $roundedNumber, $word);
@@ -351,7 +361,7 @@ function addRelatedBrands($brands)
     return array_unique($brands);
 }
 
-function getFinalSanitizedPrice($givenPrices, $existing_brands)
+function getFinalSanitizedPrice($givenPrices, $existing_brands, $applyDiscount)
 {
     $addedBrands = [];
     $filteredPrices = [];
@@ -365,7 +375,7 @@ function getFinalSanitizedPrice($givenPrices, $existing_brands)
         $finalPriceForm = $price['price'];
 
         if (checkDateIfOkay(null, $price['created_at']) && $price['price'] !== 'موجود نیست') {
-            $finalPriceForm = applyDollarRate($finalPriceForm, $price['created_at']);
+            $finalPriceForm = applyDollarRate($finalPriceForm, $price['created_at'], $applyDiscount);
         }
 
         $pricesParts = explode('/', $finalPriceForm);

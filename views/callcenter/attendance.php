@@ -113,7 +113,7 @@ $users = getUsers();
     const USER = document.getElementById('user');
     const USER_ID = document.getElementById('user_id');
     const message = document.getElementById('message');
-    const ENDPOINT = '../../app/api/callcenter/AttendanceApi.php';
+    const ENDPOINTADDR = '../../app/api/callcenter/AttendanceApi.php';
 
     function editWorkHour(element) {
         openModal();
@@ -139,7 +139,7 @@ $users = getUsers();
             late
         });
 
-        axios.post(ENDPOINT, params)
+        axios.post(ENDPOINTADDR, params)
 
             .then(data => {
                 if (data.status == 200) {
