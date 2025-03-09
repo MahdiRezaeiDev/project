@@ -28,6 +28,12 @@ html {
     scroll-behavior: smooth !important;
 }
 
+@media print {
+    .hide_while_print {
+        display: none !important;
+    }
+}
+
 @font-face {
     font-family: "Vazir";
     src: url("../../public/fonts/ad3cd4cbda94aee8578c1b622b9002f9dfe345c05870eb375a02da853d08f072.woff2") format("woff2");

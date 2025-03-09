@@ -24,7 +24,7 @@ if ($isAbsent): ?>
         <?php if ($isAbsent) : ?>
         onclick="setWorkingHour('start')"
         <?php endif; ?>
-        class="p-2 hide_while_print transition-shadow bg-green-700 text-white rounded-lg shadow-sm hover:shadow-lg cursor-pointer fixed bottom-3 left-2 z-50">
+        class="hide_while_print p-2 transition-shadow bg-green-700 text-white rounded-lg shadow-sm hover:shadow-lg cursor-pointer fixed bottom-3 left-2 z-50">
         <?php if ($isAbsent) : ?>
             <div class="flex items-start justify-between gap-5">
                 <div class="flex flex-col space-y-2">
@@ -58,7 +58,7 @@ if ($isPresent && date('H:i') >= '17:50') : ?>
         <?php if ($isPresent) : ?>
         onclick="setWorkingHour('leave')"
         <?php endif; ?>
-        class="p-2 hide_while_print transition-shadow bg-rose-700 rounded-lg shadow-sm hover:shadow-lg text-white cursor-pointer fixed bottom-3 left-2 z-50">
+        class="hide_while_print p-2 transition-shadow bg-rose-700 rounded-lg shadow-sm hover:shadow-lg text-white cursor-pointer fixed bottom-3 left-2 z-50">
         <?php if ($isPresent || $absentCount == 0) : ?>
             <div class="flex items-start justify-between gap-5">
                 <div class="flex flex-col space-y-2">

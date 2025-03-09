@@ -29,6 +29,13 @@ require_once '../../utilities/jdf.php';
     <script src="./assets/js/jalaliMoment.js"></script>
     <script src="./assets/js/html2canvas.js"></script>
     <script src="./assets/js/html2pdf.js"></script>
+    <style>
+        @media print {
+            .hide_while_print {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 
 <body class="min-h-screen bg-gray-50 pt-14">

@@ -59,7 +59,17 @@ $sheet->fromArray([$headers], NULL, 'A1');
 $sheet->fromArray([$subHeaders], NULL, 'B2');
 $row = 3;
 
+// Set default column widths for better readability
+foreach (range('B', $sheet->getHighestColumn()) as $col) {
+    $sheet->getColumnDimension($col)->setWidth(15); // Adjust width as needed
+}
+
+
 foreach ($users as $user) {
+    $userRow = $row;
+
+    $sheet->setCellValue("A{$userRow}", $user['name'] . ' ' . $user['family']);
+
     for ($counter = 0; $counter < $daysAmount; $counter++) {
         $date = strtotime("+$counter days", $startDate);
         $reportDate = date("Y-m-d", $date);
@@ -77,54 +87,48 @@ foreach ($users as $user) {
         $startTime = $Rule['start_hour'];
         $endTime = $Rule['end_hour'];
 
-        if (count($startRecords) > 0) {
-            foreach ($startRecords as $start) {
-                $entry = date('H:i', strtotime($start['timestamp']));
-                $delay = (strtotime($start['timestamp']) > strtotime($startTime)) ? round((strtotime($start['timestamp']) - strtotime($startTime)) / 60) . ' دقیقه' : '-';
-                $sheet->setCellValue("A{$row}", $user['name'] . ' ' . $user['family']);
-                $sheet->setCellValue("{$entryColumn}{$row}", $entry);
-                $sheet->setCellValue("{$delayColumn}{$row}", $delay);
-                $sheet->setCellValue("{$exitColumn}{$row}", '');
-                $sheet->setCellValue("{$extraColumn}{$row}", '');
-                $sheet->getStyle("A{$row}:{$extraColumn}{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
-                $sheet->getRowDimension($row)->setRowHeight(25);
-                $row++;
+        $entryTimes = [];
+        $exitTimes = [];
+        $delayMinutes = 0;
+        $extraMinutes = 0;
+
+        foreach ($startRecords as $start) {
+            $entryTimes[] = date('H:i', strtotime($start['timestamp']));
+            if (strtotime($start['timestamp']) > strtotime($startTime)) {
+                $delayMinutes += round((strtotime($start['timestamp']) - strtotime($startTime)) / 60);
             }
-        } else if (strtotime($reportDate) > strtotime($today)) {
-            $sheet->setCellValue("A{$row}", $user['name'] . ' ' . $user['family']);
-            $sheet->setCellValue("{$entryColumn}{$row}", 'ثبت نشده');
-            $sheet->setCellValue("{$delayColumn}{$row}", '-');
-            $sheet->setCellValue("{$exitColumn}{$row}", '');
-            $sheet->setCellValue("{$extraColumn}{$row}", '');
-            $sheet->getStyle("A{$row}:{$extraColumn}{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
-            $sheet->getRowDimension($row)->setRowHeight(25);
-            $row++;
-        } else {
-            $sheet->setCellValue("A{$row}", $user['name'] . ' ' . $user['family']);
-            $sheet->setCellValue("{$entryColumn}{$row}", 'غایب');
-            $sheet->setCellValue("{$delayColumn}{$row}", '-');
-            $sheet->setCellValue("{$exitColumn}{$row}", '');
-            $sheet->setCellValue("{$extraColumn}{$row}", '');
-            $sheet->getStyle("A{$row}:{$extraColumn}{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
-            $sheet->getRowDimension($row)->setRowHeight(25);
-            $row++;
         }
 
-        if (count($leaveRecords) > 0) {
-            foreach ($leaveRecords as $leave) {
-                $exit = date('H:i', strtotime($leave['timestamp']));
-                $extra = (strtotime($leave['timestamp']) > strtotime($endTime)) ? round((strtotime($leave['timestamp']) - strtotime($endTime)) / 60) . ' دقیقه' : '-';
-                $sheet->setCellValue("A{$row}", $user['name'] . ' ' . $user['family']);
-                $sheet->setCellValue("{$entryColumn}{$row}", '');
-                $sheet->setCellValue("{$delayColumn}{$row}", '-');
-                $sheet->setCellValue("{$exitColumn}{$row}", $exit);
-                $sheet->setCellValue("{$extraColumn}{$row}", $extra);
-                $sheet->getStyle("A{$row}:{$extraColumn}{$row}")->getAlignment()->setHorizontal('center')->setVertical('center');
-                $sheet->getRowDimension($row)->setRowHeight(25);
-                $row++;
+        foreach ($leaveRecords as $leave) {
+            $exitTimes[] = date('H:i', strtotime($leave['timestamp']));
+            if (strtotime($leave['timestamp']) > strtotime($endTime)) {
+                $extraMinutes += round((strtotime($leave['timestamp']) - strtotime($endTime)) / 60);
             }
         }
+
+        $entryTime = !empty($entryTimes) ? implode("\n", $entryTimes) : '-';
+        $exitTime = !empty($exitTimes) ? implode("\n", $exitTimes) : '-';
+        $delayTime = $delayMinutes > 0 ? $delayMinutes . ' دقیقه' : '-';
+        $extraTime = $extraMinutes > 0 ? $extraMinutes . ' دقیقه' : '-';
+
+        if (strtotime($reportDate) > strtotime($today)) {
+            $entryTime = 'ثبت نشده';
+        } elseif (empty($startRecords)) {
+            $entryTime = 'غایب';
+        }
+
+        $sheet->setCellValue("{$entryColumn}{$userRow}", $entryTime);
+        $sheet->setCellValue("{$delayColumn}{$userRow}", $delayTime);
+        $sheet->setCellValue("{$exitColumn}{$userRow}", $exitTime);
+        $sheet->setCellValue("{$extraColumn}{$userRow}", $extraTime);
+
+        // Enable text wrapping for multi-line display
+        $sheet->getStyle("{$entryColumn}{$userRow}:{$extraColumn}{$userRow}")->getAlignment()->setWrapText(true);
+        $sheet->getStyle("A{$userRow}:{$extraColumn}{$userRow}")->getAlignment()->setHorizontal('center')->setVertical('center');
     }
+
+    $sheet->getRowDimension($userRow)->setRowHeight(-1);
+    $row++;
 }
 
 $sheet->getStyle('B2:E2')->getAlignment()->setHorizontal('center')->setVertical('center');
@@ -137,6 +141,7 @@ header('Cache-Control: max-age=0');
 
 $writer = new Xlsx($spreadsheet);
 $writer->save('php://output');
+
 
 // Function definitions (unchanged)
 function getUsers($id = null)
