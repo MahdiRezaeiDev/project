@@ -8,7 +8,7 @@ $customer_info = null;
 $finalResult = null;
 $brands = [];
 $givenPrices = [];
-$discount = $_POST['discount'];
+$discount = $_POST['discount'] ?? 0;
 
 if (filter_has_var(INPUT_POST, 'givenPrice') && filter_has_var(INPUT_POST, 'user')) {
     // check if a customer is already specified or not !!!! 1 is the ID of the ordered customer!!!
