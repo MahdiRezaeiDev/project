@@ -22,6 +22,7 @@ $users = getUsers();
             <input type="text" name="user_id" id="user_id" hidden>
             <input id="start" type="time" class="border border-gray-300 w-full p-2 rounded mt-2" placeholder="ساعت شروع کار">
             <input id="end" type="time" class="border border-gray-300 w-full p-2 rounded mt-2" placeholder="ساعت پایان کار">
+            <input id="endWeek" type="time" class="border border-gray-300 w-full p-2 rounded mt-2" placeholder="ساعت پایان کار پنجشنبه">
             <input id="late" type="number" min="0" class="border border-gray-300 w-full p-2 rounded mt-2" placeholder="تاخیر مجاز">
             <div class="flex justify-between items-center">
                 <button type="submit" class="bg-blue-500 text-white py-2 px-3 rounded-sm mt-2">
@@ -58,6 +59,9 @@ $users = getUsers();
                                 پایان کار
                             </th>
                             <th scope="col" class="font-semibold text-sm text-right text-gray-800 px-6 py-3">
+                                پنجشنبه
+                            </th>
+                            <th scope="col" class="font-semibold text-sm text-right text-gray-800 px-6 py-3">
                                 تاخیر مجاز
                             </th>
                             <th scope="col" class="font-semibold text-sm text-right text-gray-800 px-6 py-3">
@@ -82,6 +86,9 @@ $users = getUsers();
                                     <?= $user['end_hour'] ?>
                                 </td>
                                 <td class="px-6 py-3  font-semibold text-right text-gray-800">
+                                    <?= $user['end_week'] ?>
+                                </td>
+                                <td class="px-6 py-3  font-semibold text-right text-gray-800">
                                     <?= $user['max_late_minutes'] ?>
                                     دقیقه
                                 </td>
@@ -91,6 +98,7 @@ $users = getUsers();
                                         data-selectedUser="<?= $user['selectedUser'] ?>"
                                         data-start="<?= $user['start_hour'] ?>"
                                         data-end="<?= $user['end_hour'] ?>"
+                                        data-endWeek ="<?= $user['end_week'] ?>"
                                         data-late="<?= $user['max_late_minutes'] ?>"
                                         onclick="editWorkHour(this)"
                                         class="text-blue-500 hover:text-blue-700 cursor-pointer">
@@ -109,6 +117,7 @@ $users = getUsers();
     const MODAL = document.getElementById('modal');
     const START = document.getElementById('start');
     const END = document.getElementById('end');
+    const ENDWEEK = document.getElementById('endWeek');
     const LATE = document.getElementById('late');
     const USER = document.getElementById('user');
     const USER_ID = document.getElementById('user_id');
@@ -119,6 +128,7 @@ $users = getUsers();
         openModal();
         START.value = element.dataset.start;
         END.value = element.dataset.end;
+        ENDWEEK.value = element.dataset.endweek;
         LATE.value = element.dataset.late;
         USER.innerText = element.dataset.user;
         USER_ID.value = element.dataset.selecteduser;
@@ -129,6 +139,7 @@ $users = getUsers();
         const user_id = USER_ID.value;
         const start = START.value;
         const end = END.value;
+        const endWeek = ENDWEEK.value;
         const late = LATE.value;
 
         const params = new URLSearchParams({
@@ -136,6 +147,7 @@ $users = getUsers();
             user_id,
             start,
             end,
+            endWeek,
             late
         });
 

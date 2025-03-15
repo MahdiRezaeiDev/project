@@ -1,27 +1,17 @@
 <?php
-require_once '../../../config/constants.php';
-require_once '../../../database/db_connect.php';
-require '../../../vendor/autoload.php';
-require '../../../utilities/jdf.php';
-
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+require_once './config/constants.php';
+require_once './database/db_connect.php';
+require './vendor/autoload.php';
+require './utilities/jdf.php';
 
 $users = [];
 $date = null;
 $userId = 0;
-
-if ($_POST['start']) {
-    $givenDate  = $_POST['start'];
-    $today  = $_POST['end'];
-    $userId = $_POST['user'];
-}
+$givenDate  = date('Y/m/d', strtotime('2025/03/12'));
+$today  = date('Y/m/d', strtotime('2025/03/13'));
+$userId = 5;
 
 $users = getUsers($userId);
-
-$spreadsheet = new Spreadsheet();
-$sheet = $spreadsheet->getActiveSheet();
 
 $givenDateObj = new DateTime($givenDate);
 $todayObj = new DateTime($today);
@@ -35,50 +25,13 @@ if ($daysAmount == 0) {
 
 $startDate = strtotime("-" . ($daysAmount - 1) . " days", strtotime($today));
 
-$headers = ['نام نام خانوادگی'];
-$subHeaders = [];
-
-for ($index = 0; $index < $daysAmount; $index++) {
-    $date = strtotime("+$index days", $startDate);
-    $persianDate = jdate('l', $date) . ' ' . jdate('Y/m/d', $date);
-    $startColumn = Coordinate::stringFromColumnIndex($index * 4 + 2);
-    $endColumn = Coordinate::stringFromColumnIndex($index * 4 + 5);
-
-    $sheet->mergeCells("$startColumn" . "1:$endColumn" . "1");
-    $sheet->setCellValue("$startColumn" . "1", $persianDate);
-    $sheet->getStyle("$startColumn" . "1")->getAlignment()->setHorizontal('center')->setVertical('center');
-    $sheet->getRowDimension(1)->setRowHeight(30);
-
-    array_push($subHeaders, 'ورود', 'تاخیر', 'خروج', 'اضافه کار');
-}
-
-$sheet->getColumnDimension('A')->setWidth(25);
-$sheet->getStyle('A1')->getAlignment()->setHorizontal('center')->setVertical('center');
-
-$sheet->fromArray([$headers], NULL, 'A1');
-$sheet->fromArray([$subHeaders], NULL, 'B2');
-$row = 3;
-
-// Set default column widths for better readability
-foreach (range('B', $sheet->getHighestColumn()) as $col) {
-    $sheet->getColumnDimension($col)->setWidth(15); // Adjust width as needed
-}
-
-
 foreach ($users as $user) {
-    $userRow = $row;
-
-    $sheet->setCellValue("A{$userRow}", $user['name'] . ' ' . $user['family']);
-
+    echo $user['name'];
     for ($counter = 0; $counter < $daysAmount; $counter++) {
         $date = strtotime("+$counter days", $startDate);
         $reportDate = date("Y-m-d", $date);
 
         $startColumnIndex = 2 + ($counter * 4);
-        $entryColumn = Coordinate::stringFromColumnIndex($startColumnIndex);
-        $delayColumn = Coordinate::stringFromColumnIndex($startColumnIndex + 1);
-        $exitColumn = Coordinate::stringFromColumnIndex($startColumnIndex + 2);
-        $extraColumn = Coordinate::stringFromColumnIndex($startColumnIndex + 3);
 
         $startRecords = getUserAttendanceReport('start', $user['selectedUser'], $reportDate);
         $leaveRecords = getUserAttendanceReport('leave', $user['selectedUser'], $reportDate);
@@ -87,7 +40,6 @@ foreach ($users as $user) {
         $startTime = $Rule['start_hour'];
         $endTime = $Rule['end_hour'];
         $endWeek = $Rule['end_week'];
-
 
         $day = jdate("l", $date);
         if ($day == 'پنجشنبه') {
@@ -113,7 +65,7 @@ foreach ($users as $user) {
             if (strtotime($leave['timestamp']) > strtotime($endTime)) {
                 $extraMinutes += floor((strtotime($leave['timestamp']) - strtotime($endTime)) / 60);
             } else {
-                $delayMinutes += floor(abs(strtotime($leave['timestamp']) - strtotime($endTime)) / 60);
+                $delayMinutes += floor((strtotime($leave['timestamp']) - strtotime($endTime)) / 60);
             }
         }
 
@@ -127,32 +79,8 @@ foreach ($users as $user) {
         } elseif (empty($startRecords)) {
             $entryTime = 'غایب';
         }
-
-        $sheet->setCellValue("{$entryColumn}{$userRow}", $entryTime);
-        $sheet->setCellValue("{$delayColumn}{$userRow}", $delayTime);
-        $sheet->setCellValue("{$exitColumn}{$userRow}", $exitTime);
-        $sheet->setCellValue("{$extraColumn}{$userRow}", $extraTime);
-
-        // Enable text wrapping for multi-line display
-        $sheet->getStyle("{$entryColumn}{$userRow}:{$extraColumn}{$userRow}")->getAlignment()->setWrapText(true);
-        $sheet->getStyle("A{$userRow}:{$extraColumn}{$userRow}")->getAlignment()->setHorizontal('center')->setVertical('center');
     }
-
-    $sheet->getRowDimension($userRow)->setRowHeight(-1);
-    $row++;
 }
-
-$sheet->getStyle('B2:E2')->getAlignment()->setHorizontal('center')->setVertical('center');
-
-ob_clean();
-$filename = "attendance_report_" . date('Y-m-d') . ".xlsx";
-header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-header("Content-Disposition: attachment;filename=$filename");
-header('Cache-Control: max-age=0');
-
-$writer = new Xlsx($spreadsheet);
-$writer->save('php://output');
-
 
 // Function definitions (unchanged)
 function getUsers($id = null)

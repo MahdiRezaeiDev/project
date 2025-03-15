@@ -31,14 +31,16 @@ function updateWorkHour()
     $user_id = $_POST['user_id'];
     $start = $_POST['start'];
     $end = $_POST['end'];
+    $endWeek = $_POST['endWeek'];
     $late = $_POST['late'];
 
     try {
         $pdo = PDO_CONNECTION; // Assuming PDO_CONNECTION is your PDO instance
-        $sql = "UPDATE attendance_settings SET start_hour = :start, end_hour = :end, max_late_minutes = :late WHERE user_id = :user_id";
+        $sql = "UPDATE attendance_settings SET start_hour = :start, end_hour = :end, end_week = :endWeek, max_late_minutes = :late WHERE user_id = :user_id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':start', $start, PDO::PARAM_STR);
         $stmt->bindParam(':end', $end, PDO::PARAM_STR);
+        $stmt->bindParam(':endWeek', $endWeek, PDO::PARAM_STR);
         $stmt->bindParam(':late', $late, PDO::PARAM_INT);
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->execute();

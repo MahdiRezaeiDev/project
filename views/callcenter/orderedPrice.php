@@ -44,7 +44,7 @@ if ($isValidCustomer) :
                 animation: bgTransition 1s infinite alternate ease-in-out;
             }
         </style>
-        <div class="w-full h-full <?= $discount ? 'animate-bg-transition' : '' ?>">
+        <div class="w-full h-screen <?= $discount ? 'animate-bg-transition' : '' ?>">
             <section class="flex gap-8 justify-between">
                 <div class="hidden sm:block m-2 bg-gray-700 p-2 sm:w-96">
                     <table class="col-6 text-sm border border-white font-light mb-2 w-full h-full">

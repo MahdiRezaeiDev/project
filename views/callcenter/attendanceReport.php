@@ -36,11 +36,14 @@ $today = date('Y-m-d');
 </div>
 <div class="bg-white rounded-lg shadow-md">
     <div class="flex items-center justify-between p-5">
-        <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
-            <i class="material-icons font-semibold text-orange-400">security</i>
-            <?= jdate('l J F'); ?> -
-            <?= jdate('Y/m/d')  ?>
-        </h2>
+        <div>
+            <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                <i class="material-icons font-semibold text-orange-400">security</i>
+                <?= jdate('l J F'); ?> -
+                <?= jdate('Y/m/d')  ?>
+            </h2>
+            <input class="text-sm py-2 px-3 font-semibold sm:w-60 border-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="selected_date" id="selected_date">
+        </div>
         <div class="flex items-start gap-2">
             <select class="text-xs py-2 px-3 font-semibold sm:w-60 border-2" name="user" id="reportedUser">
                 <option class="text-xs" value="0">همه کاربران</option>
@@ -49,8 +52,12 @@ $today = date('Y-m-d');
                 <?php endforeach; ?>
             </select>
             <div>
-                <input class="text-sm py-2 px-3 font-semibold sm:w-60 border-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="invoice_time" id="invoice_time">
+                <input class="text-sm py-2 px-3 font-semibold sm:w-60 border-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="start_time" id="start_time">
                 <p class="text-xs text-gray-500">تاریخ شروع گزارش را انتخاب نمایید.</p>
+            </div>
+            <div>
+                <input class="text-sm py-2 px-3 font-semibold sm:w-60 border-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="end_time" id="end_time">
+                <p class="text-xs text-gray-500">تاریخ ختم گزارش را انتخاب نمایید.</p>
             </div>
             <button onclick="getReport(this)" class="bg-sky-700 text-white rounded px-4 py-2 disabled:cursor-not-allowed">گزارش</button>
         </div>
@@ -67,26 +74,21 @@ $today = date('Y-m-d');
                             <th scope="col" class="font-semibold text-sm text-right text-gray-800 px-6 py-3">
                                 کاربر
                             </th>
+                            <?php for ($counter = 0; $counter < 6; $counter++):
+                                $date = strtotime("+$counter days", $startDate);
+                                $reportDate = date("Y-m-d", $date);
+
+                                $WeekDay = jdate("l", $date);
+                                $iterationDate = jdate("Y/m/d", $date);
+                            ?>
+                                <th scope="col" class="font-semibold text-center text-sm text-gray-800 px-6 py-3">
+                                    <?= $WeekDay ?>
+                                    </br>
+                                    <?= $iterationDate ?>
+                                </th>
+                            <?php endfor; ?>
                             <th scope="col" class="font-semibold text-center text-sm text-gray-800 px-6 py-3">
-                                شنبه
-                            </th>
-                            <th scope="col" class="font-semibold text-center text-sm text-gray-800 px-6 py-3">
-                                یکشنبه
-                            </th>
-                            <th scope="col" class="font-semibold text-center text-sm text-gray-800 px-6 py-3">
-                                دوشنبه
-                            </th>
-                            <th scope="col" class="font-semibold text-center text-sm text-gray-800 px-6 py-3">
-                                سه شنبه
-                            </th>
-                            <th scope="col" class="font-semibold text-center text-sm text-gray-800 px-6 py-3">
-                                چهار شنبه
-                            </th>
-                            <th scope="col" class="font-semibold text-center text-sm text-gray-800 px-6 py-3">
-                                پنج شنبه
-                            </th>
-                            <th scope="col" class="font-semibold text-center text-sm text-gray-800 px-6 py-3">
-                                جمعه
+                                <img src="./assets/img/settings.svg" alt="settings icon">
                             </th>
                         </tr>
                     </thead>
@@ -94,17 +96,19 @@ $today = date('Y-m-d');
                         <?php
                         foreach ($users as $index => $user) : ?>
                             <tr class="border-b/10 hover:bg-gray-50 even:bg-gray-100">
-                                <th class="px-6 py-3  font-semibold text-gray-800 text-right">
+                                <td class="px-6 py-3  font-semibold text-gray-800 text-right">
                                     <?= $index + 1; ?>
-                                </th>
-                                <th class="px-6 py-3  font-semibold text-gray-800 text-right">
+                                </td>
+                                <td class="px-6 py-3  font-semibold text-gray-800 text-right">
                                     <?= $user['name'] . ' ' . $user['family'] ?>
-                                </th>
+                                </td>
                                 <?php
-
-                                for ($counter = 0; $counter < 7; $counter++):
+                                for ($counter = 0; $counter < 6; $counter++):
                                     require './components/attendance/timeTable.php';
                                 endfor; ?>
+                                <td class="px-6 py-3  font-semibold text-gray-800 text-center">
+                                    <img src="./assets/img/edit.svg" alt="edit icon">
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -185,11 +189,13 @@ $today = date('Y-m-d');
     }
 
     function getReport(element) {
-        const startDate = document.getElementById('invoice_time').getAttribute('data-gdate');
+        const startDate = document.getElementById('start_time').getAttribute('data-gdate');
+        const endDate = document.getElementById('end_time').getAttribute('data-gdate');
         const user = document.getElementById('reportedUser').value;
 
         const param = new URLSearchParams();
-        param.append('date', startDate);
+        param.append('start', startDate);
+        param.append('end', endDate);
         param.append('user', user);
 
         element.innerText = 'لطفا صبور باشید...';
@@ -225,36 +231,87 @@ $today = date('Y-m-d');
     }
 
     $(function() {
-        $("#invoice_time").persianDatepicker({
+        const datepickerConfig = {
             months: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"],
             dowTitle: ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه"],
             shortDowTitle: ["ش", "ی", "د", "س", "چ", "پ", "ج"],
-            showGregorianDate: !1,
-            persianNumbers: !0,
+            showGregorianDate: false,
+            persianNumbers: true,
             formatDate: "YYYY/MM/DD",
-            selectedBefore: !1,
+            selectedBefore: false,
             selectedDate: null,
             startDate: null,
             endDate: null,
-            prevArrow: '\u25c4',
-            nextArrow: '\u25ba',
+            prevArrow: '◄',
+            nextArrow: '►',
             theme: 'default',
-            alwaysShow: !1,
+            alwaysShow: false,
             selectableYears: null,
-            selectableMonths: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            selectableMonths: Array.from({
+                length: 12
+            }, (_, i) => i + 1), // [1,2,3,...,12]
             cellWidth: 34,
             cellHeight: 28,
             fontSize: 16,
-            isRTL: !0,
+            isRTL: true,
             calendarPosition: {
                 x: 0,
-                y: 0,
+                y: 0
             },
             onShow: function() {},
             onHide: function() {},
             onSelect: function() {},
             onRender: function() {}
-        });
+        };
+
+        $("#start_time, #end_time").persianDatepicker(datepickerConfig);
+
+        $("#selected_date").persianDatepicker({
+            months: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"],
+            dowTitle: ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه"],
+            shortDowTitle: ["ش", "ی", "د", "س", "چ", "پ", "ج"],
+            showGregorianDate: false,
+            persianNumbers: true,
+            formatDate: "YYYY/MM/DD",
+            selectedBefore: false,
+            selectedDate: null,
+            startDate: null,
+            endDate: null,
+            prevArrow: '◄',
+            nextArrow: '►',
+            theme: 'default',
+            alwaysShow: false,
+            selectableYears: null,
+            selectableMonths: Array.from({
+                length: 12
+            }, (_, i) => i + 1), // [1,2,3,...,12]
+            cellWidth: 34,
+            cellHeight: 28,
+            fontSize: 16,
+            isRTL: true,
+            calendarPosition: {
+                x: 0,
+                y: 0
+            },
+            onShow: function() {},
+            onHide: function() {},
+            onSelect: function() {
+                const gdate = $('#selected_date').attr('data-gdate');
+
+                if (gdate) {
+                    // Convert date (YYYY-MM-DD) to timestamp (seconds)
+                    const timestamp = Math.floor(new Date(gdate).getTime() / 1000);
+
+                    // Update the URL with the timestamp
+                    const newUrl = new URL(window.location.href);
+                    newUrl.searchParams.set('date', timestamp); // Store as Unix timestamp
+
+                    // Reload the page with the new query string
+                    window.location.href = newUrl.toString();
+                }
+            },
+            onRender: function() {}
+        })
     });
 </script>
 

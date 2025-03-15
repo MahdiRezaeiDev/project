@@ -45,9 +45,10 @@ function getUserAttendanceRule($user_id)
     return $attendance_rule;
 }
 
-function getStartOfTheWeek()
+function getStartOfTheWeek($time)
 {
-    $persianDay =  jdate('w');
+    $formatDate = strtotime($time);
+    $persianDay =  jdate('w', $formatDate);
 
     $englishDay = null;
     switch ($persianDay) {
@@ -74,15 +75,14 @@ function getStartOfTheWeek()
             break;
     }
 
-    // Get today's timestamp
-    $today = time();
-
     // Calculate the timestamp for the previous days
-    $previousDateTimestamp = strtotime("-$englishDay days", $today);
+    $previousDateTimestamp = strtotime("-$englishDay days", $formatDate);
 
     // Convert to Jalali date
     $previousDate = $previousDateTimestamp;
     return  $previousDate;
 }
 
-$startDate = getStartOfTheWeek();
+$givenDate = isset($_GET['date']) ? date('Y/m/d', $_GET['date']) : date('Y/m/d', time());
+
+$startDate = getStartOfTheWeek($givenDate);
