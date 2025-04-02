@@ -72,7 +72,7 @@ if (isset($_GET['code'])) {
 </style>
 <!-- Search Input Section -->
 <section class="flex justify-center">
-    <input class="p-3 border border-2 border-gray-400 w-72 text-sm outline-none" type="text" name="code" id="code" onkeyup="convertToEnglish(this);
+    <input class="p-3 border-2 border-gray-400 w-72 text-sm outline-none" type="text" name="code" id="code" onkeyup="convertToEnglish(this);
     search(this.value);
     searchGoods(this.value);
     filterExport(this.value);" placeholder="کد مد نظر خود را بصورت کامل وارد کنید">

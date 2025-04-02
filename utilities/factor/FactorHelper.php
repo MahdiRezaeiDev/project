@@ -94,7 +94,7 @@ function convertPersianToEnglish($string)
     return str_replace($persianDigits, $englishDigits, $string);
 }
 
-function getFinalPriceBrands($price)
+function getFinalPriceBrand($price)
 {
     $brandsPrice = [];
     $addedBrands = [];

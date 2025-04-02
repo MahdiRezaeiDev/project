@@ -159,7 +159,7 @@ require_once '../../layouts/callcenter/sidebar.php'; ?>
     </section>
 
     <!-- Bill Operation Section -->
-    <?php if ($_SESSION["financialYear"] == '1403') : ?>
+    <?php if ($_SESSION["financialYear"] == convertPersianToEnglish(jdate('Y'))): ?>
         <div class="fixed flex justify-between items-center min-w-full h-12 bottom-0 bg-gray-800 px-3">
             <ul class="flex gap-3">
                 <?php if ($date_difference_days <= 1 || $_SESSION['id'] == 1 || $_SESSION['id'] == 5 || $_SESSION['id'] == 6) : ?>

@@ -346,7 +346,7 @@ function givenPrice($codes, $relation_exist = null)
 function exist($ids)
 {
     global $stock;
-    $stock = 'stock_1403';
+    $stock = 'stock_1404';
 
     // Prepare the base SQL query with LEFT JOIN to exitrecord and necessary calculations
     $base_sql = "SELECT qtybank.id AS quantityId, codeid AS goodId, brand.name AS brandName, qtybank.qty AS quantity,

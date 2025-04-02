@@ -10,7 +10,7 @@ require_once '../../layouts/inventory/sidebar.php';
 <div class="w-2/3 mx-auto overflow-hidden">
     <ul class="flex gap-2 mb-4 bg-gray-600">
         <li class="bg-gray-900">
-            <a class="flex justify-between items-center border-t border-t-2 border-orange-600 gap-3 text-sm font-semibold text-white p-3" href="#/one">
+            <a class="flex justify-between items-center border-t-2 border-orange-600 gap-3 text-sm font-semibold text-white p-3" href="#/one">
                 لیست کسرات کلی اجناس
                 <span class="bg-red-600 p-2 rounded-full w-10 h-10"><?= count($needToMove) ?></span>
             </a>

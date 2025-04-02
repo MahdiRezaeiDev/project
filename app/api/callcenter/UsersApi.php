@@ -18,8 +18,6 @@ if (isset($_POST['operation']) and $_POST['operation'] == 'update') :
     } catch (\Throwable $th) {
         return $th;
     }
-
-
 endif;
 
 

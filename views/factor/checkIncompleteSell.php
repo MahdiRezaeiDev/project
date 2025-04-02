@@ -110,7 +110,7 @@ require_once '../../layouts/callcenter/sidebar.php';
         </div>
         <?php require_once './components/factorDetails.php' ?>
     </section>
-    <?php if ($_SESSION["financialYear"] == '1403') : ?>
+    <?php if ($_SESSION["financialYear"] == convertPersianToEnglish(jdate('Y'))): ?>
         <!-- Bill Operation Section -->
         <section class="rtl fixed flex justify-between items-center min-w-full h-12 bottom-0 bg-gray-800 px-3">
             <ul class="flex gap-3">
