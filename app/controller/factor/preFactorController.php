@@ -98,7 +98,7 @@ try {
         $quantity = getGoodItemAmount($partNumber);
         $factorItems[] = [
             "id" => $goodDetail['goods']['id'],
-            "partName" => getItemName($goodDetail['goods'], getFinalPriceBrands($goodDetail['finalPrice'])),
+            "partName" => getItemName($goodDetail['goods'], getFinalPriceBrand($goodDetail['finalPrice'])),
             "price_per" => getItemPrice($goodDetail['finalPrice']),
             "quantity" => $quantity,
             "max" => "undefined",
