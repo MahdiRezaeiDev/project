@@ -25,9 +25,11 @@ require_once '../../layouts/inventory/sidebar.php'; ?>
                 <th class="p-3 text-white text-sm font-semibold">تاریخ انتقال </th>
                 <th class="p-3 text-white text-sm font-semibold">کاربر</th>
                 <th class="p-3 text-white text-sm font-semibold" style="color: red;"> &#10084;</th>
-                <th class="p-3 text-white text-sm font-semibold" style="color: red;">
-                    <i class="fa fa-cos" aria-hidden="true"></i>
-                </th>
+                <?php if ($_SESSION["financialYear"] == convertPersianToEnglish(jdate('Y'))): ?>
+                    <th class="p-3 text-white text-sm font-semibold" style="color: red;">
+                        <i class="fa fa-cos" aria-hidden="true"></i>
+                    </th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody id="resultBox">
@@ -55,11 +57,13 @@ require_once '../../layouts/inventory/sidebar.php'; ?>
                         <td class="text-xs text-center font-semibold" style="width:5px">
                             <input type="checkbox" name="select for print" id="select">
                         </td>
-                        <td>
-                            <a onclick="displayModal(this)" id="<?= $result['qtybanck_id'] ?>" class="edit-rec2">
-                                <img src="./assets/icons/edit.svg" alt="edit icon">
-                            </a>
-                        </td>
+                        <?php if ($_SESSION["financialYear"] == convertPersianToEnglish(jdate('Y'))): ?>
+                            <td>
+                                <a onclick="displayModal(this)" id="<?= $result['qtybanck_id'] ?>" class="edit-rec2">
+                                    <img src="./assets/icons/edit.svg" alt="edit icon">
+                                </a>
+                            </td>
+                        <?php endif; ?>
                     </tr>
             <?php endforeach;
             else :
@@ -99,11 +103,13 @@ require_once '../../layouts/inventory/sidebar.php'; ?>
                         <td class="text-xs text-center font-semibold" style="width:5px">
                             <input type="checkbox" name="select for print" id="select">
                         </td>
-                        <td>
-                            <a onclick="displayModal(this)" id="<?= $result['qtybanck_id'] ?>" class="edit-rec2">
-                                <img src="./assets/icons/edit.svg" alt="edit icon">
-                            </a>
-                        </td>
+                        <?php if ($_SESSION["financialYear"] == convertPersianToEnglish(jdate('Y'))): ?>
+                            <td>
+                                <a onclick="displayModal(this)" id="<?= $result['qtybanck_id'] ?>" class="edit-rec2">
+                                    <img src="./assets/icons/edit.svg" alt="edit icon">
+                                </a>
+                            </td>
+                        <?php endif; ?>
                     </tr>
             <?php endforeach;
             else :

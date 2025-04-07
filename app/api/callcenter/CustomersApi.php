@@ -70,3 +70,13 @@ function saveContacts($contacts, $pdo)
         'message' => "$inserted contacts saved successfully."
     ]);
 }
+
+if (isset($_POST['getContacts'])) {
+    $pattern = trim($_POST['pattern']);
+    $stmt = PDO_CONNECTION->prepare("SELECT * FROM callcenter.customer WHERE name LIKE :pattern OR family LIKE :pattern OR phone LIKE :pattern");
+    $stmt->execute([':pattern' => '%' . $pattern . '%']);
+    $allCustomers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode($allCustomers);
+} else {
+    echo json_encode($_POST);
+}

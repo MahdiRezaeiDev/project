@@ -28,9 +28,11 @@ require_once '../../layouts/inventory/sidebar.php'; ?>
                 <th class="text-xs p-3 font-bold">ورود به انبار</th>
                 <th class="text-xs p-3 font-bold">انبار</th>
                 <th class="text-xs p-3 font-bold">کاربر</th>
-                <th class="operation">
-                    <img src="./assets/icons/setting.svg" alt="settings icon">
-                </th>
+                <?php if ($_SESSION["financialYear"] == convertPersianToEnglish(jdate('Y'))): ?>
+                    <th class="operation">
+                        <img src="./assets/icons/setting.svg" alt="settings icon">
+                    </th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody id="resultBox">
@@ -101,14 +103,13 @@ require_once '../../layouts/inventory/sidebar.php'; ?>
                         </td>
                         <td class="p-2 text-xs text-gray-700 text-center font-semibold"><?= $item["stock_name"] ?></td>
                         <td class="p-2 text-xs text-gray-700 text-center font-semibold"><?= $item["username"] ?></td>
-                        <td class="text-xs w-8">
-                            <!-- <a onclick="displayModal(this)" data-target="<?= $item["purchase_id"] ?>" class="cursor-pointer">
-                                <img class="mx-auto w-5 h-5" src="./assets/icons/edit.svg" alt="edit icon">
-                            </a> -->
-                            <a href="./editPurchase.php?record=<?= $item["purchase_id"] ?>" target="_blank" class="cursor-pointer">
-                                <img class="mx-auto w-5 h-5" src="./assets/icons/edit.svg" alt="edit icon">
-                            </a>
-                        </td>
+                        <?php if ($_SESSION["financialYear"] == convertPersianToEnglish(jdate('Y'))): ?>
+                            <td class="text-xs w-8">
+                                <a href="./editPurchase.php?record=<?= $item["purchase_id"] ?>" target="_blank" class="cursor-pointer">
+                                    <img class="mx-auto w-5 h-5" src="./assets/icons/edit.svg" alt="edit icon">
+                                </a>
+                            </td>
+                        <?php endif; ?>
                     </tr>
 
                     <?php

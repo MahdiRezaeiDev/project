@@ -126,9 +126,9 @@ require_once '../../layouts/inventory/sidebar.php';
     <p class="text-center text-gray-400 text-xs">سرانجام با زدن دکمه ثبت فاکتور میتوانید همه موارد اضافه شده را به یکباره ثبت نمایید.</p>
     <p id="message" class="fixed text-sm py-3 px-5 rounded left-5 bottom-5 hidden"></p>
 </div>
-
-<button onclick="saveFactor()" id="message" class="fixed text-sm py-3 px-5 rounded right-5 bottom-5 bg-blue-500 text-white">ثبت فاکتور</button>
-
+<?php if ($_SESSION["financialYear"] == convertPersianToEnglish(jdate('Y'))): ?>
+    <button onclick="saveFactor()" id="message" class="fixed text-sm py-3 px-5 rounded right-5 bottom-5 bg-blue-500 text-white">ثبت فاکتور</button>
+<?php endif ?>
 <script src="../../public/js/assets/jalaliMoment.js"></script>
 <script>
     const apiEndPoint = "../../app/api/inventory/PurchaseApi.php";

@@ -31,9 +31,11 @@ require_once '../../layouts/inventory/sidebar.php';
                 <th class="text-xs p-3 font-bold" title="تاریخ فاکتور ورود">تاریخ ف و</th>
                 <th class="text-xs p-3 font-bold" title="انبار">انبار</th>
                 <th class="text-xs p-3 font-bold" title="کاربر">کاربر</th>
-                <th class="text-xs p-3 font-bold" class="operation" title="عملیات">
-                    <img class="w-8" src="./assets/icons/setting.svg" alt="settings icon">
-                </th>
+                <?php if ($_SESSION["financialYear"] == convertPersianToEnglish(jdate('Y'))): ?>
+                    <th class="text-xs p-3 font-bold" class="operation" title="عملیات">
+                        <img class="w-8" src="./assets/icons/setting.svg" alt="settings icon">
+                    </th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody id="resultBox">
@@ -70,7 +72,7 @@ require_once '../../layouts/inventory/sidebar.php';
                     $billItemsCount += $item["sold_quantity"]; ?>
                     <tr class="border-b-0 border-x-2 border-y-0 border-gray-800 even:bg-sky-100">
                         <td class="text-xs text-center w-2.5"><?= $counter ?></td>
-                        <td class="p-2 text-center text-lg text-white font-semibold uppercase bg-sky-500"><?= '&nbsp;'.$item["partnumber"] . " " ?></td>
+                        <td class="p-2 text-center text-lg text-white font-semibold uppercase bg-sky-500"><?= '&nbsp;' . $item["partnumber"] . " " ?></td>
                         <td class="p-2 text-center text-sm text-white <?= getBrandBackground(strtoupper($item["brand_name"])) ?> font-semibold uppercase"><?= $item["brand_name"] ?></td>
                         <td class="p-2 text-xs text-gray-700 text-center font-semibold"><?= $item["purchase_description"] ?></td>
                         <td class="p-2 text-xs text-gray-700 text-center font-semibold"><?= $item["sold_description"] ?></td>
@@ -96,11 +98,13 @@ require_once '../../layouts/inventory/sidebar.php';
                         <td class="p-2 text-xs text-gray-700 text-center font-semibold"><?= $item['qty_invoice_date'] ?></td>
                         <td class="p-2 text-xs text-gray-700 text-center font-semibold"><?= $item["stock_name"] ?></td>
                         <td class="p-2 text-xs text-gray-700 text-center font-semibold"><?= $item["username"] ?></td>
-                        <td style="display: flex; justify-content: center; margin-block: 15px;" class="operation">
-                            <a onclick="displayModal(this)" data-target="<?= $item["sold_id"] ?>" class="cursor-pointer">
-                                <img class="mx-auto w-5 h-5" src="./assets/icons/edit.svg" alt="edit icon">
-                            </a>
-                        </td>
+                        <?php if ($_SESSION["financialYear"] == convertPersianToEnglish(jdate('Y'))): ?>
+                            <td style="display: flex; justify-content: center; margin-block: 15px;" class="operation">
+                                <a onclick="displayModal(this)" data-target="<?= $item["sold_id"] ?>" class="cursor-pointer">
+                                    <img class="mx-auto w-5 h-5" src="./assets/icons/edit.svg" alt="edit icon">
+                                </a>
+                            </td>
+                        <?php endif; ?>
                     </tr>
 
                     <?php

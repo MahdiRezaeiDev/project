@@ -16,6 +16,7 @@ $totalPages = ceil($customersCount / $fetchLimit);
         <button class="bg-sky-400 rounded text-white p-3 py-2" onclick="sendToContact()">انتقال مخاططبین به حساب گوگل</button>
         <button class="bg-rose-400 rounded text-white p-3 py-2" onclick="getContacts()">بارگیری مخاطبین از حساب گوگل</button>
         <input class="border-2 border-gray-300 focus:border-gray-500 py-2 px-3 text-sm outline-none" type="search" name="search" id="search" placeholder="جستجو....">
+        <button class="bg-sky-600 text-sm text-white rounded-e px-4 py-2">جستجو</button>
     </div>
     <table class="w-4/5 mx-auto">
         <thead>
@@ -92,18 +93,20 @@ $totalPages = ceil($customersCount / $fetchLimit);
 </div>
 <script>
     const allCustomers = <?= json_encode($allCustomers) ?>;
+    const customersAPI = '../../app/api/callcenter/CustomersApi.php';
+    const contactsAPI = 'https://contacts.yadak.center/contactsAPI.php';
 
     function sendToContact() {
         const param = new URLSearchParams();
         param.append('contacts', JSON.stringify(allCustomers));
 
-        axios.post('https://contacts.yadak.center/contactsAPI.php', param)
+        axios.post(contactsAPI, param)
             .then((response) => {
                 console.log(response.data);
                 if (response.data.success) {
                     const data = new URLSearchParams();
                     data.append('SYNC', 'SYNC');
-                    axios.post('../../app/api/callcenter/CustomersApi.php', data).then((response) => {
+                    axios.post(contactsAPI, data).then((response) => {
                         window.open('https://contacts.yadak.center/', '_blank');
                     })
                 }
@@ -116,14 +119,14 @@ $totalPages = ceil($customersCount / $fetchLimit);
         const param = new URLSearchParams();
         param.append('getContacts', 'getContacts');
 
-        const data = axios.post('https://contacts.yadak.center/contactsAPI.php', param).then((response) => {
+        const data = axios.post(contactsAPI, param).then((response) => {
 
             const contacts = response.data;
 
             const data = new URLSearchParams();
             data.append('sveContacts', JSON.stringify(contacts));
 
-            axios.post('../../app/api/callcenter/CustomersApi.php', data).then((response) => {
+            axios.post(contactsAPI, data).then((response) => {
                 console.log(response.data);
 
                 if (response.data.success) {
@@ -136,6 +139,55 @@ $totalPages = ceil($customersCount / $fetchLimit);
             })
         })
     }
+
+    function searchCustomers() {
+        const searchValue = document.getElementById('search').value;
+        const params = new URLSearchParams();
+        params.append('pattern', searchValue);
+        params.append('getContacts', 'getContacts');
+
+        axios.post(customersAPI, params)
+            .then((response) => {
+                console.log(response.data);
+
+                const filteredCustomers = response.data;
+                renderCustomers(filteredCustomers);
+            })
+            .catch((error) => {
+                console.error('Error fetching customers:', error);
+            });
+    }
+
+    function renderCustomers(customers) {
+        const tableBody = document.querySelector('tbody');
+        tableBody.innerHTML = ''; // Clear existing rows
+
+        if (customers.length > 0) {
+            customers.forEach((customer, index) => {
+                const row = document.createElement('tr');
+                row.className = 'even:bg-gray-200';
+                row.innerHTML = `
+                    <td class="p-3 text-sm">${index + 1}</td>
+                    <td class="p-3 text-sm">${customer.name}</td>
+                    <td class="p-3 text-sm">${customer.family}</td>
+                    <td class="p-3 text-sm text-blue-600 font-semibold hover:underline">
+                        <a target="_blank" href="./main.php?phone=${customer.phone}">${customer.phone}</a>
+                    </td>
+                    <td class="p-3 text-sm uppercase">${customer.vin}</td>
+                    <td class="p-3 text-sm">${customer.car}</td>
+                    <td class="p-3 text-sm">${customer.kind != 'null' ? customer.kind : ''}</td>
+                    <td class="p-3 text-sm">${customer.address}</td>
+                    <td class="p-3 text-sm">${customer.des}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        } else {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="9" scope="col" class="text-rose-600 p-3 text-center font-semibold">موردی برای نمایش وجود ندارد !!</td>`;
+            tableBody.appendChild(row);
+        }
+    }
+    document.getElementById('search').addEventListener('input', searchCustomers);
 </script>
 <?php
 require_once './components/footer.php';

@@ -108,10 +108,12 @@ require_once '../../layouts/inventory/sidebar.php'; ?>
 </div>
 
 <!-- Bottom action bar for saving sells factor and operation message -->
-<div class="bg-gray-800 fixed right-0 left-0 bottom-0 px-4 py-3 flex justify-between items-center">
-    <button onclick="saveSells()" id="save_sell_factor" class="px-5 py-1 rounded bg-rose-500 text-white">ذخیره</button>
-    <p id="operation_message" class="px-3 py-2 bg-green-600 text-white rounded hidden">عملیات موفقانه صورت گرفت.</p>
-</div>
+<?php if ($_SESSION["financialYear"] == convertPersianToEnglish(jdate('Y'))): ?>
+    <div class="bg-gray-800 fixed right-0 left-0 bottom-0 px-4 py-3 flex justify-between items-center">
+        <button onclick="saveSells()" id="save_sell_factor" class="px-5 py-1 rounded bg-rose-500 text-white">ذخیره</button>
+        <p id="operation_message" class="px-3 py-2 bg-green-600 text-white rounded hidden">عملیات موفقانه صورت گرفت.</p>
+    </div>
+<?php endif ?>
 
 <!-- Page logical scripts -->
 <script>

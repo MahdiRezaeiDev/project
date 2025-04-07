@@ -9,6 +9,13 @@ require_once '../../../database/db_connect.php';
 require_once '../../../utilities/jdf.php';
 require_once '../../../utilities/inventory/InventoryHelpers.php';
 
+function convertPersianToEnglish($string)
+{
+    $persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+    $englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    return str_replace($persianDigits, $englishDigits, $string);
+}
+
 // Helper function to check if a POST value is 'null' and return null if so
 function getPostValue($key)
 {
@@ -194,11 +201,13 @@ if (count($soldItemsList) > 0) :
             <td class="p-2 text-xs text-gray-700 text-center font-semibold"><?= $item['qty_invoice_date'] ?></td>
             <td class="p-2 text-xs text-gray-700 text-center font-semibold"><?= $item["stock_name"] ?></td>
             <td class="p-2 text-xs text-gray-700 text-center font-semibold"><?= $item["username"] ?></td>
-            <td style="display: flex; justify-content: center; margin-block: 15px;" class="operation">
-                <a onclick="displayModal(this)" data-target="<?= $item["sold_id"] ?>" class="cursor-pointer">
-                    <img class="mx-auto w-5 h-5" src="./assets/icons/edit.svg" alt="edit icon">
-                </a>
-            </td>
+            <?php if ($_SESSION["financialYear"] == convertPersianToEnglish(jdate('Y'))): ?>
+                <td style="display: flex; justify-content: center; margin-block: 15px;" class="operation">
+                    <a onclick="displayModal(this)" data-target="<?= $item["sold_id"] ?>" class="cursor-pointer">
+                        <img class="mx-auto w-5 h-5" src="./assets/icons/edit.svg" alt="edit icon">
+                    </a>
+                </td>
+            <?php endif; ?>
         </tr>
         <?php
         if ($counter == count($soldItemsList)) : // Display summary only if it's not the first iteration

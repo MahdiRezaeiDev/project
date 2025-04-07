@@ -56,9 +56,12 @@ require_once '../../layouts/inventory/sidebar.php'; ?>
             </tr>
         </thead>
         <tbody id="existing_result_box">
-            <?php if (!empty($purchasedGoods)) : ?>
+            <?php if (!empty($purchasedGoods)) :
+                // insertIntoNewQtyBank($purchasedGoods);
+            ?>
                 <?php foreach ($purchasedGoods as $index => $good) :
-                    if ($good['remaining_qty'] > 0) : ?>
+                    if ($good['remaining_qty'] > 0) :
+                ?>
                         <tr class="<?= $good['is_transfered'] ? 'bg-orange-400' : 'even:bg-sky-100' ?>">
                             <td class="text-xs text-center w-2.5"><?= $index + 1 ?></td>
                             <td class="p-2 text-center text-lg text-white font-semibold uppercase <?= $item['sellerName'] == 'کاربر دستوری' ? 'bg-orange-400' : 'bg-sky-500' ?>">
