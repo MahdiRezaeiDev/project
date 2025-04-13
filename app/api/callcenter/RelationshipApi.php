@@ -86,7 +86,7 @@ if (isset($_POST['search_goods_for_relation'])) {
         <div class='w-full text-center shadow-md hover:shadow-lg rounded-md px-4 py-3 mb-2 border-1 border-gray-300''>
                 <i class=' material-icons text-red-500'>error</i>
             <br />
-            <p class='text-sm font-semibold text-gray-600 text-red-500'>کد وارد شده در سیستم موجود نمی باشد</p>
+            <p class='text-sm font-semibold text-red-500'>کد وارد شده در سیستم موجود نمی باشد</p>
         </div>
 <?php
 
@@ -373,7 +373,6 @@ if (isset($_POST['load_relation'])) {
     }
 }
 
-
 if (isset($_POST['load_pattern_ifo'])) {
 
     $pattern = $_POST['pattern'];
@@ -401,7 +400,6 @@ if (isset($_POST['load_pattern_ifo'])) {
     echo json_encode(['pattern' => $pattern_info, 'cars' => $cars_id]);
 }
 
-
 function existLimit($pattern_id)
 {
     $query = "SELECT * FROM shop.good_limit_inventory WHERE pattern_id = :pattern_id";
@@ -413,7 +411,6 @@ function existLimit($pattern_id)
 
     return $limitRecord ? true : false;
 }
-
 
 function extract_id($array)
 {

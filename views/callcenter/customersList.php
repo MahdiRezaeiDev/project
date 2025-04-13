@@ -15,8 +15,10 @@ $totalPages = ceil($customersCount / $fetchLimit);
         <h2 class="text-xl font-semibold">لیست مشتریان</h2>
         <button class="bg-sky-400 rounded text-white p-3 py-2" onclick="sendToContact()">انتقال مخاططبین به حساب گوگل</button>
         <button class="bg-rose-400 rounded text-white p-3 py-2" onclick="getContacts()">بارگیری مخاطبین از حساب گوگل</button>
-        <input class="border-2 border-gray-300 focus:border-gray-500 py-2 px-3 text-sm outline-none" type="search" name="search" id="search" placeholder="جستجو....">
-        <button class="bg-sky-600 text-sm text-white rounded-e px-4 py-2">جستجو</button>
+        <div>
+            <input class="border-2 border-gray-300 focus:border-gray-500 py-2 px-3 text-sm outline-none" type="search" name="search" placeholder="جستجو....">
+            <button id="searchButton" class="bg-sky-600 text-sm text-white rounded-e px-4 py-2">جستجو</button>
+        </div>
     </div>
     <table class="w-4/5 mx-auto">
         <thead>
@@ -102,7 +104,6 @@ $totalPages = ceil($customersCount / $fetchLimit);
 
         axios.post(contactsAPI, param)
             .then((response) => {
-                console.log(response.data);
                 if (response.data.success) {
                     const data = new URLSearchParams();
                     data.append('SYNC', 'SYNC');
@@ -127,8 +128,6 @@ $totalPages = ceil($customersCount / $fetchLimit);
             data.append('sveContacts', JSON.stringify(contacts));
 
             axios.post(contactsAPI, data).then((response) => {
-                console.log(response.data);
-
                 if (response.data.success) {
                     if (response.data.message == "0 contacts saved successfully.") {
                         alert("Already Upto date")
@@ -146,16 +145,20 @@ $totalPages = ceil($customersCount / $fetchLimit);
         params.append('pattern', searchValue);
         params.append('getContacts', 'getContacts');
 
-        axios.post(customersAPI, params)
-            .then((response) => {
-                console.log(response.data);
+        if (searchValue.length == 0) {
+            window.location.reload();
+        }
 
-                const filteredCustomers = response.data;
-                renderCustomers(filteredCustomers);
-            })
-            .catch((error) => {
-                console.error('Error fetching customers:', error);
-            });
+        if (searchValue.length >= 3) {
+            axios.post(customersAPI, params)
+                .then((response) => {
+                    const filteredCustomers = response.data;
+                    renderCustomers(filteredCustomers);
+                })
+                .catch((error) => {
+                    console.error('Error fetching customers:', error);
+                });
+        }
     }
 
     function renderCustomers(customers) {
@@ -187,7 +190,7 @@ $totalPages = ceil($customersCount / $fetchLimit);
             tableBody.appendChild(row);
         }
     }
-    document.getElementById('search').addEventListener('input', searchCustomers);
+    document.getElementById('searchButton').addEventListener('click', searchCustomers);
 </script>
 <?php
 require_once './components/footer.php';

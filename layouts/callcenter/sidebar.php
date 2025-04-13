@@ -19,11 +19,28 @@ if (!isset($dbname)) {
                 سامانه قیمت
             </a>
         </li>
-        <li>
-            <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'customersList.php' ? 'bg-gray-400' : '' ?> items-center gap-2" href="<?= $append ?>customersList.php">
-                <img src="../../layouts/callcenter/icons/client.svg" alt="dashboard icon">
-                لیست مشتریان
+        <li class="dropdown">
+            <a class="flex justify-between items-center gap-2 p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'customersList.php' ? 'bg-gray-400' : '' ?>">
+                <span class="flex items-center gap-2">
+                    <img src="../../layouts/callcenter/icons/client.svg" alt="dashboard icon">
+                    مدیریت مشتریان
+                </span>
+                <img src="./assets/icons/left_arrow.svg" alt="left arrow">
             </a>
+            <ul class="drop_down_menu_aside bg-gray-800 border border-gray-800">
+                <li>
+                    <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="<?= $append ?>customersList.php">
+                        <img src="../inventory/assets/icons/manage.svg" alt="save icon">
+                        لیست مشتریان
+                    </a>
+                </li>
+                <li>
+                    <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="<?= $append ?>customersPhone.php">
+                        <img src="../../layouts/callcenter/icons/attendance.svg" alt="save icon">
+                        تعریف رابطه شماره
+                    </a>
+                </li>
+            </ul>
         </li>
         <li>
             <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'searchGoods.php' ? 'bg-gray-400' : '' ?> items-center gap-2" href="<?= $append ?>searchGoods.php">
