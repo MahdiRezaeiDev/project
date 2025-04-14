@@ -22,7 +22,7 @@ if (!isset($dbname)) {
         <li class="dropdown">
             <a class="flex justify-between items-center gap-2 p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'customersList.php' ? 'bg-gray-400' : '' ?>">
                 <span class="flex items-center gap-2">
-                    <img src="../../layouts/callcenter/icons/client.svg" alt="customers icon">
+                    <img src="../../layouts/callcenter/icons/client.svg" alt="dashboard icon">
                     مدیریت مشتریان
                 </span>
                 <img src="./assets/icons/left_arrow.svg" alt="left arrow">

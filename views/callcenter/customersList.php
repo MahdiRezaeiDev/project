@@ -32,6 +32,7 @@ $totalPages = ceil($customersCount / $fetchLimit);
                 <th class="p-3 text-sm text-right text-white font-semibold">نوع</th>
                 <th class="p-3 text-sm text-right text-white font-semibold">آدرس</th>
                 <th class="p-3 text-sm text-right text-white font-semibold">توضیحات</th>
+                <th class="p-3 text-sm text-right text-white font-semibold">تعریف رابطه شماره</th>
             </tr>
         </thead>
         <tbody class="border border-dashed border-gray-600">
@@ -50,6 +51,9 @@ $totalPages = ceil($customersCount / $fetchLimit);
                         <td class="p-3 text-sm"><?= $customer['kind'] != 'null' ? $customer['kind'] : '' ?></td>
                         <td class="p-3 text-sm"><?= $customer['address']; ?></td>
                         <td class="p-3 text-sm"><?= $customer['des'] ?></td>
+                        <td class="p-3 text-sm">
+                            <a href="./customersPhone.php?search=<?= $customer['name']; ?>" class="bg-rose-600 text-xs text-white rounded px-3 py-2">تعریف</a>
+                        </td>
                     </tr>
                 <?php
                     $counter += 1;

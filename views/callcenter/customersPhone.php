@@ -1,11 +1,12 @@
 <?php
-$pageTitle = "تعریف رابطه اجناس";
+$pageTitle = "تعریف رابطه مشتری های";
 $iconUrl = 'report.png';
 require_once './components/header.php';
 require_once '../../app/controller/callcenter/relationshipController.php';
 require_once '../../layouts/callcenter/nav.php';
 require_once '../../layouts/callcenter/sidebar.php';
 $qualified = ['mahdi', 'babak', 'niyayesh'];
+$search = isset($_GET['search']) ? trim($_GET['search']) : null;
 ?>
 <link rel="stylesheet" href="./assets/css/select2.css">
 <script src="./assets/js/select2.js"></script>
@@ -34,7 +35,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh'];
             <div class="flex items-center justify-between p-3">
                 <h2 class="text-lg font-semibold text-white flex items-center gap-2">
                     <i class="material-icons text-green-600">beenhere</i>
-                    اجناس انتخاب شده
+                    مشتری های انتخاب شده
                 </h2>
                 <button class="flex items-center bg-red-500 hover:bg-red-600 text-white rounded px-4 py-1 text-xs" onclick="clearAll()">
                     <i class="material-icons hover:cursor-pointer">delete</i>
@@ -42,11 +43,11 @@ $qualified = ['mahdi', 'babak', 'niyayesh'];
             </div>
             <p class="px-3 mb-4 text-white text-sm leading-relaxed">
                 <span class="text-red-500">*</span>
-                لیست اجناس انتخاب شده برای افزودن به رابطه!
+                لیست مشتری های انتخاب شده برای افزودن به رابطه!
             </p>
         </div>
         <p id="select_box_error" class="px-3 tiny-text text-red-500 hidden">
-            لیست اجناس انتخاب شده برای افزودن به رابطه خالی بوده نمیتواند!
+            لیست مشتری های انتخاب شده برای افزودن به رابطه خالی بوده نمیتواند!
         </p>
         <p id="duplicate_relation" class="px-3 tiny-text text-red-500 hidden">
             شما همزمان نمی توانید ۲ رابطه را بارگذاری نمایید.(شما میتوانید با حذف همه رابطه جدید را وارد نمایید)
@@ -253,8 +254,6 @@ $qualified = ['mahdi', 'babak', 'niyayesh'];
         selected_box.innerHTML = template;
     }
 
-    // this function is used to get all the selected items using Javascript and push them into an array
-    // and prepare them for sending to the server
     function getSelectedItems(id) {
         let selected = [];
         for (var option of document.getElementById(id).options) {
@@ -359,6 +358,11 @@ $qualified = ['mahdi', 'babak', 'niyayesh'];
             });
         }
     };
+
+    <?php if (isset($_GET['search'])): ?>
+        search("<?= $search; ?>");
+        document.getElementById('serial').value = "<?= $search; ?>";
+    <?php endif; ?>
 </script>
 <?php
 require_once './components/footer.php';
