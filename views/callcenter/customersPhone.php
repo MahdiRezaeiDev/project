@@ -4,7 +4,9 @@ $iconUrl = 'report.png';
 require_once './components/header.php';
 require_once '../../app/controller/callcenter/relationshipController.php';
 require_once '../../layouts/callcenter/nav.php';
-require_once '../../layouts/callcenter/sidebar.php'; ?>
+require_once '../../layouts/callcenter/sidebar.php';
+$qualified = ['mahdi', 'babak', 'niyayesh'];
+?>
 <link rel="stylesheet" href="./assets/css/select2.css">
 <script src="./assets/js/select2.js"></script>
 <div class=" grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-6 px-4">
@@ -77,15 +79,17 @@ require_once '../../layouts/callcenter/sidebar.php'; ?>
                     <input dir="rtl" name="customer_name" value="" class="border-2 outline-none text-sm mt-1 w-full border-gray-300 shadow-sm px-3 py-2" required id="customer_name" type="text" />
                     <p class="mt-2"></p>
                 </div>
-                <div class="col-span-12 sm:col-span-4 mb-3">
-                    <div class="flex gap-2">
-                        <label for="is_verified" class="block font-medium text-sm text-gray-700 cursor-pointer">
-                            وضعیت تایید مالی
-                        </label>
-                        <input name="is_verified" id="is_verified" type="checkbox" />
+                <?php if (in_array($_SESSION['username'], $qualified)): ?>
+                    <div class="col-span-12 sm:col-span-4 mb-3">
+                        <div class="flex gap-2">
+                            <label for="is_verified" class="block font-medium text-sm text-gray-700 cursor-pointer">
+                                وضعیت تایید مالی
+                            </label>
+                            <input name="is_verified" id="is_verified" type="checkbox" />
+                        </div>
+                        <p class="mt-2"></p>
                     </div>
-                    <p class="mt-2"></p>
-                </div>
+                <?php endif; ?>
                 <div class="col-span-12 sm:col-span-4 mb-3">
                     <label for="admin_des" class="block font-medium text-sm text-gray-700">
                         توضیحات مدیریت
