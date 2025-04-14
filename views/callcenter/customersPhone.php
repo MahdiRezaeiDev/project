@@ -284,21 +284,19 @@ require_once '../../layouts/callcenter/sidebar.php'; ?>
         if (selected_customers.length > 0) {
             axios.post("../../app/api/callcenter/CustomersApi.php", params)
                 .then(function(response) {
-                    console.log(response.data);
-
-                    // if (response.data == true) {
-                    //     form_success.classList.remove('hidden');
-                    //     setTimeout(() => {
-                    //         form_success.classList.add('hidden');
-                    //         location.reload();
-                    //     }, 2000)
-                    // } else {
-                    //     form_error.classList.remove('hidden');
-                    //     setTimeout(() => {
-                    //         form_error.classList.add('hidden');
-                    //         location.reload();
-                    //     }, 2000)
-                    // }
+                    if (response.data == true) {
+                        form_success.classList.remove('hidden');
+                        setTimeout(() => {
+                            form_success.classList.add('hidden');
+                            location.reload();
+                        }, 2000)
+                    } else {
+                        form_error.classList.remove('hidden');
+                        setTimeout(() => {
+                            form_error.classList.add('hidden');
+                            location.reload();
+                        }, 2000)
+                    }
                 })
                 .catch(function(error) {
 
