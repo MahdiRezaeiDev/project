@@ -1,124 +1,310 @@
 <?php
-require_once './config/constants.php';
-require_once './database/db_connect.php';
-require './vendor/autoload.php';
-require './utilities/jdf.php';
+require_once './init.php';
+require_once './config/const.php';
+require_once './utilities/helper.php';
 
-$users = [];
-$date = null;
-$userId = 0;
-$givenDate  = date('Y/m/d', strtotime('2025/03/12'));
-$today  = date('Y/m/d', strtotime('2025/03/13'));
-$userId = 5;
-
-$users = getUsers($userId);
-
-$givenDateObj = new DateTime($givenDate);
-$todayObj = new DateTime($today);
-$interval = $givenDateObj->diff($todayObj);
-$dayDifference = $interval->days + 1;
-$daysAmount = isset($dayDifference) && is_numeric($dayDifference) ? (int)$dayDifference : 7;
-
-if ($daysAmount == 0) {
-    $daysAmount = 1;
-}
-
-$startDate = strtotime("-" . ($daysAmount - 1) . " days", strtotime($today));
-
-foreach ($users as $user) {
-    echo $user['name'];
-    for ($counter = 0; $counter < $daysAmount; $counter++) {
-        $date = strtotime("+$counter days", $startDate);
-        $reportDate = date("Y-m-d", $date);
-
-        $startColumnIndex = 2 + ($counter * 4);
-
-        $startRecords = getUserAttendanceReport('start', $user['selectedUser'], $reportDate);
-        $leaveRecords = getUserAttendanceReport('leave', $user['selectedUser'], $reportDate);
-
-        $Rule = getUserAttendanceRule($user['selectedUser']);
-        $startTime = $Rule['start_hour'];
-        $endTime = $Rule['end_hour'];
-        $endWeek = $Rule['end_week'];
-
-        $day = jdate("l", $date);
-        if ($day == 'پنجشنبه') {
-            $endTime = $endWeek;
-        }
-
-        $entryTimes = [];
-        $exitTimes = [];
-        $delayMinutes = 0;
-        $extraMinutes = 0;
-
-        foreach ($startRecords as $start) {
-            $entryTimes[] = date('H:i', strtotime($start['timestamp']));
-            if (strtotime($start['timestamp']) > strtotime($startTime)) {
-                $delayMinutes += floor((strtotime($start['timestamp']) - strtotime($startTime)) / 60);
-            } else {
-                $extraMinutes += floor(abs(strtotime($start['timestamp']) - strtotime($startTime)) / 60);
-            }
-        }
-
-        foreach ($leaveRecords as $leave) {
-            $exitTimes[] = date('H:i', strtotime($leave['timestamp']));
-            if (strtotime($leave['timestamp']) > strtotime($endTime)) {
-                $extraMinutes += floor((strtotime($leave['timestamp']) - strtotime($endTime)) / 60);
-            } else {
-                $delayMinutes += floor((strtotime($leave['timestamp']) - strtotime($endTime)) / 60);
-            }
-        }
-
-        $entryTime = !empty($entryTimes) ? implode("\n", $entryTimes) : '-';
-        $exitTime = !empty($exitTimes) ? implode("\n", $exitTimes) : '-';
-        $delayTime = $delayMinutes > 0 ? $delayMinutes . ' دقیقه' : '-';
-        $extraTime = $extraMinutes > 0 ? $extraMinutes . ' دقیقه' : '-';
-
-        if (strtotime($reportDate) > strtotime($today)) {
-            $entryTime = 'ثبت نشده';
-        } elseif (empty($startRecords)) {
-            $entryTime = 'غایب';
-        }
+if (isset($_POST['sendMessage'])) {
+    $value = $_POST['sendMessage'];
+    switch ($value) {
+        case 'sellsReport':
+            sellsReport($MadelineProto, $_POST);
+            break;
+        case 'sellsReportTest':
+            sellsReportTest($MadelineProto, $_POST);
+            break;
+        case "PurchaseReport":
+            lowQuantityReport($MadelineProto, $_POST);
+            break;
+        case "sendDeliveryReport":
+            sendDeliveryReport($MadelineProto, $_POST);
+            break;
+        case "sellsReportButtons":
+            sellsReportButtonsFormat($MadelineProto, $_POST);
+            break;
     }
 }
 
-// Function definitions (unchanged)
-function getUsers($id = null)
+function sellsReportButtonsFormat($MadelineProto, $data)
 {
-    $sql = "SELECT users.id, name, family, settings.user_id AS selectedUser FROM yadakshop.users AS users 
-            INNER JOIN yadakshop.attendance_settings AS settings ON settings.user_id = users.id
-            WHERE users.password IS NOT NULL AND users.password != '' AND username != 'tv'";
+    $topicID = $data['topic_id'];
+    $header = $data['header'];
+    $footer = str_repeat('➖', 8) . PHP_EOL;
+    $selectedGoods = json_decode($data['selectedGoods'], true);
+    $lowQuantity = json_decode($data['lowQuantity'], true);
 
-    if (!empty($id)) {
-        $sql .= " AND user_id = :id";
+    $markup = [
+        '_' => 'replyInlineMarkup',
+        'rows' => []
+    ];
+
+    // Add goods rows
+    foreach ([['items' => $selectedGoods, 'type' => 'normal'], ['items' => $lowQuantity, 'type' => 'low']] as $group) {
+        foreach ($group['items'] as $good) {
+            $markup['rows'] = array_merge($markup['rows'], buildGoodRows($good, $group['type']));
+        }
     }
 
-    $stmt = PDO_CONNECTION->prepare($sql);
+    $inputReplyToMessage = [
+        '_' => 'inputReplyToMessage',
+        'reply_to_msg_id' => $topicID,
+    ];
 
-    if (!empty($id)) {
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    // Send header + table
+    $MadelineProto->messages->sendMessage([
+        'peer' => '-1002320490188',
+        'reply_to' => $inputReplyToMessage,
+        'message' => $header,
+        'reply_markup' => $markup,
+        'parse_mode' => 'html',
+    ]);
+
+    // Send footer
+    $MadelineProto->messages->sendMessage([
+        'peer' => '-1002320490188',
+        'reply_to' => $inputReplyToMessage,
+        'message' => $footer,
+        'parse_mode' => 'html',
+    ]);
+}
+
+function buildGoodRows($good, $type = 'normal')
+{
+    $brand = htmlspecialchars($good['brandName'], ENT_XML1, 'UTF-8');
+    $dotColor = in_array($brand, ['GEN', 'MOB', 'اصلی']) ? '🔷' : '🔶';
+
+    $rows = [];
+
+    // First row
+    $firstRowButtons = [
+        ['_' => 'keyboardButtonCallback', 'text' => $good['partNumber'], 'data' => 0],
+        ['_' => 'keyboardButtonCallback', 'text' => "$dotColor $brand", 'data' => 0],
+    ];
+
+    if ($type === 'low') {
+        $firstRowButtons[] = ['_' => 'keyboardButtonCallback', 'text' => $good['quantity'] . ' | مورد نیاز: ' . $good['required'], 'data' => 0];
+    } else {
+        $firstRowButtons[] = ['_' => 'keyboardButtonCallback', 'text' => $good['quantity'], 'data' => 0];
     }
 
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $rows[] = [
+        '_' => 'keyboardButtonRow',
+        'buttons' => $firstRowButtons,
+    ];
+
+    // Second row
+    $rows[] = [
+        '_' => 'keyboardButtonRow',
+        'buttons' => [
+            ['_' => 'keyboardButtonCallback', 'text' => $good['persianName'], 'data' => 0],
+            ['_' => 'keyboardButtonCallback', 'text' => $good['pos1'] . ' ' . $good['pos2'], 'data' => 0],
+            ['_' => 'keyboardButtonCallback', 'text' => 'باقی مانده: ' . $good['remaining_qty'], 'data' => 0],
+        ],
+    ];
+
+    return $rows;
 }
 
-function getUserAttendanceReport($action, $user_id, $date)
+function sendTableFormattedMessage($MadelineProto, $data)
 {
-    $sql = "SELECT * FROM yadakshop.attendance_logs WHERE user_id = :user_id AND DATE(created_at) = :date AND action = :action";
-    $stmt = PDO_CONNECTION->prepare($sql);
-    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-    $stmt->bindParam(':date', $date, PDO::PARAM_STR);
-    $stmt->bindParam(':action', $action, PDO::PARAM_STR);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $topicID = $data['topic_id'];
+    $header = $data['header'];
+    $selectedGoods = json_decode($data['selectedGoods'], true);
+    $lowQuantity = json_decode($data['lowQuantity'], true);
+    $footer = str_repeat('➖', 8) . PHP_EOL;
+    $markup = [
+        '_' => 'replyInlineMarkup',
+        'rows' => []
+    ];
+
+    foreach ($selectedGoods as $good) {
+        $brand = htmlspecialchars($good['brandName'], ENT_XML1, 'UTF-8');
+        $dotColor = in_array($brand, ['GEN', 'MOB', 'اصلی']) ? '🔷' : '🔶';
+
+        array_push($markup['rows'], [
+            '_' => 'keyboardButtonRow',
+            'buttons' => [
+                ['_' => 'keyboardButtonCallback', 'text' => $good['partNumber'], 'data' => 0],
+                ['_' => 'keyboardButtonCallback', 'text' . $brand . ' ' . $dotColor, 'data' => 0],
+                ['_' => 'keyboardButtonCallback', 'text' . $good['quantity'], 'data' => 0],
+                ['_' => 'keyboardButtonCallback', 'text' . $good['pos1'], 'data' => 0],
+                ['_' => 'keyboardButtonCallback', 'text' . $good['pos2'], 'data' => 0],
+            ]
+        ]);
+    }
+
+    foreach ($lowQuantity as $good) {
+        array_push($markup['rows'], [
+            '_' => 'keyboardButtonRow',
+            'buttons' => [
+                ['_' => 'keyboardButtonCallback', 'text' => $good['partNumber'], 'data' => 0],
+                ['_' => 'keyboardButtonCallback', 'text' . $brand . ' ' . $dotColor, 'data' => 0],
+                ['_' => 'keyboardButtonCallback', 'text' . $good['quantity'], 'data' => 0],
+                ['_' => 'keyboardButtonCallback', 'text' . $good['pos1'], 'data' => 0],
+                ['_' => 'keyboardButtonCallback', 'text' . $good['pos2'], 'data' => 0],
+            ]
+        ]);
+    }
+
+    $inputReplyToMessage = [
+        '_' => 'inputReplyToMessage',
+        'reply_to_msg_id' => $topicID,
+    ];
+
+    // Sending the message
+    $MadelineProto->messages->sendMessage([
+        'peer' => 'https://t.me/+Z3c56mn7IQ0xNjI0',
+        'reply_to' => $inputReplyToMessage,
+        'message' => $header,
+        'reply_markup' => $markup,
+        'parse_mode' => 'html',
+    ]);
+    sendReportMessage($topicID, $MadelineProto, $footer);
 }
 
-function getUserAttendanceRule($user_id)
+function sellsReport($MadelineProto, $data)
 {
-    $sql = "SELECT * FROM yadakshop.attendance_settings WHERE user_id = :user_id";
-    $stmt = PDO_CONNECTION->prepare($sql);
-    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-    $stmt->execute();
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    $message = $data['message'];
+    $topicID = $data['topic_id'];
+
+    $inputReplyToMessage = [
+        '_' => 'inputReplyToMessage',
+        'reply_to_msg_id' => $topicID,
+    ];
+
+    // Sending the message
+    $MadelineProto->messages->sendMessage([
+        'peer' => 'https://t.me/+Z3c56mn7IQ0xNjI0',
+        'reply_to' => $inputReplyToMessage,
+        'message' => $message,
+        'parse_mode' => 'html',
+    ]);
+}
+
+function lowQuantityReport($MadelineProto, $data)
+{
+    $topicID = 28985;
+    $lowQuantity = json_decode($data['lowQuantity'], true);
+    $footer = str_repeat('➖', 8) . PHP_EOL;
+    $messageBody = null;
+
+    if (count($lowQuantity) > 0) {
+        foreach ($lowQuantity as $good) {
+            $good['quantity'] = $good['required'];
+            $messageBody .= formatLowQuantityMessageBody($good);
+        }
+        $messageBody .= $footer;
+        sendPurchaseReport($topicID, $MadelineProto, $messageBody);
+    }
+}
+
+function sellsReportTest($MadelineProto, $data)
+{
+    $topicID = $data['topic_id'];
+    $header = $data['header'];
+    $selectedGoods = json_decode($data['selectedGoods'], true);
+    $lowQuantity = json_decode($data['lowQuantity'], true);
+    $footer = str_repeat('➖', 8) . PHP_EOL;
+
+    $goodsTotal = count($selectedGoods + $lowQuantity);
+    sendReportMessage($topicID, $MadelineProto, $header);
+    if ($goodsTotal > 10) {
+        $messageBody = null;
+        foreach ($selectedGoods as $good) {
+            $messageBody .= formatMessageBody($good);
+        }
+
+        foreach ($lowQuantity as $good) {
+            $messageBody .= formatMessageBody($good)
+                . "مقدار مورد نیاز: {$good['required']} ❌❌ \n";
+        }
+
+        sendReportMessage($topicID, $MadelineProto, $messageBody);
+    } else {
+        foreach ($selectedGoods as $good) {
+            $messageBody = formatMessageBody($good);
+            sendReportMessage($topicID, $MadelineProto, $messageBody);
+        }
+
+        foreach ($lowQuantity as $good) {
+            $messageBody = formatMessageBody($good)
+                . "مقدار مورد نیاز: {$good['required']} ❌❌ \n\n";
+            sendReportMessage($topicID, $MadelineProto, $messageBody);
+        }
+    }
+
+    sendReportMessage($topicID, $MadelineProto, $footer);
+}
+
+function formatMessageBody($good)
+{
+    $brand = htmlspecialchars($good['brandName'], ENT_XML1, 'UTF-8');
+    $dotColor = in_array($brand, ['GEN', 'MOB', 'اصلی']) ? '🔷' : '🔶';
+
+    return PHP_EOL
+        . str_pad(htmlspecialchars($good['partNumber'], ENT_XML1, 'UTF-8'), 18, ' ', STR_PAD_RIGHT)
+        . $brand . ' ' . $dotColor . ' '
+        . str_pad(htmlspecialchars($good['quantity'], ENT_XML1, 'UTF-8'), 8, ' ', STR_PAD_RIGHT)
+        . htmlspecialchars($good['pos1'], ENT_XML1, 'UTF-8') . ' '
+        . htmlspecialchars($good['pos2'], ENT_XML1, 'UTF-8') . PHP_EOL;
+}
+
+function formatLowQuantityMessageBody($good)
+{
+    $brand = htmlspecialchars($good['brandName'], ENT_XML1, 'UTF-8');
+    $dotColor = in_array($brand, ['GEN', 'MOB', 'اصلی']) ? '🔷' : '🔶';
+
+    return PHP_EOL
+        . str_pad(htmlspecialchars($good['partNumber'], ENT_XML1, 'UTF-8'), 18, ' ', STR_PAD_RIGHT)
+        . $brand . ' ' . $dotColor . ' '
+        . str_pad(htmlspecialchars($good['quantity'], ENT_XML1, 'UTF-8'), 8, ' ', STR_PAD_RIGHT) . PHP_EOL;
+}
+
+function sendReportMessage($topicID, $MadelineProto, $message)
+{
+    $inputReplyToMessage = [
+        '_' => 'inputReplyToMessage',
+        'reply_to_msg_id' => $topicID,
+    ];
+
+    // Sending the message
+    $MadelineProto->messages->sendMessage([
+        'peer' => 'https://t.me/+Z3c56mn7IQ0xNjI0',
+        'reply_to' => $inputReplyToMessage,
+        'message' => $message,
+        'parse_mode' => 'html',
+    ]);
+}
+
+function sendPurchaseReport($topicID, $MadelineProto, $message)
+{
+    $inputReplyToMessage = [
+        '_' => 'inputReplyToMessage',
+        'reply_to_msg_id' => $topicID,
+    ];
+
+    // Sending the message
+    $MadelineProto->messages->sendMessage([
+        'peer' => 'https://t.me/+swCvruDsax1hMmQ0',
+        'reply_to' => $inputReplyToMessage,
+        'message' => $message,
+        'parse_mode' => 'html',
+    ]);
+}
+
+function sendDeliveryReport($MadelineProto, $data)
+{
+    $message = $data['message'];
+    $topicID = 37411;
+    $inputReplyToMessage = [
+        '_' => 'inputReplyToMessage',
+        'reply_to_msg_id' => $topicID,
+    ];
+
+    // Sending the message
+    $MadelineProto->messages->sendMessage([
+        'peer' => 'https://t.me/+Z3c56mn7IQ0xNjI0',
+        'reply_to' => $inputReplyToMessage,
+        'message' => $message,
+        'parse_mode' => 'html',
+    ]);
 }

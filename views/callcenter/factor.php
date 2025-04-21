@@ -178,10 +178,10 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                 <td class="text-center align-middle">
                                     <img onclick="userReport(this)" class="w-10 rounded-full hover:cursor-pointer mt-2 mx-auto" data-id="<?= $factor['user']; ?>" src="<?= getUserProfile($factor['user']) ?>" />
                                 </td>
-                                <?php if (in_array($_SESSION['username'], $qualified)): ?>
+                                <?php if (in_array($_SESSION['username'], $qualified)):?>
                                     <td class="hide_while_print">
                                         <div class="flex justify-center items-center">
-                                            <input onclick="changeStatus(this)" <?= $factor["approved"] ? 'checked' : '' ?> type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
+                                            <input onclick="changeStatus(this)" <?= ($factor["exists_in_phones"] || $factor["approved"]) ? 'checked' : '' ?> type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
                                         </div>
                                     </td>
                                 <?php endif ?>

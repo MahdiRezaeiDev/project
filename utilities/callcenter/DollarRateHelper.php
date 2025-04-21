@@ -344,6 +344,7 @@ function addRelatedBrands($brands)
         'CAP' => ['KOREA'],
         'GMB' => ['KOREA'],
         'BRG' => ['KOREA'],
+        'KGC' => ['KOREA'],
     ];
 
     // Normalize brand names to uppercase

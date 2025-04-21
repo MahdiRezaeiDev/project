@@ -2,7 +2,7 @@
 $pageTitle = "ایجاد حساب کاربری";
 $iconUrl = 'report.png';
 require_once './components/header.php';
-require_once '../../app/controller/callcenter/UsersController.php';
+require_once '../../app/controller/callcenter/ManageUsersController.php';
 require_once '../../layouts/callcenter/nav.php';
 require_once '../../layouts/callcenter/sidebar.php';
 ?>

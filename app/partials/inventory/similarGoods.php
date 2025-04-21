@@ -8,13 +8,16 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
     foreach ($factorItems as $item) {
         $brandSeparator = strripos($item->partName, '-');
         $factorItemParts = explode('-', $item->partName);
+        $persianPartNumber = '';
 
         if (count($factorItemParts) > 1) {
             $goodNameBrand = trim(substr($item->partName, $brandSeparator + 1));
             $goodNamePart = trim(explode(' ', $factorItemParts[0])[0]);
+            $persianPartNumber = trim(implode(' ', array_slice(explode(' ', $factorItemParts[0]), 1)));
         } else {
             $goodNameBrand = 'اصلی';
             $goodNamePart = trim(explode(' ', $factorItemParts[0])[0]);
+            $persianPartNumber = trim(implode(' ', array_slice(explode(' ', $factorItemParts[0]), 1)));
         }
 
         $ALLOWED_BRANDS = [];
@@ -85,7 +88,8 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
                     'PH',
                     'CAP',
                     'BRG',
-                    'GMB'
+                    'GMB',
+                    'KGC',
                 ],
                 'CHINA' => [
                     'OEMAX',
@@ -113,6 +117,7 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
                 'id' => $item->id,
                 'goodId' => $item->id,
                 'partNumber' => $goodNamePart,
+                'persianPartNumber' => $persianPartNumber,
                 'stockId' => null,
                 'purchase_Description' => '',
                 'stockName' => '',
@@ -186,11 +191,14 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
                     $trackingQuantity[$good['quantityId']] -= $sellQuantity;
 
                     // Add the allocated good to the selected goods
-                    addToBillItems($good, $sellQuantity, $selectedGoods, $item->id);
+                    addToBillItems($good, $sellQuantity, $selectedGoods, $item->id, $trackingQuantity[$good['quantityId']], $persianPartNumber);
                 } else {
                     $good['quantity'] = $totalQuantity;
                     $good['id'] = $item->id;
-                    array_push($lowQuantity, [...$good, 'required' => $billItemQuantity - $totalQuantity]);
+                    $lowQuantityItem = $good;
+                    $lowQuantityItem['required'] = $billItemQuantity - $totalQuantity;
+                    $lowQuantityItem['persianName'] = $persianPartNumber;
+                    array_push($lowQuantity, $lowQuantityItem);
                     break;
                 }
             }
@@ -246,7 +254,7 @@ function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, 
     if ($isComplete) {
         $destination = "http://delivery.yadak.center/";
     } else {
-        $destination = $factorNumber % 2 == 0 ? "http://sells.yadak.center/" : "http://sells2.yadak.center/";
+        $destination = $factorNumber % 2 == 0 ? "http://sells.yadak.center" : "http://sells.yadak.center";
     }
 
     sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete);
@@ -272,6 +280,8 @@ function sendPurchaseReportMessage($lowQuantity)
     // Execute cURL request
     $result = curl_exec($ch);
 
+    print_r($result);
+
     // Close cURL session
     curl_close($ch);
 }
@@ -285,7 +295,7 @@ function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuanti
     }
 
     $postData = array(
-        "sendMessage" => "sellsReportTest",
+        "sendMessage" => "sellsReportButtons",
         "header" => $header,
         "topic_id" => $typeID,
         "selectedGoods" => json_encode($selectedGoods),
@@ -303,7 +313,6 @@ function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuanti
 
     // Execute cURL request
     $result = curl_exec($ch);
-
     // Close cURL session
     curl_close($ch);
 }
@@ -519,7 +528,7 @@ function getTotalQuantity($goods = [], $brandsName = [])
     return $totalQuantity;
 }
 
-function addToBillItems($good, $quantity, &$selectedGoods, $index)
+function addToBillItems($good, $quantity, &$selectedGoods, $index, $remaining, $persianName)
 {
     // Check if the item already exists in billItems
     if (array_key_exists($good['goodId'], $selectedGoods)) {
@@ -540,7 +549,9 @@ function addToBillItems($good, $quantity, &$selectedGoods, $index)
                 'sellerName' => $good['seller_name'],
                 'quantity' => $quantity,
                 'pos1' => $good['pos1'],
-                'pos2' => $good['pos2']
+                'pos2' => $good['pos2'],
+                'remaining_qty' => $remaining,
+                'persianName' => $persianName,
             ]);
         }
     } else {
@@ -557,7 +568,9 @@ function addToBillItems($good, $quantity, &$selectedGoods, $index)
             'sellerName' => $good['seller_name'],
             'quantity' => $quantity,
             'pos1' => $good['pos1'],
-            'pos2' => $good['pos2']
+            'pos2' => $good['pos2'],
+            'remaining_qty' => $remaining,
+            'persianName' => $persianName,
         ];
     }
 }

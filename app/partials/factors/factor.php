@@ -125,7 +125,7 @@ function displayUI($factors, $countFactorByUser)
                             <?php if (in_array($_SESSION['username'], $qualified)): ?>
                                 <td class="hide_while_print">
                                     <div class="flex justify-center items-center">
-                                        <input onclick="changeStatus(this)" <?= $factor["approved"] ? 'checked' : '' ?> type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
+                                        <input onclick="changeStatus(this)" <?= ($factor["exists_in_phones"] || $factor["approved"]) ? 'checked' : '' ?> type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
                                     </div>
                                 </td>
                             <?php endif; ?>
