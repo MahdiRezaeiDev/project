@@ -191,7 +191,7 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
                     $trackingQuantity[$good['quantityId']] -= $sellQuantity;
 
                     // Add the allocated good to the selected goods
-                    addToBillItems($good, $sellQuantity, $selectedGoods, $item->id, $trackingQuantity[$good['quantityId']], $persianPartNumber);
+                    addToBillItems($good, $sellQuantity, $selectedGoods, $item->id, $totalQuantity, $persianPartNumber);
                 } else {
                     $good['quantity'] = $totalQuantity;
                     $good['id'] = $item->id;
@@ -252,7 +252,7 @@ function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, 
 
 
     if ($isComplete) {
-        $destination = "http://delivery.yadak.center/";
+        $destination = "http://sells.yadak.center/";
     } else {
         $destination = $factorNumber % 2 == 0 ? "http://sells.yadak.center" : "http://sells.yadak.center";
     }
@@ -295,7 +295,7 @@ function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuanti
     }
 
     $postData = array(
-        "sendMessage" => "sellsReportButtons",
+        "sendMessage" => "sellsReportTest",
         "header" => $header,
         "topic_id" => $typeID,
         "selectedGoods" => json_encode($selectedGoods),
@@ -313,6 +313,7 @@ function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuanti
 
     // Execute cURL request
     $result = curl_exec($ch);
+    print_r($result);
     // Close cURL session
     curl_close($ch);
 }
