@@ -197,8 +197,8 @@ require_once '../../layouts/inventory/sidebar.php'; ?>
 
         if (goods.length > 0) {
             for (good of goods) {
-                if (good.sellerName !== 'کاربر دستوری') {
-                    resultBox.innerHTML += `
+                // if (good.sellerName !== 'کاربر دستوری') {
+                resultBox.innerHTML += `
                     <div id="${good.quantityId}" class="bg-gray-100 shadow rounded-lg overflow-hidden mb-2 selected_card">
                         <div class="bg-gray-800 rounded-t-md p-2">
                             <p class="text-left font-semibold text-white text-sm">
@@ -241,7 +241,7 @@ require_once '../../layouts/inventory/sidebar.php'; ?>
                         </div>
                     </div>
                     `;
-                }
+                // }
             }
 
             const selectedCards = document.querySelectorAll('.selected_card');
