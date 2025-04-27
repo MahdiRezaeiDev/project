@@ -139,6 +139,7 @@ $today = date('Y-m-d');
         END_ID.value = element.dataset.end_id;
     }
 
+
     function updateWorkHour(event) {
         event.preventDefault();
         const user_id = USER_ID.value;
@@ -313,6 +314,38 @@ $today = date('Y-m-d');
             onRender: function() {}
         })
     });
+
+    function setOffDay() {
+        const user = event.target.dataset.user;
+        const date = event.target.dataset.date;
+        const selectedUser = event.target.dataset.selecteduser;
+
+        const params = new URLSearchParams({
+            action: 'SetOffDay',
+            user,
+            date,
+            selectedUser
+        });
+
+        confirm(`آیا می خواهید مرخصی کاربر ${user} را ثبت کنید؟`) ?
+            axios.post(END_POINT, params)
+            .then(response => {
+                const data = response;
+                if (data.status == 200) {
+                    message.innerText = data.data.message;
+                    setTimeout(() => {
+                        alert(`مرخصی کاربر ${user} ثبت شد.`);
+                        window.location.reload();
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            }) :
+            alert(`مرخصی کاربر ${user} ثبت نشد.`);
+
+
+    }
 </script>
 
 <?php

@@ -1,5 +1,5 @@
 const address = "../../app/api/callcenter/TelegramPartnerApi.php";
-const externalAddressPoint = "http://telegram.yadak.center/";
+const externalAddressPoint = "http://tel.yadak.center/";
 
 let localData = [];
 function getInitialData() {
@@ -37,7 +37,9 @@ function sendMessage() {
 
     axios
       .post(externalAddressPoint, params)
-      .then(function (response) {})
+      .then(function (response) {
+        console.log(response.data);
+      })
       .catch(function (error) {});
 
     const logParams = new URLSearchParams();
@@ -331,7 +333,12 @@ function addPartner(element) {
   axios
     .post(address, params)
     .then(function (response) {
-      console.log(response.data);
+      const message = document.getElementById("success");
+      message.classList.remove("hidden");
+      setTimeout(() => {
+        message.classList.add("hidden");
+      }, 2000);
+      displayLocalData();
     })
     .catch(function (error) {
       console.log(error);

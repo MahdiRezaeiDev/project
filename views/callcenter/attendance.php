@@ -17,15 +17,22 @@ $users = getUsers();
             <i class="material-icons text-rose-600 font-semibold cursor-pointer" onclick="closeModal()">close</i>
         </div>
         <hr class="my-3">
-        <p class="text-xs text-gray-500 font-semibold py-1">ساعات کاری <span class=" bg-gray-400 rounded-sm px-3 py-1 text-white" id="user"></span></p>
-        <form action="#" onsubmit="updateWorkHour(event)" method="post">
+        <span class="text-xs font-semibold bg-gray-400 rounded-sm px-3 py-1 text-white" id="user"></span>
+        <form class="py-5" action="#" onsubmit="updateWorkHour(event)" method="post">
             <input type="text" name="user_id" id="user_id" hidden>
+            <label class="text-xs text-gray-500 font-semibold py-1" for="start">شروع کار</label>
             <input id="start" type="time" class="border border-gray-300 w-full p-2 rounded mt-2" placeholder="ساعت شروع کار">
+            <label class="text-xs text-gray-500 font-semibold py-1" for="end">پایان کار</label>
             <input id="end" type="time" class="border border-gray-300 w-full p-2 rounded mt-2" placeholder="ساعت پایان کار">
+            <label class="text-xs text-gray-500 font-semibold py-1" for="endWeek">پنجشنبه</label>
             <input id="endWeek" type="time" class="border border-gray-300 w-full p-2 rounded mt-2" placeholder="ساعت پایان کار پنجشنبه">
-            <input id="late" type="number" min="0" class="border border-gray-300 w-full p-2 rounded mt-2" placeholder="تاخیر مجاز">
+            <div class="flex justify-between items-center pt-2">
+                <label class="text-xs text-gray-500 font-semibold py-1" for="late">تاخیر مجاز</label>
+                <p class="text-xs text-gray-500 font-semibold py-1">به دقیقه وارد کنید</p>
+            </div>
+            <input id="late" type="number" min="0" class="border border-gray-300 w-full p-2 rounded mt-2" dir="ltr" placeholder="تاخیر مجاز">
             <div class="flex justify-between items-center">
-                <button type="submit" class="bg-blue-500 text-white py-2 px-3 rounded-sm mt-2">
+                <button type="submit" class="bg-blue-700 text-white p-4 rounded-sm mt-2 text-xs font-semibold hover:bg-blue-800 transition duration-200 ease-in-out">
                     ویرایش ساعات کاری
                 </button>
                 <p id="message" class="text-xs text-green-500 font-semibold py-1"></p>
@@ -98,7 +105,7 @@ $users = getUsers();
                                         data-selectedUser="<?= $user['selectedUser'] ?>"
                                         data-start="<?= $user['start_hour'] ?>"
                                         data-end="<?= $user['end_hour'] ?>"
-                                        data-endWeek ="<?= $user['end_week'] ?>"
+                                        data-endWeek="<?= $user['end_week'] ?>"
                                         data-late="<?= $user['max_late_minutes'] ?>"
                                         onclick="editWorkHour(this)"
                                         class="text-blue-500 hover:text-blue-700 cursor-pointer">

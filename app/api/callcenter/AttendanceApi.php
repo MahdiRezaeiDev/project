@@ -20,9 +20,39 @@ if (isset($_POST['action'])) {
         case 'UpdateAttendance':
             UpdateAttendance();
             break;
+        case 'SetOffDay':
+            SetOffDay();
+            break;
         default:
             echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
             break;
+    }
+}
+
+function SetOffDay()
+{
+    $user_id = $_POST['selectedUser'];
+    $time = date('H:i:s');
+    $action = 'off';
+
+
+    try {
+        $pdo = PDO_CONNECTION;
+        $sql = "INSERT INTO attendance_logs (user_id, action, timestamp) VALUES (:user_id, :action, :time) 
+                ON DUPLICATE KEY UPDATE action = :action, timestamp = :time";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':action', $action, PDO::PARAM_STR);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindParam(':time', $time, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if ($stmt->rowCount() === 1) {
+            echo json_encode(['status' => 'success', 'message' => 'ساعت کار با موفقیت به روز رسانی شد']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'خطا در به روز رسانی ساعت شروع کار']);
+        }
+    } catch (PDOException $e) {
+        echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
     }
 }
 

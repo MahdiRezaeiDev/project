@@ -180,13 +180,22 @@ function partnerExist($id)
 
 function updatePartner($chat_id, $current_cat, $data)
 {
+    $current_cat = array_map(function ($item) {
+        return is_array($item) ? reset($item) : $item;
+    }, $current_cat);
+
+    $data = array_map(function ($item) {
+        return is_array($item) ? reset($item) : $item;
+    }, $data);
+
     $toDelete = array_unique(array_diff($current_cat, $data));
     $toAdd = array_unique(array_diff($data, $current_cat));
 
+
     if (count($toDelete) > 0) {
+        $match = "DELETE FROM telegram.partner_category_match WHERE partner_id = :partner_id AND cat_id = :cat_id";
+        $stmt = PDO_CONNECTION->prepare($match);
         foreach ($toDelete as $id) {
-            $match = "DELETE FROM telegram.partner_category_match WHERE partner_id = :partner_id AND cat_id = :cat_id";
-            $stmt = PDO_CONNECTION->prepare($match);
             $stmt->bindParam(':partner_id', $chat_id, PDO::PARAM_INT);
             $stmt->bindParam(':cat_id', $id, PDO::PARAM_INT);
             $stmt->execute();
@@ -194,10 +203,10 @@ function updatePartner($chat_id, $current_cat, $data)
     }
 
     if (count($toAdd) > 0) {
+        $match = "INSERT INTO telegram.partner_category_match (partner_id, cat_id) VALUES (:partner_id, :cat_id)";
+        $stmt = PDO_CONNECTION->prepare($match);
         foreach ($toAdd as $id) {
             try {
-                $match = "INSERT INTO telegram.partner_category_match (partner_id, cat_id) VALUES (:partner_id, :cat_id)";
-                $stmt = PDO_CONNECTION->prepare($match);
                 $stmt->bindParam(':partner_id', $chat_id, PDO::PARAM_INT);
                 $stmt->bindParam(':cat_id', $id, PDO::PARAM_INT);
                 $stmt->execute();
@@ -210,22 +219,27 @@ function updatePartner($chat_id, $current_cat, $data)
 
 function createPartner($chat_id, $name, $username, $profile, $data)
 {
-    $sql = "INSERT INTO telegram.telegram_partner (chat_id, name, username, profile) 
+    try {
+        $sql = "INSERT INTO telegram.telegram_partner (chat_id, name, username, profile) 
             VALUES (:chat_id, :name, :username, :profile)";
-    $stmt = PDO_CONNECTION->prepare($sql);
-    $stmt->bindParam(':chat_id', $chat_id, PDO::PARAM_INT);
-    $stmt->bindParam(':name', $name, PDO::PARAM_STR);
-    $stmt->bindParam(':username', $username, PDO::PARAM_STR);
-    $stmt->bindParam(':profile', $profile, PDO::PARAM_STR);
-    $stmt->execute();
+        $stmt = PDO_CONNECTION->prepare($sql);
+        $stmt->bindParam(':chat_id', $chat_id, PDO::PARAM_INT);
+        $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+        $stmt->bindParam(':profile', $profile, PDO::PARAM_STR);
+        $stmt->execute();
 
-    foreach ($data as $id) {
         $sql = "INSERT INTO telegram.partner_category_match (partner_id , cat_id) 
         VALUES (:chat_id, :cat_id)";
         $stmt = PDO_CONNECTION->prepare($sql);
-        $stmt->bindParam(':chat_id', $chat_id, PDO::PARAM_INT);
-        $stmt->bindParam(':cat_id', $id, PDO::PARAM_INT);
-        $stmt->execute();
+
+        foreach ($data as $id) {
+            $stmt->bindParam(':chat_id', $chat_id, PDO::PARAM_INT);
+            $stmt->bindParam(':cat_id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+        }
+    } catch (\Throwable $th) {
+        throw $th;
     }
 }
 

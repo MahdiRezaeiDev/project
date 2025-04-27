@@ -7,9 +7,13 @@
 
     $START_HOUR = getUserAttendanceReport('start', $user['selectedUser'], $reportDate);
     $END_HOUR = getUserAttendanceReport('leave', $user['selectedUser'], $reportDate);
+    $IS_OFF = getUserAttendanceReport('off', $user['selectedUser'], $reportDate);
+    if (count($IS_OFF) > 0) {
+        echo '<p colspan="4" class="py-2 text-center bg-sky-600 text-white">مرخص</p>';
+    }
     ?>
     <table class="w-full text-sm text-left rtl:text-right text-gray-800 h-full">
-        <?php if (count($START_HOUR) > 0) { ?>
+        <?php if (count($START_HOUR) > 0 && count($IS_OFF) <= 0) { ?>
             <thead class="text-sm text-gray-700 uppercase bg-gray-500">
                 <tr>
                     <th class="text-xs text-center p-2 text-white">ورود</th>
@@ -73,16 +77,33 @@
                             </span>
                         </td>
                     </tr>
-            <?php
+                    <?php
                 endforeach;
-            } else {
+            } else if (count($IS_OFF) <= 0) {
                 if ($counter == 6) {
                     echo '<tr><td colspan="4" class="text-center text-red-500">تعطیل</td></tr>';
                 } else {
                     if (strtotime($reportDate) > strtotime($today)) {
                         echo '<tr><td colspan="4" class="text-center text-green-700">ثبت نشده</td></tr>';
                     } else {
-                        echo '<tr><td colspan="4" class="text-center text-red-500">غایب</td></tr>';
+                    ?>
+                        <tr>
+                            <td colspan="4" class="flex justify-around">
+                                <p class="text-rose-500">
+                                    غایب
+                                </p>
+                                <p
+                                    class="text-xs text-sky-500 cursor-pointer"
+                                    data-user="<?= $user['name'] . ' ' . $user['family'] ?>"
+                                    data-selectedUser="<?= $user['selectedUser'] ?>"
+                                    data-date="<?= $reportDate ?>"
+                                    onclick="setOffDay()">
+                                    رد کردن مرخصی
+                                </p>
+
+                            </td>
+                        </tr>
+            <?php
                     }
                 }
             }
