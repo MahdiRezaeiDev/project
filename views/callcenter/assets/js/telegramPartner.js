@@ -273,7 +273,9 @@ async function getContacts() {
 
     try {
       // Make the Axios request to fetch contact data
-      const response = await axios.post(externalAddressPoint);
+      const params = new URLSearchParams();
+      params.append("getContacts", "getContacts");
+      const response = await axios.post(externalAddressPoint, params);
       displayTelegramData(response.data);
       isLoadedTelegramContacts = true;
     } catch (error) {
