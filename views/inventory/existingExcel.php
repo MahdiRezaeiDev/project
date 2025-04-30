@@ -19,7 +19,7 @@ $deficits = [];
 function getPurchaseReport()
 {
     global $stock;
-    $sql = "SELECT nisha.partnumber, nisha.id, qtybank.id as qid, stock.name AS stckname, nisha.price AS nprice,
+    $sql = "SELECT nisha.partnumber, nisha.partName, nisha.id, qtybank.id as qid, stock.name AS stckname, nisha.price AS nprice,
                 seller.name, brand.name AS brand_name, qtybank.qty, qtybank.pos1, qtybank.pos2,
                 qtybank.des, qtybank.id AS qtyid, qtybank.qty AS entqty, qtybank.is_transfered
             FROM $stock.qtybank
@@ -82,6 +82,7 @@ $sanitizedData = [];
 foreach ($existingGoods as $row) {
     $sanitizedData[] = [
         'partnumber' => strtoupper($row["partnumber"]),
+        'partName' => $row["partName"],
         'brand' => $row["brand_name"],
         'quantity' => $row["remaining_qty"],
         'seller' => $row["name"],
@@ -97,7 +98,7 @@ $sheet = $spreadsheet->getActiveSheet();
 
 // Set custom column headers
 $customHeaders = [
-    'شماره فنی', 'برند', 'تعداد', 'فروشنده', 'راهرو', 'قفسه', 'توضیحات', 'انبار'
+    'شماره فنی','قطعه' ,'برند', 'تعداد', 'فروشنده', 'راهرو', 'قفسه', 'توضیحات', 'انبار'
 ];
 
 $col = 1;
