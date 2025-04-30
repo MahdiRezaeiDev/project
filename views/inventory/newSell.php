@@ -532,7 +532,13 @@ require_once '../../layouts/inventory/sidebar.php';
         resultBox.innerHTML = '';
         if (goods.length > 0) {
             for (good of goods) {
-                if (good.sellerName !== 'کاربر دستوری') {
+                const excluded = [
+                    'کاربر دستوری',
+                    'کاربر دستوری معیوب',
+                    'کاربر دستوری مفقود'
+                ];
+
+                if (!excluded.includes(good.sellerName)) {
                     resultBox.innerHTML += `
                     <div id="${good.quantityId}" class="bg-gray-100 shadow rounded-lg overflow-hidden mb-2 selected_card">
                         <div class="bg-gray-800 rounded-t-md p-2">
