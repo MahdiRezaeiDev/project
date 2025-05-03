@@ -1,5 +1,5 @@
 const address = "../../app/api/callcenter/TelegramPartnerApi.php";
-const externalAddressPoint = "http://partner.yadak.center/";
+const externalAddressPoint = "http://partners.yadak.center/";
 
 let localData = [];
 function getInitialData() {
@@ -146,7 +146,7 @@ function displayLocalData() {
       for (let user of partners) {
         const related_cats = user.category_names.split(",");
         // Substring to be replaced
-        var search = "http://partner.yadak.center/";
+        var search = "http://partners.yadak.center/";
 
         // Replace the substring
         var newUrl = user.profile.replace(search, externalAddressPoint);
