@@ -188,7 +188,7 @@
                                                                             }
                                                                         }
                                                                 ?>
-                                                                        <tr class="<?= $item['seller_name'] == 'کاربر دستوری' ? 'bg-red-500' : 'bg-gray-600' ?>">
+                                                                        <tr class="<?= in_array($item['seller_name'], $excludedSellers) ? 'bg-red-500' : 'bg-gray-600' ?>">
                                                                             <td class="p-2 text-xs text-right"><?= $item['seller_name'] ?></td>
                                                                             <td class="p-2 text-xs text-right"><?= $item['remaining_qty'] ?></td>
                                                                             <td class="p-2 text-xs text-right"><?= (explode(' ', $item['invoice_date'])[0]) ?></td>

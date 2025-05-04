@@ -13,7 +13,11 @@ $AvailableBrands = getBrands();
 $brandsEnglishName = array_column($AvailableBrands, 'name');
 $brandsPersianName = array_column($AvailableBrands, 'persian_name');
 $customBrands = json_encode(array_combine($brandsEnglishName, $brandsPersianName));
-
+$excludedSellers = [
+    'کاربر دستوری',
+    'کاربر دستوری معیوب',
+    'کاربر دستوری مفقود'
+];
 if ($isValidCustomer) :
     if ($finalResult) :
         $explodedCodes = $finalResult['explodedCodes'];
