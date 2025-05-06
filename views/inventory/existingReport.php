@@ -5,7 +5,9 @@ require_once './components/header.php';
 require_once '../../app/controller/inventory/ExistingController.php';
 require_once '../../utilities/inventory/InventoryHelpers.php';
 require_once '../../layouts/inventory/nav.php';
-require_once '../../layouts/inventory/sidebar.php'; ?>
+require_once '../../layouts/inventory/sidebar.php';
+
+?>
 <script>
     const endpointAddress = "../../app/api/inventory/ExistingGoodsApi.php";
 
@@ -65,7 +67,7 @@ require_once '../../layouts/inventory/sidebar.php'; ?>
                         <tr class="<?= $good['is_transfered'] ? 'bg-orange-400' : 'even:bg-sky-100' ?>">
                             <td class="text-xs text-center w-2.5"><?= $index + 1 ?></td>
                             <td class="p-2 text-center text-lg text-white font-semibold uppercase <?= $item['sellerName'] == 'کاربر دستوری' ? 'bg-orange-400' : 'bg-sky-500' ?>">
-                                &nbsp;<?= $good['sellerName'] == 'کاربر دستوری' ? '
+                                &nbsp;<?= in_array($good['sellerName'], $excludedSellers) ? '
                                     <img class=" absolute right-12 shake" src="./assets/icons/warning.svg" />'
                                             : '' ?>
                                 <?= $good["partNumber"] . ' '; ?>

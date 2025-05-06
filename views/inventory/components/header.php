@@ -37,4 +37,9 @@ function convertPersianToEnglish($string)
 <body class="pt-14">
     <?php
     require_once '../../utilities/attendance/attendanceHelper.php';
+    $excludedSellers = [
+        'کاربر دستوری',
+        'کاربر دستوری معیوب',
+        'کاربر دستوری مفقود'
+    ];
     ?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @param Connection to the database
  * @return array of rates selected to be used in the goods report table
@@ -81,6 +82,12 @@ function relations($id, $condition)
 {
     $relations = [];
     $limit_id = '';
+    $excludedSellers = [
+        'کاربر دستوری',
+        'کاربر دستوری معیوب',
+        'کاربر دستوری مفقود'
+    ];
+
 
     if ($condition) {
         $sql = "SELECT nisha.* 
@@ -125,7 +132,7 @@ function relations($id, $condition)
     $existingQuantity = 0;
     foreach ($stockInfo as $key => $stock) {
         foreach ($stock as $item) {
-            if ($item['seller_name'] !== 'کاربر دستوری') {
+            if (!in_array($item['seller_name'], $excludedSellers)) {
                 $existingQuantity += intval($item['remaining_qty']);
             }
         }
@@ -289,6 +296,13 @@ function exist($ids)
 {
     global $stock;
 
+    $excludedSellers = [
+        'کاربر دستوری',
+        'کاربر دستوری معیوب',
+        'کاربر دستوری مفقود'
+    ];
+
+
     // Prepare the base SQL query with LEFT JOIN to exitrecord and necessary calculations
     $base_sql = "SELECT qtybank.id AS quantityId, codeid AS goodId, brand.name AS brandName, qtybank.qty AS quantity,
                     create_time AS invoice_date, seller.name AS seller_name, brand.id AS brandId, stock.id AS stockId,
@@ -339,7 +353,7 @@ function exist($ids)
         foreach ($existingGoods as $item) {
             $brandName = $item['brandName'];
             $remainingQuantity = $item['remaining_qty'];
-            if ($item['seller_name'] !== 'کاربر دستوری') {
+            if (!in_array($item['seller_name'], $excludedSellers)) {
                 if (isset($brands_info[$brandName])) {
                     $brands_info[$brandName] += $remainingQuantity;
                 } else {

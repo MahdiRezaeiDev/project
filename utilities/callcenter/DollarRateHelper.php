@@ -272,6 +272,12 @@ function timeFormatter($date)
 
 function getExistingBrands($stockInfo)
 {
+    $excludedSellers = [
+        'کاربر دستوری',
+        'کاربر دستوری معیوب',
+        'کاربر دستوری مفقود'
+    ];
+
     if ($stockInfo) {
         $stockInfo = array_values($stockInfo);
 
@@ -282,7 +288,7 @@ function getExistingBrands($stockInfo)
         $brands = [];
         foreach ($stockInfo as $stock) {
             foreach ($stock as $item) {
-                if ($item['seller_name'] !== 'کاربر دستوری') {
+                if (!in_array($item['seller_name'], $excludedSellers)) {
                     $brands[] = strtoupper($item['brandName']);
                 }
             }
@@ -345,6 +351,7 @@ function addRelatedBrands($brands)
         'GMB' => ['KOREA'],
         'BRG' => ['KOREA'],
         'KGC' => ['KOREA'],
+        'GATES' => ['KOREA'],
     ];
 
     // Normalize brand names to uppercase

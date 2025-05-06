@@ -201,9 +201,14 @@ require_once '../../layouts/inventory/sidebar.php';
                                 </p>`;
                             }
 
-                            INVENTORY_GOODS = INVENTORY_GOODS.filter((good) => {
-                                return good.seller_name != 'کاربر دستوری';
-                            });
+                            const excluded = new Set([
+                                'کاربر دستوری',
+                                'کاربر دستوری معیوب',
+                                'کاربر دستوری مفقود'
+                            ]);
+
+                            INVENTORY_GOODS = INVENTORY_GOODS.filter(good => !excluded.has(good.seller_name));
+
 
                             if (!INVENTORY_CODES.includes(GOOD_NAME_PART) && INVENTORY_GOODS.length != 0) {
                                 ERROR_BOX.innerHTML += `<p class="p-2 text-green-500 text-xs font-semibold shadow">
@@ -532,11 +537,11 @@ require_once '../../layouts/inventory/sidebar.php';
         resultBox.innerHTML = '';
         if (goods.length > 0) {
             for (good of goods) {
-                const excluded = [
+                const excluded = new Set([
                     'کاربر دستوری',
                     'کاربر دستوری معیوب',
                     'کاربر دستوری مفقود'
-                ];
+                ]);
 
                 if (!excluded.includes(good.sellerName)) {
                     resultBox.innerHTML += `

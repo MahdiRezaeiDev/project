@@ -82,6 +82,11 @@ function relations($id, $condition)
 {
     $relations = [];
     $limit_id = '';
+    $excludedSellers = [
+        'کاربر دستوری',
+        'کاربر دستوری معیوب',
+        'کاربر دستوری مفقود'
+    ];
 
     if ($condition) {
         $sql = "SELECT nisha.* 
@@ -126,7 +131,7 @@ function relations($id, $condition)
     $existingQuantity = 0;
     foreach ($stockInfo as $key => $stock) {
         foreach ($stock as $item) {
-            if ($item['seller_name'] !== 'کاربر دستوری') {
+            if (!in_array($item['seller_name'], $excludedSellers)) {
                 $existingQuantity += intval($item['remaining_qty']);
             }
         }

@@ -90,6 +90,7 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
                     'BRG',
                     'GMB',
                     'KGC',
+                    'GATES'
                 ],
                 'CHINA' => [
                     'OEMAX',
