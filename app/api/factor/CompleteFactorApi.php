@@ -35,8 +35,8 @@ if (isset($_POST['GenerateCompleteFactor'])) {
 
         CreateCompleteBill($factorInfo, $customer_id, $factorNumber);
         CreateBillItems($factorInfo, $factorItems);
-        getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorNumber, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date, false);
-        sendSMS($customerInfo, $factorInfo, $factorItems, $factorNumber);
+        $SMS_Status = sendSMS($customerInfo, $factorInfo, $factorItems, $factorNumber);
+        getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorNumber, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date, false, $SMS_Status);
     } catch (Exception $e) {
         $success = false; // Set success to false if an error occurred
     }
@@ -62,12 +62,17 @@ function sendSMS($customer, $factor, $factorItems, $factorNumber)
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
     // Execute cURL request
-    curl_exec($ch);
+    $result = curl_exec($ch);
+
     // Close cURL session
     curl_close($ch);
-    exit();
+
+    // Return the result instead of printing it
+    return $result;
 }
+
 
 if (isset($_POST['updateCompleteFactor'])) {
     $customerInfo = json_decode($_POST['customerInfo']);

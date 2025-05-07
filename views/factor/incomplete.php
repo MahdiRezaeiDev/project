@@ -168,6 +168,11 @@ require_once '../../layouts/callcenter/sidebar.php';
                     </button>
                 </li>
             </ul>
+            <p id="save_message_sms" class="hidden bg-white text-green-400 px-3 py-1">
+                ویرایش موفقانه صورت گرفت
+                <span class="bg-red-500 text-white px-3 py-1">ارسال پیام به مشتری ناموفق بود.</span>
+                <a id="sms_link" href="">مشاهده فاکتور</a>
+            </p>
             <p id="save_message" class="hidden bg-white text-green-400 px-3 py-1">ویرایش موفقانه صورت گرفت</p>
             <p id="save_error_message" class="hidden bg-red-500 text-white px-3 py-1">خطا در ویرایش اطلاعات</p>
         </section>
@@ -781,22 +786,46 @@ require_once './components/factor.php';
                 const data = response.data;
 
                 const factorNumber = data.factorNumber;
+                let SMS_Status = JSON.parse(data.SMS_Status);
                 params.append('factorNumber', factorNumber);
 
+                SMS_Status = SMS_Status.status;
+
+
                 if (data.status == 'success') {
-                    const save_message = document.getElementById('save_message');
-                    save_message.classList.remove('hidden');
-                    setTimeout(() => {
-                        save_message.classList.add('hidden');
+                    let save_message = document.getElementById('save_message');
+
+                    if (SMS_Status != 1) {
+                        save_message = document.getElementById('save_message_sms');
+                        save_message.classList.remove('hidden');
+                        const link = document.getElementById('sms_link');
                         if (factorInfo['id']) {
                             localStorage.setItem('displayName', customerInfo.displayName);
+                            let link_address = '';
+
                             if (factorInfo['partner']) {
-                                window.location.href = './partnerFactor.php?factorNumber=' + factorInfo['id'];
+                                link_address = './partnerFactor.php?factorNumber=' + factorInfo['id'];
                             } else {
-                                window.location.href = './yadakFactor.php?factorNumber=' + factorInfo['id'];
+                                link_address = './yadakFactor.php?factorNumber=' + factorInfo['id'];
                             }
+                            link.setAttribute('href', link_address);
                         }
-                    }, 1000);
+
+                    } else {
+                        save_message.classList.remove('hidden');
+                        setTimeout(() => {
+                            save_message.classList.add('hidden');
+                            if (factorInfo['id']) {
+                                localStorage.setItem('displayName', customerInfo.displayName);
+                                if (factorInfo['partner']) {
+                                    window.location.href = './partnerFactor.php?factorNumber=' + factorInfo['id'];
+                                } else {
+                                    window.location.href = './yadakFactor.php?factorNumber=' + factorInfo['id'];
+                                }
+                            }
+                        }, 1000);
+                    }
+
                 } else {
                     const save_error_message = document.getElementById('save_error_message');
                     save_error_message.classList.remove('hidden');

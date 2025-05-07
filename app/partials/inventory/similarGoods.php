@@ -1,5 +1,5 @@
 <?php
-function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $factorType, $totalPrice, $date, $isComplete)
+function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $factorType, $totalPrice, $date, $isComplete, $SMS_Status)
 {
     $selectedGoods = [];
     $lowQuantity = [];
@@ -213,9 +213,9 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
     $selectedGoods = [...$selectedGoods, ...$lowQuantity];
 
     if (hasPreSellFactor($billId)) {
-        update_pre_bill($billId, json_encode($selectedGoods), json_encode([]), $factorNumber);
+        update_pre_bill($billId, json_encode($selectedGoods), json_encode([]), $factorNumber, $SMS_Status);
     } else {
-        save_pre_bill($billId, json_encode($selectedGoods), json_encode([]), $factorNumber);
+        save_pre_bill($billId, json_encode($selectedGoods), json_encode([]), $factorNumber, $SMS_Status);
     }
 }
 
@@ -281,8 +281,6 @@ function sendPurchaseReportMessage($lowQuantity)
     // Execute cURL request
     $result = curl_exec($ch);
 
-    print_r($result);
-
     // Close cURL session
     curl_close($ch);
 }
@@ -314,7 +312,6 @@ function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuanti
 
     // Execute cURL request
     $result = curl_exec($ch);
-    print_r($result);
     // Close cURL session
     curl_close($ch);
 }
@@ -577,7 +574,7 @@ function addToBillItems($good, $quantity, &$selectedGoods, $index, $remaining, $
     }
 }
 
-function save_pre_bill($billId, $billItems, $billItemsDescription, $factorNumber)
+function save_pre_bill($billId, $billItems, $billItemsDescription, $factorNumber, $SMS_Status)
 {
     try {
         // Prepare the SQL statement with correct placeholders
@@ -597,16 +594,26 @@ function save_pre_bill($billId, $billItems, $billItemsDescription, $factorNumber
 
         // Execute the statement and handle the result
         if ($stmt->execute()) {
-            echo json_encode(array('status' => 'success', 'message' => 'Bill saved successfully', 'factorNumber' => $factorNumber));
+            echo json_encode([
+
+                'status' => 'success',
+                'message' => 'Bill updated successfully',
+                'factorNumber' => $factorNumber,
+                'SMS_Status' => $SMS_Status
+            ]);
         } else {
-            echo json_encode(array('status' => 'error', 'message' => 'Failed to save bill'));
+            echo json_encode([
+
+                'status' => 'error',
+                'message' => 'Failed to update bill'
+            ]);
         }
     } catch (\Throwable $th) {
         echo json_encode(array('status' => 'error', 'message' => 'An error occurred: ' . $th->getMessage()));
     }
 }
 
-function update_pre_bill($billId, $billItems, $billItemsDescription, $factorNumber)
+function update_pre_bill($billId, $billItems, $billItemsDescription, $factorNumber, $SMS_Status)
 {
     try {
         // Prepare the SQL statement with correct placeholders
@@ -625,12 +632,26 @@ function update_pre_bill($billId, $billItems, $billItemsDescription, $factorNumb
 
         // Execute the statement and handle the result
         if ($stmt->execute()) {
-            echo json_encode(array('status' => 'success', 'message' => 'Bill updated successfully', 'factorNumber' => $factorNumber));
+            echo json_encode([
+
+                'status' => 'success',
+                'message' => 'Bill updated successfully',
+                'factorNumber' => $factorNumber,
+                'SMS_Status' => $SMS_Status
+            ]);
         } else {
-            echo json_encode(array('status' => 'error', 'message' => 'Failed to update bill'));
+            echo json_encode([
+
+                'status' => 'error',
+                'message' => 'Failed to update bill'
+            ]);
         }
     } catch (\Throwable $th) {
-        echo json_encode(array('status' => 'error', 'message' => 'An error occurred: ' . $th->getMessage()));
+        echo json_encode([
+
+            'status' => 'error',
+            'message' => 'An error occurred: ' . $th->getMessage()
+        ]);
     }
 }
 
