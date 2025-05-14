@@ -784,30 +784,35 @@ require_once './components/factor.php';
         axios.post("../../app/api/factor/CompleteFactorApi.php", params)
             .then(function(response) {
                 const data = response.data;
-
                 const factorNumber = data.factorNumber;
-                let SMS_Status = JSON.parse(data.SMS_Status);
                 params.append('factorNumber', factorNumber);
 
-                SMS_Status = SMS_Status.status;
+                let SMS_Status = 1; // Default to 1 (assume SMS sent) if not present
 
+                if (data.SMS_Status) {
+                    try {
+                        const parsedStatus = JSON.parse(data.SMS_Status);
+                        SMS_Status = parsedStatus.status ?? 1; // fallback to 1 if status is missing
+                    } catch (e) {
+                        console.error("Failed to parse SMS_Status:", e);
+                        SMS_Status = 1;
+                    }
+                }
 
-                if (data.status == 'success') {
+                if (data.status === 'success') {
                     let save_message = document.getElementById('save_message');
 
                     if (SMS_Status != 1) {
                         save_message = document.getElementById('save_message_sms');
                         save_message.classList.remove('hidden');
+
                         const link = document.getElementById('sms_link');
                         if (factorInfo['id']) {
                             localStorage.setItem('displayName', customerInfo.displayName);
-                            let link_address = '';
+                            let link_address = factorInfo['partner'] ?
+                                './partnerFactor.php?factorNumber=' + factorInfo['id'] :
+                                './yadakFactor.php?factorNumber=' + factorInfo['id'];
 
-                            if (factorInfo['partner']) {
-                                link_address = './partnerFactor.php?factorNumber=' + factorInfo['id'];
-                            } else {
-                                link_address = './yadakFactor.php?factorNumber=' + factorInfo['id'];
-                            }
                             link.setAttribute('href', link_address);
                         }
 
@@ -817,11 +822,9 @@ require_once './components/factor.php';
                             save_message.classList.add('hidden');
                             if (factorInfo['id']) {
                                 localStorage.setItem('displayName', customerInfo.displayName);
-                                if (factorInfo['partner']) {
-                                    window.location.href = './partnerFactor.php?factorNumber=' + factorInfo['id'];
-                                } else {
-                                    window.location.href = './yadakFactor.php?factorNumber=' + factorInfo['id'];
-                                }
+                                window.location.href = factorInfo['partner'] ?
+                                    './partnerFactor.php?factorNumber=' + factorInfo['id'] :
+                                    './yadakFactor.php?factorNumber=' + factorInfo['id'];
                             }
                         }, 1000);
                     }
@@ -832,11 +835,11 @@ require_once './components/factor.php';
 
                     setTimeout(() => {
                         save_error_message.classList.add('hidden');
-                        // Enable the element after unsuccessful request
                         element.disabled = false;
                         element.innerHTML = 'صدور فاکتور';
                     }, 3000);
                 }
+
 
             })
             .catch(function(error) {
