@@ -123,6 +123,8 @@ function getSpecification($explodedCodes)
     }
 
     $goodDetails = $finalGoods;
+
+    // print_r(json_encode($goodDetails));
     $finalResult = [];
 
     foreach ($goodDetails as $partNumber => $goodDetail) {
@@ -222,9 +224,14 @@ function relations($id, $condition)
 {
     $relations = [];
     $limit_id = '';
+    $excludedSellers = [
+        'کاربر دستوری',
+        'کاربر دستوری معیوب',
+        'کاربر دستوری مفقود'
+    ];
 
     if ($condition) {
-        $sql = "SELECT yadakshop.nisha.* 
+        $sql = "SELECT nisha.* 
                 FROM yadakshop.nisha 
                 INNER JOIN shop.similars ON similars.nisha_id = nisha.id 
                 WHERE similars.pattern_id = :id";
@@ -240,7 +247,6 @@ function relations($id, $condition)
         $stmt->bindParam(':id', $id, PDO::PARAM_STR);
         $stmt->execute();
         $relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         $limit_id = end($relations)['id'] . '-s';
     }
 
@@ -258,11 +264,19 @@ function relations($id, $condition)
         $sortedGoods[$relation['partnumber']] = $relation;
     }
 
-
     foreach ($unique_goods as $key => $relation_ids) {
         $data = exist($relation_ids);
         $existing[$key] = $data['brands_info'];
         $stockInfo[$key] = $data['stockInfo'];
+    }
+
+    $existingQuantity = 0;
+    foreach ($stockInfo as $key => $stock) {
+        foreach ($stock as $item) {
+            if (!in_array($item['seller_name'], $excludedSellers)) {
+                $existingQuantity += intval($item['remaining_qty']);
+            }
+        }
     }
 
     arsort($existing);
@@ -281,7 +295,8 @@ function relations($id, $condition)
         'existing' => $existing,
         'sorted' => $sorted,
         'stockInfo' => $stockInfo,
-        'limit_alert' => $limit_id
+        'limit_alert' => $limit_id,
+        'existingQuantity' => $existingQuantity
     ];
 }
 
@@ -361,6 +376,7 @@ function exist($ids)
     // Append the condition based on the number of IDs
     if (count($ids) == 1) {
         $data_sql = $base_sql . " WHERE codeid = :id
+                                    AND seller.name NOT IN ('کاربر دستوری', 'کاربر دستوری معیوب', 'کاربر دستوری مفقود')
                                   GROUP BY qtybank.id, codeid, brand.name, qtybank.qty, create_time, seller.name, brand.id
                                   HAVING remaining_qty > 0";
 
@@ -372,6 +388,7 @@ function exist($ids)
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
 
         $data_sql = $base_sql . " WHERE codeid IN ($placeholders)
+                                    AND seller.name NOT IN ('کاربر دستوری', 'کاربر دستوری معیوب', 'کاربر دستوری مفقود')
                                   GROUP BY qtybank.id, codeid, brand.name, qtybank.qty, create_time, seller.name, brand.id
                                   HAVING remaining_qty > 0";
 
