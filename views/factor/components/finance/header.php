@@ -84,6 +84,8 @@
             "MOB"
         ];
 
+
+
         for (const item of billItems) {
             const payPrice = Number(item.quantity) * Number(item.price_per);
             totalPrice += payPrice;
@@ -119,6 +121,7 @@
                             <table style="direction:ltr !important; border:none !important" id="${item.id}_finance" class="float-left">
                             </table>
                             <span class="float-left" id="des_${item.id}_finance"></span>
+                            
                         </td>
                         <td style="padding:15px 0 !important; width:10px !important" class="text-sm ${item.quantity != 1 ? 'font-semibold' : ''}">
                             <span>${item.quantity}</span>
@@ -175,7 +178,7 @@
         phoneElement.innerHTML = customerInfo.phone;
         if (customerInfo.address && customerInfo.address != "null")
             addressElement.innerHTML = customerInfo.address;
-        
+
         // if (customerInfo.car && customerInfo.car != "null")
         //     car_finance.innerHTML = customerInfo.car;
     }

@@ -119,6 +119,25 @@
                 }
             }
 
+            const price_difference = item.price_per - item.actual_price;
+
+            let price_template = '';
+
+            if (price_difference > 0) {
+                price_template = "* " + Math.abs(price_difference) + '+';
+            }
+
+            if (price_difference < 0) {
+                price_template = "* " + Math.abs(price_difference) + '-';
+            }
+
+            let originalPrice = item.original_price; // assuming `item` is a JS object
+            let LRTemplate = '';
+
+            if (originalPrice.includes('(LR)')) {
+                LRTemplate = '●';
+            }
+
             template += `
                     <tr class="even:bg-gray-100">
                         <td style="padding-block:10px !important;" class="text-sm text-center">
@@ -131,6 +150,11 @@
                             <table style="direction:ltr !important; border:none !important" id="owner_${item.id}" class="float-left">
                             </table>
                             <span class="float-left" id="des_${item.id}"></span>
+                            <span class="float-left">
+                            ${LRTemplate}
+                            ${price_template}
+
+                            </span>
                         </td>
                         <td style="padding:15px 0 !important; width:10px !important" class="text-sm ${item.quantity != 1 ? 'font-semibold' : ''}">
                             <span>${item.quantity}</span>

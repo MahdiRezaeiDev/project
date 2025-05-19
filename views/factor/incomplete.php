@@ -784,6 +784,7 @@ require_once './components/factor.php';
         axios.post("../../app/api/factor/CompleteFactorApi.php", params)
             .then(function(response) {
                 const data = response.data;
+
                 const factorNumber = data.factorNumber;
                 params.append('factorNumber', factorNumber);
 
