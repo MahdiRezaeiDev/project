@@ -150,7 +150,7 @@
                             <table style="direction:ltr !important; border:none !important" id="owner_${item.id}" class="float-left">
                             </table>
                             <span class="float-left" id="des_${item.id}"></span>
-                            <span class="float-left">
+                            <span class="float-left" id="template_${item.id}">
                             ${LRTemplate}
                             ${price_template}
 
