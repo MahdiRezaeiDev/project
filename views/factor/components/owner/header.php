@@ -124,11 +124,11 @@
             let price_template = '';
 
             if (price_difference > 0) {
-                price_template = "* " + Math.abs(price_difference)/10000 + '+';
+                price_template = "* " + Math.abs(price_difference) / 10000 + '+';
             }
 
             if (price_difference < 0) {
-                price_template = "* " + Math.abs(price_difference) /10000+ '-';
+                price_template = "* " + Math.abs(price_difference) / 10000 + '-';
             }
 
             let originalPrice = item.original_price; // assuming `item` is a JS object

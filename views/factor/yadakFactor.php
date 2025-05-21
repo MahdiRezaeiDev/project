@@ -117,6 +117,7 @@ if (!file_exists($profile)) {
                 <td style="padding: 3px !important; border: none !important; text-align: center !important; font-size:13px">${item.required ?? ''}</td>
             </tr>`;
             if (item.required) {
+                 document.getElementById('template_' + item.id).classList.add('hidden');
                 document.getElementById('owner_' + item.id).innerHTML += `
                     <tr>
                             <td style="padding: 3px !important; border: none !important; text-align: center !important; font-size:13px">${item.partNumber}</td>
