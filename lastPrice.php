@@ -19,8 +19,8 @@ header("Content-Type: application/json"); // Allow requests from any origin
 
 if (isset($_POST['code'])) {
     //remove all the special characters from the user input
-    $code = htmlspecialchars($_POST['code']);
-    $finalResult = getSpecification($code);
+    $code = [htmlspecialchars($_POST['code'])];
+    $finalResult = getSpecification($code[0]);
     echo json_encode($finalResult);
 }
 
@@ -34,11 +34,9 @@ function getSpecification($explodedCodes)
         return strtoupper(preg_replace('/[^a-z0-9]/i', '', $code));
     }, $explodedCodes);
 
-
     $sanitizedCodes = array_filter($sanitizedCodes, function ($code) {
         return strlen($code) > 6;
     });
-
 
     // Remove duplicate codes
     $explodedCodes = array_unique($sanitizedCodes);
@@ -64,11 +62,10 @@ function getSpecification($explodedCodes)
 
     $equal = [];
 
-
     foreach ($existing_code as $key => $info) {
         $item = current($info)['partnumber'];
-        if (isset($info) && !empty($info)) {
-            $equal[$key] = $info;
+        if (isset($item) && !empty($item)) {
+            $equal[$key] = $item;
         } else {
             $equal[$key] = 'N/A'; // or any other default value you prefer
         }
