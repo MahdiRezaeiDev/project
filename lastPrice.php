@@ -19,7 +19,7 @@ header("Content-Type: application/json"); // Allow requests from any origin
 
 if (isset($_POST['code'])) {
     //remove all the special characters from the user input
-    $code = [htmlspecialchars($_POST['code'])];
+    $code = htmlspecialchars($_POST['code']);
     $finalResult = getSpecification($code);
     echo json_encode($finalResult);
 }
