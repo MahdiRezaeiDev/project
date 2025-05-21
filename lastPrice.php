@@ -64,10 +64,11 @@ function getSpecification($explodedCodes)
 
     $equal = [];
 
+
     foreach ($existing_code as $key => $info) {
         $item = current($info)['partnumber'];
-        if (isset($item) && !empty($item)) {
-            $equal[$key] = $item;
+        if (isset($info) && !empty($info)) {
+            $equal[$key] = $info;
         } else {
             $equal[$key] = 'N/A'; // or any other default value you prefer
         }
