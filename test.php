@@ -75,9 +75,6 @@ require_once "../../layouts/admin/sidebar.php";
                 const response = await axios.post('http://84.241.41.22:9002/yadakshop-app/lastPrice.php', formData);
                 const displayPrices = response.data;
 
-                console.log(response.data);
-
-
                 const codes = displayPrices?.['explodedCodes'] || [];
                 const prices = displayPrices?.['prices'] || {};
                 const equal = displayPrices?.['equal'] || {};
