@@ -20,7 +20,7 @@ header("Content-Type: application/json"); // Allow requests from any origin
 if (isset($_POST['code'])) {
     //remove all the special characters from the user input
     $code = [htmlspecialchars($_POST['code'])];
-    // $code = [""];
+    // $code = ["351002E\n351002G"];
     $finalResult = getSpecification($code[0]);
     echo json_encode($finalResult);
 }
@@ -61,20 +61,8 @@ function getSpecification($explodedCodes)
         }
     }
 
-    $equal = [];
-
-    foreach ($existing_code as $key => $info) {
-        $item = current($info);
-        if (isset($item) && !empty($item)) {
-            $equal[$key] = array_column($info, 'partnumber');
-        } else {
-            $equal[$key] = 'N/A'; // or any other default value you prefer
-        }
-    }
-
     $goodDetails = [];
     $relation_id = [];
-
     foreach ($explodedCodes as $code) {
         if (!in_array($code, $nonExistingCodes)) {
             foreach ($existing_code[$code] as $item) {
@@ -125,6 +113,10 @@ function getSpecification($explodedCodes)
     }
 
     $goodDetails = $finalGoods;
+    $detailKeys = array_keys($goodDetails);
+    $existingKeys = array_keys($existing_code);
+
+    $equal = array_combine($existingKeys, $detailKeys);
 
     $finalResult = [];
 
