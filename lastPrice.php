@@ -17,13 +17,13 @@ header("Access-Control-Allow-Credentials: true");
 // Set content type to JSON
 header("Content-Type: application/json"); // Allow requests from any origin
 
-// if (isset($_POST['code'])) {
-//remove all the special characters from the user input
-// $code = [htmlspecialchars($_POST['code'])];
-$code = ["351002E\n351002G"];
-$finalResult = getSpecification($code[0]);
-echo json_encode($finalResult);
-// }
+if (isset($_POST['code'])) {
+    //remove all the special characters from the user input
+    $code = [htmlspecialchars($_POST['code'])];
+    // $code = [""];
+    $finalResult = getSpecification($code[0]);
+    echo json_encode($finalResult);
+}
 
 function getSpecification($explodedCodes)
 {
