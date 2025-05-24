@@ -96,7 +96,7 @@ if (isset($_POST['updateCompleteFactor'])) {
         updateRegisteredFactorNumber($factorInfo->billNO, $customerInfo);
         UpdateCompletedBill($factorInfo, $customer_id);
         CreateBillItems($factorInfo, $factorItems);
-        getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorInfo->billNO, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date, true);
+        getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorInfo->billNO, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date, true, false);
     } catch (Exception $e) {
         // An error occurred, rollback the transaction
         PDO_CONNECTION->rollback();

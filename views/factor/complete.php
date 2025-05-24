@@ -765,7 +765,6 @@ require_once './components/factor.php'; ?>
         //     return false;
         // }
 
-
         var params = new URLSearchParams();
         params.append('updateCompleteFactor', 'updateCompleteFactor');
         params.append('customerInfo', JSON.stringify(customerInfo));
