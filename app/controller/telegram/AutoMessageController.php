@@ -559,7 +559,8 @@ function exist($ids)
 
     // Append the condition based on the number of IDs
     if (count($ids) == 1) {
-        $data_sql = $base_sql . " WHERE codeid = :id AND seller.id != 166
+        $data_sql = $base_sql . " WHERE codeid = :id
+                                     AND seller.name NOT IN ('کاربر دستوری', 'کاربر دستوری معیوب', 'کاربر دستوری مفقود')
                                   GROUP BY qtybank.id, codeid, brand.name, qtybank.qty, create_time, seller.name, brand.id
                                   HAVING remaining_qty > 0";
 
@@ -570,7 +571,7 @@ function exist($ids)
         // Prepare placeholders for multiple IDs
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
 
-        $data_sql = $base_sql . " WHERE codeid IN ($placeholders) AND seller.id != 166
+        $data_sql = $base_sql . " WHERE codeid IN ($placeholders)  AND seller.name NOT IN ('کاربر دستوری', 'کاربر دستوری معیوب', 'کاربر دستوری مفقود')
                                   GROUP BY qtybank.id, codeid, brand.name, qtybank.qty, create_time, seller.name, brand.id
                                   HAVING remaining_qty > 0";
 
