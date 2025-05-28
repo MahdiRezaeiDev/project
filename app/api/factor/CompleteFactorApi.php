@@ -35,44 +35,42 @@ if (isset($_POST['GenerateCompleteFactor'])) {
 
         CreateCompleteBill($factorInfo, $customer_id, $factorNumber);
         CreateBillItems($factorInfo, $factorItems);
-        $SMS_Status = sendSMS($customerInfo, $factorInfo, $factorItems, $factorNumber);
-        getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorNumber, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date, false, $SMS_Status);
+        store_jobs($customerInfo, $factorInfo, $factorItems, $factorNumber);
+        getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorNumber, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date, false, false);
     } catch (Exception $e) {
         $success = false; // Set success to false if an error occurred
     }
 }
 
-function sendSMS($customer, $factor, $factorItems, $factorNumber)
+function store_jobs($customer, $factor, $factorItems, $factorNumber)
 {
-    // Prepare data for POST request
-    $postData = array(
-        "GenerateCompleteFactor" => "GenerateCompleteFactor",
-        "customer" => json_encode($customer),
-        "factor" => json_encode($factor),
-        "factorItems" => json_encode($factorItems),
-        "user_id" => $_SESSION['id'],
-        "factorNumber" => $factorNumber
-    );
+    $sql = "INSERT INTO factor.bill_jobs 
+            (user_id, factor_number, factor_info, factor_items, customer_info, created_at)
+            VALUES (:user_id, :factor_number, :factor_info, :factor_items, :customer_info, CURRENT_TIMESTAMP)";
 
-    // Initialize cURL session
-    $ch = curl_init();
+    $stmt = PDO_CONNECTION->prepare($sql);
 
-    // Set cURL options
-    curl_setopt($ch, CURLOPT_URL, "http://sells.yadak.shop/");
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $user_id = $_SESSION['id'];
 
-    // Execute cURL request
-    $result = curl_exec($ch);
+    // Safely encode to JSON with UTF-8 characters unescaped
+    $factor_info = json_encode($factor, JSON_UNESCAPED_UNICODE);
+    $factor_items = json_encode($factorItems, JSON_UNESCAPED_UNICODE);
+    $customer_info = json_encode($customer, JSON_UNESCAPED_UNICODE);
 
-    // Close cURL session
-    curl_close($ch);
+    // Optional: Add error checks for JSON
+    if (!$factor_info || !$factor_items || !$customer_info) {
+        error_log("JSON encode error: " . json_last_error_msg());
+        return false;
+    }
 
-    // Return the result instead of printing it
-    return $result;
+    $stmt->bindParam(':user_id', $user_id);
+    $stmt->bindParam(':factor_number', $factorNumber);
+    $stmt->bindParam(':factor_info', $factor_info);
+    $stmt->bindParam(':factor_items', $factor_items);
+    $stmt->bindParam(':customer_info', $customer_info);
+
+    return $stmt->execute();
 }
-
 
 if (isset($_POST['updateCompleteFactor'])) {
     $customerInfo = json_decode($_POST['customerInfo']);
@@ -83,7 +81,6 @@ if (isset($_POST['updateCompleteFactor'])) {
     $success = true; // Initialize success variable
 
     try {
-
         if (!$customer_id) {
             $customer_id = createCustomer($customerInfo);
         } else {
@@ -333,7 +330,7 @@ function CreateBillItems($billInfo, $billItems)
 {
     try {
         // Convert bill items to JSON
-        $billItemsJson = json_encode($billItems);
+        $billItemsJson = json_encode($billItems, JSON_UNESCAPED_UNICODE);
 
         // SQL query with named placeholders
         $sql = "UPDATE factor.bill_details

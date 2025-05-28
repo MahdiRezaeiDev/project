@@ -785,6 +785,9 @@ require_once './components/factor.php';
             .then(function(response) {
                 const data = response.data;
 
+                console.log(response.data);
+
+
                 const factorNumber = data.factorNumber;
                 params.append('factorNumber', factorNumber);
 
@@ -840,8 +843,6 @@ require_once './components/factor.php';
                         element.innerHTML = 'صدور فاکتور';
                     }, 3000);
                 }
-
-
             })
             .catch(function(error) {
                 // Handle errors

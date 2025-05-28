@@ -207,7 +207,7 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
     }
 
     if (!empty($selectedGoods) || !empty($lowQuantity)) {
-        sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete);
+        // sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete);
     }
 
     $selectedGoods = [...$selectedGoods, ...$lowQuantity];
@@ -584,8 +584,8 @@ function save_pre_bill($billId, $billItems, $billItemsDescription, $factorNumber
         $stmt = PDO_CONNECTION->prepare($sql);
 
         // Ensure the data is serialized if necessary
-        $billItems = json_encode($billItems);
-        $billItemsDescription = json_encode($billItemsDescription);
+        $billItems = json_encode($billItems, JSON_UNESCAPED_UNICODE);
+        $billItemsDescription = json_encode($billItemsDescription, JSON_UNESCAPED_UNICODE);
 
         // Bind values to the placeholders
         $stmt->bindValue(":billId", $billId);
@@ -622,8 +622,8 @@ function update_pre_bill($billId, $billItems, $billItemsDescription, $factorNumb
         $stmt = PDO_CONNECTION->prepare($sql);
 
         // Ensure the data is serialized if necessary
-        $billItems = json_encode($billItems);
-        $billItemsDescription = json_encode($billItemsDescription);
+        $billItems = json_encode($billItems, JSON_UNESCAPED_UNICODE);
+        $billItemsDescription = json_encode($billItemsDescription, JSON_UNESCAPED_UNICODE);
 
         // Bind values to the placeholders
         $stmt->bindValue(":billId", $billId);
