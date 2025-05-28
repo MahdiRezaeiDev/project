@@ -207,7 +207,7 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
     }
 
     if (!empty($selectedGoods) || !empty($lowQuantity)) {
-        // sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete);
+        sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete);
     }
 
     $selectedGoods = [...$selectedGoods, ...$lowQuantity];
