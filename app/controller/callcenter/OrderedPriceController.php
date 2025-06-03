@@ -62,16 +62,18 @@ function setup_loading($customer, $completeCode, $notification = null)
 
     $sql = "INSERT INTO shop.searches (partNumber, user_id) VALUES (:request, :user_id)";
 
-    foreach ($explodedCodes as $code) {
-        $stmt = PDO_CONNECTION->prepare($sql);
-        $stmt->bindParam(':request', $code, PDO::PARAM_STR);
-        $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+    if (!in_array($_SESSION['username'], ['mahdi', 'niyayesh'])) :
+        foreach ($explodedCodes as $code) {
+            $stmt = PDO_CONNECTION->prepare($sql);
+            $stmt->bindParam(':request', $code, PDO::PARAM_STR);
+            $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
 
-        if (!$stmt->execute()) {
-            // If the query fails, we can log the error or handle it accordingly
-            error_log("Failed to insert code: " . $code);
+            if (!$stmt->execute()) {
+                // If the query fails, we can log the error or handle it accordingly
+                error_log("Failed to insert code: " . $code);
+            }
         }
-    }
+    endif;
 
     $existing_code = []; // this array will hold the id and partNumber of the existing codes in DB
 
