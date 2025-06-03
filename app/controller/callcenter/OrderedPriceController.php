@@ -62,7 +62,7 @@ function setup_loading($customer, $completeCode, $notification = null)
 
     $sql = "INSERT INTO shop.searches (partNumber, user_id) VALUES (:request, :user_id)";
 
-    if (!in_array($_SESSION['username'], ['mahdi', 'niyayesh'])) :
+    if (!in_array($_SESSION['username'], ['mahdi', 'niyayesh', 'aliakbar', 'amirmohammad', 'amani'])) :
         foreach ($explodedCodes as $code) {
             $stmt = PDO_CONNECTION->prepare($sql);
             $stmt->bindParam(':request', $code, PDO::PARAM_STR);
