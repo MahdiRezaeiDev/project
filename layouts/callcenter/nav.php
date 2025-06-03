@@ -131,10 +131,22 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
             </a>
         </li>
         <li class="mx-1 hidden sm:block <?= $fileName == 'pricesHistory.php' ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold">
-            <a class="p-2 flex items-center gap-2" target="_blank" href="<?= $append ?>pricesHistory.php">
-                <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/history.svg" alt="telegram icon">
-                تاریخچه
-            </a>
+            <div class="dropdown">
+                <a class="p-2 flex items-center gap-2" target="_blank" href="<?= $append ?>pricesHistory.php">
+                    <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/history.svg" alt="telegram icon">
+                    تاریخچه
+                    <img src="../inventory/assets/icons/down_arrow.svg" alt="down arrow">
+                </a>
+                <div class="dropdown_container ">
+                    <ul class="dropdown_menu bg-gray-800 border border-gray-800">
+                        <li class="hover:bg-gray-900 text-white text-sm font-bold">
+                            <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>priceSearch.php">
+                                تاریخچه قیمت دستوری
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </li>
         <?php if ($_SESSION['financialYear'] != jdate('Y', '', '', '', 'en')) : ?>
             <li class="mx-1 text-sm font-bold">
