@@ -12,9 +12,15 @@ $spreadsheet = new Spreadsheet();
 
 // SQL query to retrieve distinct customers
 $sql = "SELECT DISTINCT customer.phone, customer.name, customer.family
-        FROM factor.bill
-        INNER JOIN callcenter.customer ON bill.customer_id = customer.id
-        WHERE bill.partner = 0";
+FROM factor.bill
+INNER JOIN callcenter.customer ON bill.customer_id = customer.id
+WHERE bill.partner = 0
+  AND NOT EXISTS (
+    SELECT 1
+    FROM factor.bill b2
+    WHERE b2.customer_id = bill.customer_id AND b2.partner = 1
+  )
+";
 $stmt = PDO_CONNECTION->prepare($sql);
 $stmt->execute();
 
