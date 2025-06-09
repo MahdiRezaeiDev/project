@@ -13,7 +13,7 @@ require_once '../../layouts/callcenter/sidebar.php';
             <div class="flex items-center justify-between bg-gray-800 p-5">
                 <h1 class="text-lg font-semibold text-white">
                     آمار درخواست های یک ساعت اخیر</h1>
-                <!-- <a href="./requests.php?type=hour" class="text-sm text-blue-500">مشاهده همه</a> -->
+                <a href="./priceSearchDetails.php?type=hour" class="text-sm text-blue-500">مشاهده همه</a>
             </div>
             <div class="shadow-md sm:rounded-lg w-full h-full">
                 <table class="w-full text-sm text-left rtl:text-center text-gray-800">
@@ -53,7 +53,7 @@ require_once '../../layouts/callcenter/sidebar.php';
             <div class="flex items-center justify-between bg-gray-800 p-5">
                 <h1 class="text-lg font-semibold text-white">آمار درخواست های امروز
                 </h1>
-                <!-- <a href="./requests.php?type=today" class="text-sm text-blue-500">مشاهده همه</a> -->
+                <a href="./priceSearchDetails.php?type=today" class="text-sm text-blue-500">مشاهده همه</a>
             </div>
             <div class="shadow-md sm:rounded-lg w-full h-full">
                 <table class="w-full text-sm text-left rtl:text-center text-gray-800">
@@ -92,7 +92,7 @@ require_once '../../layouts/callcenter/sidebar.php';
         <div class="bg-white rounded-lg overflow-hidden border border-gray-800 shadow-md hover:shadow-xl">
             <div class="flex items-center justify-between bg-gray-800 p-5">
                 <h1 class="text-lg font-semibold text-white">آمار درخواست های کلی</h1>
-                <!-- <a href="./requests.php?type=all" class="text-sm text-blue-500">مشاهده همه</a> -->
+                <a href="./priceSearchDetails.php?type=all" class="text-sm text-blue-500">مشاهده همه</a>
             </div>
             <div class="shadow-md sm:rounded-lg w-full h-full">
                 <table class="w-full text-sm text-left rtl:text-center text-gray-800">

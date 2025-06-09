@@ -140,7 +140,17 @@
                                                         لیست پیام
                                                     </p>
                                                 </a>
-                                        <?php }
+                                            <?php }
+                                            ?>
+                                            <a class="flex items-center gap-2 mb-2" title="حذف از لیست پیام خودکار"
+                                                target="_blank"
+                                                href="./priceSearchDetails.php?type=week&code=<?= $goods[$index]['partnumber'] ?>">
+                                                <img src="./assets/img/time.svg" class="w-4 h-auto" alt="">
+                                                <p class="text-white text-xs">
+                                                    گزارش جستجو
+                                                </p>
+                                            </a>
+                                        <?php
                                         } ?>
                                     </div>
                                 </div>
