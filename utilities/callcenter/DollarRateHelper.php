@@ -230,7 +230,7 @@ function checkDateIfOkay($applyDate, $priceDate)
 function is_registered($partNumber)
 {
     // Prepare the SQL statement
-    $sql = "SELECT * FROM telegram.goods_for_sell WHERE partNumber = :partNumber";
+    $sql = "SELECT * FROM telegram.excluded_goods WHERE partNumber = :partNumber";
     $stmt = PDO_CONNECTION->prepare($sql);
     $stmt->bindValue(':partNumber', $partNumber);
     $stmt->execute();

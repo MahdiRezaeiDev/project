@@ -602,6 +602,8 @@ function deleteGood(partNumber, element) {
     .post("../../app/api/telegram/telegramApi.php", params)
     .then(function (response) {
       const data = response.data;
+      console.log(data);
+
       if (response.data) {
         form_success.style.bottom = "10px";
         setTimeout(() => {

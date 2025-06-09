@@ -23,7 +23,7 @@
                     <td class="relative px-1 hover:cursor-pointer" data-part="<?= $goods[$index]['partnumber'] ?>" onmouseleave="hideToolTip(this)" onmouseover="showToolTip(this)">
                         <div class="relative">
                             <?php
-                            $not_registered = !is_registered($goods[$index]['partnumber']);
+                            $not_registered = is_registered($goods[$index]['partnumber']);
                             $user = $_SESSION['username']; ?>
                             <p onclick="copyPartNumber(this, '<?= strtoupper($goods[$index]['partnumber']) ?>')" class="text-center bold bg-gray-600 <?= $not_registered ? 'text-white' : 'text-green-500' ?>  px-2 py-3">
                                 <?php
