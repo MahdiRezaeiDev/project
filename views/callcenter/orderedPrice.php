@@ -364,7 +364,7 @@ if ($isValidCustomer) :
                 }
 
                 // Copy the plain text to clipboard
-                copyToClipboard(final.join('\n') + `\n\nقیمت ها در واحد هزار تومان می باشد.\nتمام قطعات اصلی برند جنیون پارت می باشند.`);
+                copyToClipboard(final.join('\n') + `\n\nقیمت ها در واحد هزار تومان می باشد.`);
                 element.innerHTML = `done`;
                 setTimeout(() => {
                     element.innerHTML = `content_copy`;
