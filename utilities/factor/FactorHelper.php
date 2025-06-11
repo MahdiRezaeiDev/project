@@ -47,10 +47,12 @@ function createBill($billInfo)
 {
     try {
         $sql = "INSERT INTO factor.bill 
-                (customer_id, bill_number, quantity, discount, tax, withdraw, total, bill_date, user_id, status, partner) 
-                VALUES (:customer_id, :bill_number, :quantity, :discount, :tax, :withdraw, :total, :bill_date, :user_id, :status, :partner)";
+                (customer_id, bill_number, quantity, discount, tax, withdraw, total, bill_date, user_id, status, partner, insurance) 
+                VALUES (:customer_id, :bill_number, :quantity, :discount, :tax, :withdraw, :total, :bill_date, :user_id, :status, :partner, :insurance)";
 
         $status = 0;
+
+        $insurance = $billInfo['insurance'] ?? 0;
         $stmt = PDO_CONNECTION->prepare($sql);
         $stmt->bindParam(':customer_id', $billInfo['customer_id'], PDO::PARAM_INT);
         $stmt->bindParam(':bill_number', $billInfo['bill_number'], PDO::PARAM_STR);
@@ -63,6 +65,7 @@ function createBill($billInfo)
         $stmt->bindParam(':user_id', $_SESSION['id'], PDO::PARAM_INT);
         $stmt->bindParam(':status', $status, PDO::PARAM_INT);
         $stmt->bindParam(':partner', $billInfo['partner'], PDO::PARAM_INT);
+        $stmt->bindParam(':insurance', $insurance, PDO::PARAM_INT);
 
         $stmt->execute();
 
@@ -71,7 +74,7 @@ function createBill($billInfo)
 
         return $lastInsertedId;
     } catch (PDOException $e) {
-        return false;
+        throw $e;
     }
 }
 

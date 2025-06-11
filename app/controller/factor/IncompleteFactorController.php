@@ -34,6 +34,7 @@ if (isset($_GET['factor_number'])) {
         'discount' => $details['discount'],
         'description' => $details['description'],
         'partner' => $details['partner'],
+        'insurance' => $details['insurance'],
         'withdraw' => $details['withdraw'],
     ];
 

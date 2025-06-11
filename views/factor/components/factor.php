@@ -5,6 +5,7 @@
             <li onclick="changeLayout('yadak')" class="text-sm text-white bg-gray-900 rounded-md mx-1 px-2 cursor-pointer">یدک شاپ</li>
             <li onclick="changeLayout('insurance')" class="text-sm text-white bg-gray-900 rounded-md mx-1 px-2 cursor-pointer">بیمه</li>
             <li onclick="changeLayout('partner')" class="text-sm text-white bg-gray-900 rounded-md mx-1 px-2 cursor-pointer">همکار</li>
+            <li onclick="changeLayout('fiduciary')" class="text-sm text-white bg-gray-900 rounded-md mx-1 px-2 cursor-pointer">امانت نامه</li>
             <li onclick="changeLayout('korea')" class="text-sm text-white bg-gray-900 rounded-md mx-1 px-2 cursor-pointer">آتوپارت</li>
         </ul>
         <div id="capture">

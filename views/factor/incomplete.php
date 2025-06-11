@@ -785,7 +785,7 @@ require_once './components/factor.php';
             .then(function(response) {
                 const data = response.data;
 
-                console.log(response.data);
+                console.log(response);
 
 
                 const factorNumber = data.factorNumber;
@@ -826,9 +826,16 @@ require_once './components/factor.php';
                             save_message.classList.add('hidden');
                             if (factorInfo['id']) {
                                 localStorage.setItem('displayName', customerInfo.displayName);
-                                window.location.href = factorInfo['partner'] ?
-                                    './partnerFactor.php?factorNumber=' + factorInfo['id'] :
-                                    './yadakFactor.php?factorNumber=' + factorInfo['id'];
+                                const isPartner = Number(factorInfo['partner']) === 1;
+                                const isInsurance = Number(factorInfo['insurance']) === 1;
+
+                                if (isPartner) {
+                                    window.location.href = isInsurance ?
+                                        './factorInsurance.php?factorNumber=' + factorInfo['id'] :
+                                        './partnerFactor.php?factorNumber=' + factorInfo['id'];
+                                } else {
+                                    window.location.href = './yadakFactor.php?factorNumber=' + factorInfo['id'];
+                                }
                             }
                         }, 1000);
                     }

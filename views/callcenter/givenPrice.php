@@ -29,6 +29,7 @@ require_once '../../layouts/callcenter/sidebar.php';
             <div class="flex gap-2 items-center">
                 <button type="submit" formaction="../factor/createPreCompleteBill.php?partner=0" class="cursor-pointer  text-white rounded bg-sky-600 hover:bg-sky-500 px-3 py-2 text-xs">پیش فاکتور مصرف کننده</button>
                 <button type="submit" formaction="../factor/createPreCompleteBill.php?partner=1" class="cursor-pointer bg-green-600 hover:bg-green-700 text-white rounded px-3 py-2 text-xs">پیش فاکتور همکار</button>
+                <button type="submit" formaction="../factor/createPreCompleteBill.php?partner=1&insurance=1" class="cursor-pointer bg-rose-600 hover:bg-rose-700 text-white rounded px-3 py-2 text-xs">امانت نامه</button>
             </div>
             <button type="submit" class="inline-flex items-center px-5 py-2 bg-gray-800 font-semibold text-xs text-white hover:bg-gray-700 rounded"> جستجو
             </button>

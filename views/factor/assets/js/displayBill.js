@@ -162,6 +162,7 @@ function changeLayout(layout) {
   const insurance_logo = "./assets/img/insurance.png";
   const partner_logo = "./assets/img/partner.jpg";
   const korea_logo = "./assets/img/korea.jpg";
+  const logo_fiduciary = "./assets/img/fiduciary.webp";
   displayLayout = layout;
 
   switch (layout) {
@@ -197,6 +198,24 @@ function changeLayout(layout) {
     case "partner":
       logo_element.src = partner_logo;
       document.getElementById("factor_heading").innerHTML = "فاکتور فروش همکار";
+      document.getElementById("factor_description").style.display = "block";
+      document.getElementById("factor_address").style.display = "block";
+      document.getElementById(
+        "factor_phone"
+      ).innerHTML = `<span style="direction: ltr !important;">
+                                                                  ۰۲۱ - ۳۳ ۹۸ ۷۲ ۳۲
+                                                              </span>
+                                                              <span style="direction: ltr !important;">
+                                                                  ۰۲۱ - ۳۳ ۹۸ ۷۲ ۳۳
+                                                              </span>
+                                                              <span style="direction: ltr !important;">
+                                                                  ۰۲۱ - ۳۳ ۹۸ ۷۲ ۳۴
+                                                              </span>`;
+      previewBill(layout);
+      break;
+    case "fiduciary":
+      logo_element.src = logo_fiduciary;
+      document.getElementById("factor_heading").innerHTML = "امانت نامه";
       document.getElementById("factor_description").style.display = "block";
       document.getElementById("factor_address").style.display = "block";
       document.getElementById(

@@ -117,6 +117,7 @@ try {
         'total' => 0,
         'date' => $dateTime,
         'partner' => $_GET['partner'],
+        'insurance' => $_GET['insurance'],
         'totalInWords' => null
     ];
 
