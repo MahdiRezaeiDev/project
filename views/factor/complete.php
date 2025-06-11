@@ -730,11 +730,17 @@ require_once './components/factor.php'; ?>
         }
 
         localStorage.setItem('displayName', customerInfo.displayName);
-        if (factorInfo['partner']) {
-            window.location.href = './partnerFactor.php?factorNumber=' + factorInfo['id'];
-            return false;
+
+        const isPartner = Number(factorInfo['partner']) === 1;
+        const isInsurance = Number(factorInfo['insurance']) === 1;
+
+        if (isPartner) {
+            window.location.href = isInsurance ?
+                './factorInsurance.php?factorNumber=' + factorInfo['id'] :
+                './partnerFactor.php?factorNumber=' + factorInfo['id'];
+        } else {
+            window.location.href = './yadakFactor.php?factorNumber=' + factorInfo['id'];
         }
-        window.location.href = './yadakFactor.php?factorNumber=' + factorInfo['id'];
     }
 
     // Update the incomplete 

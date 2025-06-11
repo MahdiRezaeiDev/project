@@ -33,6 +33,7 @@ if (isset($_GET['factor_number']) && is_numeric($_GET['factor_number'])) {
         'description' => $details['description'],
         'withdraw' => $details['withdraw'],
         'partner' => $details['partner'],
+        'insurance' => $details['insurance'],
         'created_at' => $details['created_at'],
     ];
 
