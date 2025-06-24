@@ -116,7 +116,6 @@ function sanitizeInput($input)
 
 function sendAjaxRequest($id, $username, $financialYear)
 {
-    // Prepare data for POST request
     $postData = array(
         "sendMessage" => "local",
         "id" => $id,
@@ -126,25 +125,36 @@ function sendAjaxRequest($id, $username, $financialYear)
         "ip" => $_SERVER['REMOTE_ADDR']
     );
 
-    // Initialize cURL session
     $ch = curl_init();
 
-    // Set cURL options
     curl_setopt($ch, CURLOPT_URL, "http://auto.yadak.center/");
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Optional: timeout in 10 seconds
 
-    // Execute cURL request
     $result = curl_exec($ch);
 
-    // Close cURL session
+    // Check for connection error
+    if (curl_errno($ch)) {
+        $errorMessage = curl_error($ch);
+
+        // Log the error (optional)
+        error_log("cURL Error: " . $errorMessage);
+
+        // Redirect user to an offline-safe page
+        curl_close($ch);
+        header("Location: ../../views/inventory/index.php");
+        exit();
+    }
+
     curl_close($ch);
 
-    // Redirect user after request
+    // Continue with normal redirect
     header("Location: ../../views/inventory/index.php");
     exit();
 }
+
 
 function sendLoginAttemptAlert($username, $password)
 {
