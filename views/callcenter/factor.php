@@ -136,6 +136,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                         if ($isAdmin) : ?>
                             <th class="p-3 text-sm font-semibold hide_while_print hidden sm:table-cell">ویرایش</th>
                         <?php endif; ?>
+                        <th class="p-3 text-sm font-semibold">واریزی</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -170,6 +171,11 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                         <?php if ($factor['printed']) : ?>
                                             <img class="w-6 cursor-pointer d-block" title="چاپ شده" src="./assets/img/printed.svg" />
                                         <?php endif; ?>
+                                        <?php if ($factor['exists_in_payments']) : ?>
+                                            <a href="../factor/paymentDetails.php?factor=<?= $factor['shomare'] ?>">
+                                                <img class="w-6 cursor-pointer d-block" title="مشاهده واریزی ها" src="./assets/img/payment.svg" />
+                                            </a>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                                 <td class="text-center align-middle font-semibold">
@@ -178,7 +184,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                 <td class="text-center align-middle">
                                     <img onclick="userReport(this)" class="w-10 rounded-full hover:cursor-pointer mt-2 mx-auto" data-id="<?= $factor['user']; ?>" src="<?= getUserProfile($factor['user']) ?>" />
                                 </td>
-                                <?php if (in_array($_SESSION['username'], $qualified)):?>
+                                <?php if (in_array($_SESSION['username'], $qualified)): ?>
                                     <td class="hide_while_print">
                                         <div class="flex justify-center items-center">
                                             <input onclick="changeStatus(this)" <?= ($factor["exists_in_phones"] || $factor["approved"]) ? 'checked' : '' ?> type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
@@ -190,6 +196,19 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                     <td class="text-center align-middle hide_while_print hidden sm:table-cell">
                                         <a onclick="toggleModal(this); edit(this)" data-factor="<?= $factor["id"] ?>" data-user="<?= $factor['user']; ?>" data-billNO="<?= $factor['shomare'] ?>" data-user-info="<?= getUserInfo($factor['user']) ?>" data-customer="<?= $factor['kharidar'] ?>" class="text-xs bg-cyan-500 text-white cursor-pointer px-2 py-1 rounded">
                                             ویرایش
+                                        </a>
+                                    </td>
+                                <?php endif;
+                                if ($factor['is_paid_off']): ?>
+                                    <td class="text-center align-middle hide_while_print hidden sm:table-cell">
+                                        <a href="../factor/paymentDetails.php?factor=<?= $factor['shomare'] ?>" class="text-xs bg-green-500 text-white cursor-pointer px-2 py-1 rounded">
+                                            مشاهده واریزی
+                                        </a>
+                                    </td>
+                                <?php else: ?>
+                                    <td class="text-center align-middle hide_while_print hidden sm:table-cell">
+                                        <a href="../factor/addPayment.php?factor=<?= $factor['shomare'] ?>" class="text-xs bg-cyan-500 text-white cursor-pointer px-2 py-1 rounded">
+                                            ثبت واریزی
                                         </a>
                                     </td>
                                 <?php endif; ?>

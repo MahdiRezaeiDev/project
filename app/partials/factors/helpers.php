@@ -10,46 +10,71 @@ if (!isset($dbname)) {
 function getFactors($start, $end, $user = null)
 {
     $query = "SELECT
-    shomarefaktor.*,
-    bill.id AS bill_id,
-    bill.printed,
-    bill.partner,
-    CASE 
-        WHEN bill.bill_number IS NOT NULL THEN TRUE 
-        ELSE FALSE 
-    END AS exists_in_bill,
-    
-    CASE 
-        WHEN EXISTS (
-            SELECT 1 
-            FROM callcenter.phones p 
-            WHERE p.customer_id = bill.customer_id
-        ) THEN TRUE 
-        ELSE FALSE 
-    END AS exists_in_phones,
+        shomarefaktor.*,
+        bill.id AS bill_id,
+        bill.printed,
+        bill.partner,
+        bill.total,
+        bill.partner AS isPartner,
 
-    bill.total,
-    bill.partner AS isPartner
+        CASE 
+            WHEN bill.bill_number IS NOT NULL THEN TRUE 
+            ELSE FALSE 
+        END AS exists_in_bill,
 
-FROM
-    factor.shomarefaktor
-LEFT JOIN
-    factor.bill ON shomarefaktor.shomare = bill.bill_number
-WHERE
-    shomarefaktor.time < '$end' 
-    AND shomarefaktor.time >= '$start' 
-";
+        CASE 
+            WHEN EXISTS (
+                SELECT 1 
+                FROM callcenter.phones p 
+                WHERE p.customer_id = bill.customer_id
+            ) THEN TRUE 
+            ELSE FALSE 
+        END AS exists_in_phones,
+
+        CASE 
+            WHEN EXISTS (
+                SELECT 1 
+                FROM factor.payments pay
+                WHERE pay.bill_id = bill.id
+            ) THEN TRUE 
+            ELSE FALSE 
+        END AS exists_in_payments,
+
+        CASE 
+            WHEN (
+                SELECT COALESCE(SUM(pay.amount), 0)
+                FROM factor.payments pay
+                WHERE pay.bill_id = bill.id
+            ) >= bill.total THEN TRUE
+            ELSE FALSE
+        END AS is_paid_off
+
+    FROM
+        factor.shomarefaktor
+    LEFT JOIN
+        factor.bill ON shomarefaktor.shomare = bill.bill_number
+    WHERE
+        shomarefaktor.time < :end
+        AND shomarefaktor.time >= :start
+    ";
 
     if ($user !== null) {
-        $query .= " AND shomarefaktor.user = '$user'";
+        $query .= " AND shomarefaktor.user = :user";
     }
 
     $query .= " ORDER BY shomarefaktor.shomare DESC";
+
     $statement = PDO_CONNECTION->prepare($query);
+    $statement->bindValue(':start', $start);
+    $statement->bindValue(':end', $end);
+    if ($user !== null) {
+        $statement->bindValue(':user', $user);
+    }
     $statement->execute();
-    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-    return $result;
+
+    return $statement->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 function getCountFactorByUser($start, $end = null, $user = null)
 {

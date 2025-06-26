@@ -596,7 +596,6 @@ function save_pre_bill($billId, $billItems, $billItemsDescription, $factorNumber
         // Execute the statement and handle the result
         if ($stmt->execute()) {
             echo json_encode([
-
                 'status' => 'success',
                 'message' => 'Bill updated successfully',
                 'factorNumber' => $factorNumber,
@@ -604,7 +603,6 @@ function save_pre_bill($billId, $billItems, $billItemsDescription, $factorNumber
             ]);
         } else {
             echo json_encode([
-
                 'status' => 'error',
                 'message' => 'Failed to update bill'
             ]);
@@ -634,7 +632,6 @@ function update_pre_bill($billId, $billItems, $billItemsDescription, $factorNumb
         // Execute the statement and handle the result
         if ($stmt->execute()) {
             echo json_encode([
-
                 'status' => 'success',
                 'message' => 'Bill updated successfully',
                 'factorNumber' => $factorNumber,
@@ -642,14 +639,12 @@ function update_pre_bill($billId, $billItems, $billItemsDescription, $factorNumb
             ]);
         } else {
             echo json_encode([
-
                 'status' => 'error',
                 'message' => 'Failed to update bill'
             ]);
         }
     } catch (\Throwable $th) {
         echo json_encode([
-
             'status' => 'error',
             'message' => 'An error occurred: ' . $th->getMessage()
         ]);

@@ -78,6 +78,7 @@ function displayUI($factors, $countFactorByUser)
                     if ($isAdmin) : ?>
                         <th class="p-3 text-sm font-semibold hide_while_print" class="edit">ویرایش</th>
                     <?php endif; ?>
+                    <th class="p-3 text-sm font-semibold">عملیات</th>
                 </tr>
             </thead>
             <tbody>
@@ -114,6 +115,11 @@ function displayUI($factors, $countFactorByUser)
                                     <?php if ($factor['printed']) : ?>
                                         <img class="w-6 cursor-pointer d-block" title="چاپ شده" src="./assets/img/printed.svg" />
                                     <?php endif; ?>
+                                    <?php if ($factor['exists_in_payments']) : ?>
+                                        <a href="../factor/paymentDetails.php?factor=<?= $factor['shomare'] ?>">
+                                            <img class="w-6 cursor-pointer d-block" title="مشاهده واریزی ها" src="./assets/img/payment.svg" />
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                             <td class="text-center align-middle font-semibold">
@@ -139,6 +145,19 @@ function displayUI($factors, $countFactorByUser)
                                         data-billNO="<?= $factor['shomare'] ?>"
                                         data-user-info="<?= getUserInfo($factor['user']) ?>" data-customer="<?= $factor['kharidar'] ?>" class="text-xs bg-cyan-500 text-white cursor-pointer px-2 py-1 rounded">
                                         ویرایش
+                                    </a>
+                                </td>
+                            <?php endif;
+                            if ($factor['is_paid_off']): ?>
+                                <td class="text-center align-middle hide_while_print hidden sm:table-cell">
+                                    <a href="../factor/paymentDetails.php?factor=<?= $factor['shomare'] ?>" class="text-xs bg-green-500 text-white cursor-pointer px-2 py-1 rounded">
+                                        مشاهده واریزی
+                                    </a>
+                                </td>
+                            <?php else: ?>
+                                <td class="text-center align-middle hide_while_print hidden sm:table-cell">
+                                    <a href="../factor/addPayment.php?factor=<?= $factor['shomare'] ?>" class="text-xs bg-cyan-500 text-white cursor-pointer px-2 py-1 rounded">
+                                        ثبت واریزی
                                     </a>
                                 </td>
                             <?php endif; ?>

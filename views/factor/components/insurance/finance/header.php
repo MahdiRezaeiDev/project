@@ -160,7 +160,7 @@
 
     function displayFinanceCustomer() {
         // Retrieve display name from local storage
-        const displayName = localStorage.getItem("displayName_finance");
+        const displayName = sessionStorage.getItem("displayName");
 
         // Update customer information if display name is available
         if (displayName !== null && displayName !== undefined) {

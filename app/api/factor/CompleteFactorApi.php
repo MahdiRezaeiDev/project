@@ -35,14 +35,14 @@ if (isset($_POST['GenerateCompleteFactor'])) {
 
         CreateCompleteBill($factorInfo, $customer_id, $factorNumber);
         CreateBillItems($factorInfo, $factorItems);
-        store_jobs($customerInfo, $factorInfo, $factorItems, $factorNumber);
+        Store_jobs($customerInfo, $factorInfo, $factorItems, $factorNumber);
         getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorNumber, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date, false, false);
     } catch (Exception $e) {
         $success = false; // Set success to false if an error occurred
     }
 }
 
-function store_jobs($customer, $factor, $factorItems, $factorNumber)
+function Store_jobs($customer, $factor, $factorItems, $factorNumber)
 {
     $sql = "INSERT INTO factor.bill_jobs 
             (user_id, factor_number, factor_info, factor_items, customer_info, created_at)

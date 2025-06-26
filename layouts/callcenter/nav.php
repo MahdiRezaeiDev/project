@@ -121,6 +121,12 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
                             مدیریت فاکتور
                         </a>
                     </li>
+                    <li class="hover:bg-gray-900 text-white text-sm font-bold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="../factor/payments.php">
+                            <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/authority.svg" alt="add icon">
+                            واریزی ها
+                        </a>
+                    </li>
                 </ul>
             </div>
         </li>

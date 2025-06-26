@@ -812,7 +812,8 @@ require_once './components/factor.php';
 
                         const link = document.getElementById('sms_link');
                         if (factorInfo['id']) {
-                            localStorage.setItem('displayName', customerInfo.displayName);
+                            sessionStorage.setItem('displayName', customerInfo.displayName);
+
                             let link_address = factorInfo['partner'] ?
                                 './partnerFactor.php?factorNumber=' + factorInfo['id'] :
                                 './yadakFactor.php?factorNumber=' + factorInfo['id'];
