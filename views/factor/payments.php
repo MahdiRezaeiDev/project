@@ -11,7 +11,7 @@ function getAllPayments()
         SELECT 
             payments.*,
             bill.total,
-            bill.bill_number. 
+            bill.bill_number,
             user.name AS user_name, 
             user.family AS user_family, 
             customer.name AS customer_name, 
@@ -37,13 +37,14 @@ function getAllPayments()
     <table class="w-full border border-gray-300 text-sm">
         <thead class="bg-gray-100">
             <tr>
-                <th class="border px-3 py-2">شناسه</th>
-                <th class="border px-3 py-2">مشتری</th>
-                <th class="border px-3 py-2">کاربر ثبت کننده</th>
-                <th class="border px-3 py-2">مبلغ</th>
-                <th class="border px-3 py-2">تاریخ</th>
-                <th class="border px-3 py-2">شماره حساب</th>
-                <th class="border px-3 py-2">تصویر</th>
+                <th class="border px-3 py-2 text-right">شماره فاکتور</th>
+                <th class="border px-3 py-2 text-right">مشتری</th>
+                <th class="border px-3 py-2 text-right">مبلغ فاکتور</th>
+                <th class="border px-3 py-2 text-right">کاربر ثبت کننده</th>
+                <th class="border px-3 py-2 text-right">مبلغ واریزی</th>
+                <th class="border px-3 py-2 text-right">تاریخ</th>
+                <th class="border px-3 py-2 text-right">شماره حساب</th>
+                <th class="border px-3 py-2 text-right">تصویر</th>
             </tr>
         </thead>
         <tbody>
@@ -51,6 +52,7 @@ function getAllPayments()
                 <tr class="border-t">
                     <td class="px-3 py-1 text-center"><?= $payment['bill_number'] ?></td>
                     <td class="px-3 py-1"><?= $payment['customer_name'] . ' ' . $payment['customer_family'] ?></td>
+                    <td class="px-3 py-1"><?= $payment['total'] ?></td>
                     <td class="px-3 py-1"><?= $payment['user_name'] . ' ' . $payment['user_family'] ?></td>
                     <td class="px-3 py-1 text-right"><?= number_format($payment['amount']) ?> افغانی</td>
                     <td class="px-3 py-1"><?= $payment['date'] ?></td>
