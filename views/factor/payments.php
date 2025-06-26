@@ -52,9 +52,9 @@ function getAllPayments()
                 <tr class="border-t">
                     <td class="px-3 py-1 text-center"><?= $payment['bill_number'] ?></td>
                     <td class="px-3 py-1"><?= $payment['customer_name'] . ' ' . $payment['customer_family'] ?></td>
-                    <td class="px-3 py-1"><?= $payment['total'] ?></td>
+                    <td class="px-3 py-1"><?= number_format($payment['total']) ?> تومان </td>
                     <td class="px-3 py-1"><?= $payment['user_name'] . ' ' . $payment['user_family'] ?></td>
-                    <td class="px-3 py-1 text-right"><?= number_format($payment['amount']) ?> افغانی</td>
+                    <td class="px-3 py-1 text-right"><?= number_format($payment['amount']) ?> تومان</td>
                     <td class="px-3 py-1"><?= $payment['date'] ?></td>
                     <td class="px-3 py-1"><?= $payment['account'] ?></td>
                     <td class="px-3 py-1 text-center">
