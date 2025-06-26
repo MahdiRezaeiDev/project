@@ -161,12 +161,6 @@
         // Retrieve display name from local storage
         const displayName = sessionStorage.getItem("displayName");
 
-        console.log("Display Name:", displayName);
-        console.log("Factor Number:", factorNumber);
-        console.log("BillInfo.bill_number:", BillInfo.bill_number);
-
-
-
         // Update customer information if display name is available
         if (displayName !== null && displayName !== undefined) {
             // Update customer information if display name is available
