@@ -217,7 +217,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                         endforeach;
                     else : ?>
                         <tr class="bg-gray-100">
-                            <td class="text-center py-40" colspan="6">
+                            <td class="text-center py-40" colspan="7">
                                 <p class="text-rose-500 font-semibold">هیچ فاکتوری برای امروز ثبت نشده است.</p>
                             </td>
                         </tr>

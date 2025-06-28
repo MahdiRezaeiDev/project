@@ -35,8 +35,8 @@ if (isset($_POST['GenerateCompleteFactor'])) {
 
         CreateCompleteBill($factorInfo, $customer_id, $factorNumber);
         CreateBillItems($factorInfo, $factorItems);
-        Store_jobs($customerInfo, $factorInfo, $factorItems, $factorNumber);
         getSimilarGoods($factorItems, $factorInfo->id, $customerInfo, $factorNumber, $factorInfo->partner, $factorInfo->totalPrice, $factorInfo->date, false, false);
+        Store_jobs($customerInfo, $factorInfo, $factorItems, $factorNumber);
     } catch (Exception $e) {
         $success = false; // Set success to false if an error occurred
     }
