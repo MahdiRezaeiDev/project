@@ -72,7 +72,14 @@ $remainingAmount = $factorInfo['total'] - $totalPayment;
         </tbody>
     </table>
 </div>
+
 <?php
+if ($status): ?>
+    <div class="w-2/4 mx-auto border bg-green-500 border-green-600 rounded py-3 text-center text-white font-semibold">
+        واریزی مدنظر شما موفقانه حذف گردید.
+    </div>
+<?php
+endif;
 foreach ($payments as $payment): ?>
     <div class="w-2/4 bg-white shadow-lg rounded p-3 md:p-5 max-w-4xl mx-auto mb-5">
         <h2 class="text-lg font-bold mb-2">جزئیات واریزی</h2>

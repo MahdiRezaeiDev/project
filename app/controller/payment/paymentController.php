@@ -3,7 +3,7 @@ if (!isset($dbname)) {
     header("Location: ../../../views/auth/403.php");
     exit;
 }
-
+$status = false;
 $factor_number = $_GET['factor'] ?? null;
 
 if (!$factor_number) {
@@ -39,3 +39,10 @@ function getPayments($billId)
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+if (isset($_GET['deletePayment']) && is_numeric($_GET['deletePayment'])) {
+    $paymentId = $_GET['deletePayment'];
+
+    $stmt = PDO_CONNECTION->prepare('DELETE FROM factor.payments WHERE ID = ?');
+    $stmt->execute([$paymentId]);
+    $status = true;
+}
