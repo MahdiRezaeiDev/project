@@ -107,12 +107,13 @@ foreach ($payments as $payment): ?>
                     <td class="border-l px-2 py-1 font-semibold">عکس رسید:</td>
                     <td class="px-2 py-1">
                         <?php if (!empty($payment['photo'])): ?>
-                            <img src="../../<?= htmlspecialchars($payment['photo']) ?>" alt="Payment Receipt" class="max-w-[50%] mx-auto my-4 rounded-md shadow">
+                            <img src="<?= htmlspecialchars(preg_replace('/^\.\.\//', '', $payment['photo'])) ?>"
+                                alt="Payment Receipt"
+                                class="max-w-[50%] mx-auto my-4 rounded-md shadow">
                         <?php else: ?>
                             <span class="text-gray-500">عکسی وجود ندارد</span>
                         <?php endif; ?>
                     </td>
-
                 </tr>
             </tbody>
         </table>
