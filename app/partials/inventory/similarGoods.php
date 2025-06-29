@@ -207,16 +207,16 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
         }
     }
 
-    if (!empty($selectedGoods) || !empty($lowQuantity)) {
-        sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete);
-    }
-
-    $selectedGoods = [...$selectedGoods, ...$lowQuantity];
+    $AllSelectedGoods = [...$selectedGoods, ...$lowQuantity];
 
     if (hasPreSellFactor($billId)) {
-        update_pre_bill($billId, json_encode($selectedGoods), json_encode([]), $factorNumber, $SMS_Status);
+        update_pre_bill($billId, json_encode($AllSelectedGoods), json_encode([]), $factorNumber, $SMS_Status);
     } else {
-        save_pre_bill($billId, json_encode($selectedGoods), json_encode([]), $factorNumber, $SMS_Status);
+        save_pre_bill($billId, json_encode($AllSelectedGoods), json_encode([]), $factorNumber, $SMS_Status);
+    }
+
+    if (!empty($selectedGoods) || !empty($lowQuantity)) {
+        sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, $lowQuantity, $billId, $isComplete);
     }
 }
 
@@ -259,62 +259,57 @@ function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, 
         $destination = $factorNumber % 2 == 0 ? "http://sells.yadak.center" : "http://sells.yadak.center";
     }
 
-    sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete);
-    sendPurchaseReportMessage($lowQuantity);
+    storeSellsReport($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete);
+    if (count($lowQuantity))
+        storeShortageReport($lowQuantity);
 }
 
-function sendPurchaseReportMessage($lowQuantity)
+function storeSellsReport($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete)
 {
-    $postData = array(
-        "sendMessage" => "PurchaseReport",
-        "lowQuantity" => json_encode($lowQuantity),
-    );
+    try {
+        $sql = "INSERT INTO factor.sells_report (
+                header,
+                factor_type,
+                selected_goods,
+                low_quantity,
+                destination,
+                is_completed
+            ) VALUES (
+                :header,
+                :factor_type,
+                :selected_goods,
+                :low_quantity,
+                :destination,
+                :is_completed
+            )";
 
-    // Initialize cURL session
-    $ch = curl_init();
+        $stmt = PDO_CONNECTION->prepare($sql);
 
-    // Set cURL options
-    curl_setopt($ch, CURLOPT_URL, "http://delivery.yadak.center/");
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // Convert arrays to JSON before binding
+        $selectedGoodsJson = json_encode($selectedGoods);
+        $lowQuantityJson = json_encode($lowQuantity);
 
-    // Execute cURL request
-    $result = curl_exec($ch);
+        // Bind parameters
+        $stmt->bindParam(':header', $header);
+        $stmt->bindParam(':factor_type', $factorType);
+        $stmt->bindParam(':selected_goods', $selectedGoodsJson);
+        $stmt->bindParam(':low_quantity', $lowQuantityJson);
+        $stmt->bindParam(':destination', $destination);
+        $stmt->bindParam(':is_completed', $isComplete);
 
-    // Close cURL session
-    curl_close($ch);
-}
-
-function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete)
-{
-    if (!$isComplete) {
-        $typeID = $factorType == 0 ? 3516 : 3514;
-    } else {
-        $typeID = 17815;
+        $stmt->execute();
+    } catch (\Throwable $th) {
+        throw $th;
     }
+}
 
-    $postData = array(
-        "sendMessage" => "sellsReportTest",
-        "header" => $header,
-        "topic_id" => $typeID,
-        "selectedGoods" => json_encode($selectedGoods),
-        "lowQuantity" => json_encode($lowQuantity),
-    );
 
-    // Initialize cURL session
-    $ch = curl_init();
-
-    // Set cURL options
-    curl_setopt($ch, CURLOPT_URL, $destination);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    // Execute cURL request
-    $result = curl_exec($ch);
-    // Close cURL session
-    curl_close($ch);
+function storeShortageReport($lowQuantity)
+{
+    $stmt = PDO_CONNECTION->prepare("INSERT INTO factor.shortage_report (low_quantity) VALUES(:low_quantity)");
+    $lowQuantity = json_encode($lowQuantity);
+    $stmt->bindParam(':low_quantity', ($lowQuantity));
+    $stmt->execute();
 }
 
 function getGoodsSpecification($completeCode, $allAllowedBrands)
