@@ -785,9 +785,6 @@ require_once './components/factor.php';
             .then(function(response) {
                 const data = response.data;
 
-                console.log(response);
-
-
                 const factorNumber = data.factorNumber;
                 params.append('factorNumber', factorNumber);
 
@@ -803,54 +800,54 @@ require_once './components/factor.php';
                     }
                 }
 
-                // if (data.status === 'success') {
-                //     let save_message = document.getElementById('save_message');
+                if (data.status === 'success') {
+                    let save_message = document.getElementById('save_message');
 
-                //     if (SMS_Status != 1) {
-                //         save_message = document.getElementById('save_message_sms');
-                //         save_message.classList.remove('hidden');
+                    if (SMS_Status != 1) {
+                        save_message = document.getElementById('save_message_sms');
+                        save_message.classList.remove('hidden');
 
-                //         const link = document.getElementById('sms_link');
-                //         if (factorInfo['id']) {
-                //             sessionStorage.setItem('displayName', customerInfo.displayName);
+                        const link = document.getElementById('sms_link');
+                        if (factorInfo['id']) {
+                            sessionStorage.setItem('displayName', customerInfo.displayName);
 
-                //             let link_address = factorInfo['partner'] ?
-                //                 './partnerFactor.php?factorNumber=' + factorInfo['id'] :
-                //                 './yadakFactor.php?factorNumber=' + factorInfo['id'];
+                            let link_address = factorInfo['partner'] ?
+                                './partnerFactor.php?factorNumber=' + factorInfo['id'] :
+                                './yadakFactor.php?factorNumber=' + factorInfo['id'];
 
-                //             link.setAttribute('href', link_address);
-                //         }
+                            link.setAttribute('href', link_address);
+                        }
 
-                //     } else {
-                //         save_message.classList.remove('hidden');
-                //         setTimeout(() => {
-                //             save_message.classList.add('hidden');
-                //             if (factorInfo['id']) {
-                //                 localStorage.setItem('displayName', customerInfo.displayName);
-                //                 const isPartner = Number(factorInfo['partner']) === 1;
-                //                 const isInsurance = Number(factorInfo['insurance']) === 1;
+                    } else {
+                        save_message.classList.remove('hidden');
+                        setTimeout(() => {
+                            save_message.classList.add('hidden');
+                            if (factorInfo['id']) {
+                                localStorage.setItem('displayName', customerInfo.displayName);
+                                const isPartner = Number(factorInfo['partner']) === 1;
+                                const isInsurance = Number(factorInfo['insurance']) === 1;
 
-                //                 if (isPartner) {
-                //                     window.location.href = isInsurance ?
-                //                         './factorInsurance.php?factorNumber=' + factorInfo['id'] :
-                //                         './partnerFactor.php?factorNumber=' + factorInfo['id'];
-                //                 } else {
-                //                     window.location.href = './yadakFactor.php?factorNumber=' + factorInfo['id'];
-                //                 }
-                //             }
-                //         }, 1000);
-                //     }
+                                if (isPartner) {
+                                    window.location.href = isInsurance ?
+                                        './factorInsurance.php?factorNumber=' + factorInfo['id'] :
+                                        './partnerFactor.php?factorNumber=' + factorInfo['id'];
+                                } else {
+                                    window.location.href = './yadakFactor.php?factorNumber=' + factorInfo['id'];
+                                }
+                            }
+                        }, 1000);
+                    }
 
-                // } else {
-                //     const save_error_message = document.getElementById('save_error_message');
-                //     save_error_message.classList.remove('hidden');
+                } else {
+                    const save_error_message = document.getElementById('save_error_message');
+                    save_error_message.classList.remove('hidden');
 
-                //     setTimeout(() => {
-                //         save_error_message.classList.add('hidden');
-                //         element.disabled = false;
-                //         element.innerHTML = 'صدور فاکتور';
-                //     }, 3000);
-                // }
+                    setTimeout(() => {
+                        save_error_message.classList.add('hidden');
+                        element.disabled = false;
+                        element.innerHTML = 'صدور فاکتور';
+                    }, 3000);
+                }
             })
             .catch(function(error) {
                 // Handle errors
