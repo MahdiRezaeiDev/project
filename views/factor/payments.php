@@ -12,27 +12,32 @@ function getAllPayments()
     $endOfDay = date('Y-m-d 23:59:59');
 
     $stmt = PDO_CONNECTION->prepare("
-        SELECT 
-            payments.*,
-            bill.total,
-            bill.bill_number,
-            user.name AS user_name, 
-            user.family AS user_family, 
-            customer.name AS customer_name, 
-            customer.family AS customer_family
-        FROM 
-            factor.payments
-        JOIN 
-            factor.bill AS bill ON payments.bill_id = bill.id
-        JOIN 
-            yadakshop.users AS user ON payments.user_id = user.id
-        JOIN 
-            callcenter.customer AS customer ON payments.customer_id = customer.id
-        WHERE 
-            payments.created_at >= :startOfDay AND payments.created_at <= :endOfDay
-        ORDER BY 
-            payments.created_at DESC
-    ");
+    SELECT 
+        payments.*,
+        bill.total,
+        bill.bill_number,
+        user.name AS user_name, 
+        user.family AS user_family, 
+        approved_user.name AS approved_by_name,
+        approved_user.family AS approved_by_family,
+        customer.name AS customer_name, 
+        customer.family AS customer_family
+    FROM 
+        factor.payments
+    JOIN 
+        factor.bill AS bill ON payments.bill_id = bill.id
+    JOIN 
+        yadakshop.users AS user ON payments.user_id = user.id
+    LEFT JOIN 
+        yadakshop.users AS approved_user ON payments.approved_by = approved_user.id
+    JOIN 
+        callcenter.customer AS customer ON payments.customer_id = customer.id
+    WHERE 
+        payments.created_at >= :startOfDay AND payments.created_at <= :endOfDay
+    ORDER BY 
+        payments.created_at DESC
+");
+
 
     $stmt->bindValue(':startOfDay', $startOfDay);
     $stmt->bindValue(':endOfDay', $endOfDay);
@@ -61,7 +66,7 @@ function getAllPayments()
                 <th class="border px-3 py-2 text-right">تاریخ</th>
                 <th class="border px-3 py-2 text-right">شماره حساب</th>
                 <th class="border px-3 py-2 text-right">تصویر</th>
-                <!-- <th class="border px-3 py-2 text-right">عملیات</th> -->
+                <th class="border px-3 py-2 text-right">تایید کننده</th>
             </tr>
         </thead>
         <tbody id="result_box">
@@ -81,11 +86,20 @@ function getAllPayments()
                             <span class="text-gray-400">ندارد</span>
                         <?php endif; ?>
                     </td>
-                    <!-- <td>
-                        <a href="./editPayment/factor=<?= $payment['bill_number'] ?>">
-                            ویرایش
-                        </a>
-                    </td> -->
+                    <td class="text-center">
+                        <input
+                            type="checkbox"
+                            <?= !empty($payment['approved_by']) ? 'checked' : '' ?>
+                            onchange="updateApproval(this, <?= $payment['id'] ?>)"
+                            name="approved">
+                        <br>
+                        <span class="text-xs text-gray-500">
+                            <?= !empty($payment['approved_by_name']) ?
+                                $payment['approved_by_name'] . ' ' . $payment['approved_by_family'] :
+                                '—' ?>
+                        </span>
+
+                    </td>
                 </tr>
             <?php endforeach;
             if (!count($payments)): ?>
@@ -144,6 +158,30 @@ function getAllPayments()
             onRender: function() {}
         });
     });
+
+    function updateApproval(element, paymentId) {
+        const isApproved = element.checked ? 1 : 0;
+
+        axios.post('../../app/api/payments/paymentApi.php', new URLSearchParams({
+                updateApproval: 'updateApproval',
+                payment_id: paymentId,
+                approved: isApproved
+            }))
+            .then(response => {
+                if (response.data.success) {
+                    alert("عملیات موفقانه صورت گرفت.");
+                    location.reload();
+                } else {
+                    alert('Failed to update approval');
+                    element.checked = !element.checked; // Revert checkbox
+                }
+            })
+            .catch(error => {
+                console.error('Approval error:', error);
+                alert('Network error occurred');
+                element.checked = !element.checked; // Revert checkbox
+            });
+    }
 </script>
 <?php
 require_once './components/footer.php';

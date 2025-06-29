@@ -106,10 +106,8 @@ foreach ($payments as $payment): ?>
                 <tr class="border-b">
                     <td class="border-l px-2 py-1 font-semibold">عکس رسید:</td>
                     <td class="px-2 py-1">
-                        <?php if (!empty($payment['photo'])):
-                            $cleanSrc = preg_replace('/^\.\.\//', '', $payment['photo']);
-                        ?>
-                            <img src="<?= htmlspecialchars($cleanSrc) ?>" alt="Payment Receipt" class="max-w-[50%] mx-auto my-4 rounded-md shadow">
+                        <?php if (!empty($payment['photo'])): ?>
+                            <img src="../../<?= htmlspecialchars($payment['photo']) ?>" alt="Payment Receipt" class="max-w-[50%] mx-auto my-4 rounded-md shadow">
                         <?php else: ?>
                             <span class="text-gray-500">عکسی وجود ندارد</span>
                         <?php endif; ?>
