@@ -2,6 +2,6 @@
 
 while true
 do
-    php jobs_cron.php
+    php factorSellsCron.php
     sleep 60  # Wait for 60 seconds before running again
 done
