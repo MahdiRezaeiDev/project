@@ -6,36 +6,36 @@ error_reporting(E_ALL);
 require_once './config/constants.php';
 require_once './database/db_connect.php';
 
-try {
-    echo " -------------------- STARTED " . date("H:m:i");
-    $sells_report = getAllReports();
-    $shortage_report = getShortageReport();
+$now = date('H:i:s');
+echo "\n\n*************** Factor sells Report job started ( $now ) ************************\n\n";
 
-    foreach ($sells_report as $sell) {
-        $sent = sendSellsReportMessage(
-            $sell['header'],
-            $sell['factor_type'],
-            $sell['selected_goods'],
-            $sell['low_quantity'],
-            $sell['destination'],
-            $sell['is_completed']
-        );
+$sells_report = getAllReports();
+$shortage_report = getShortageReport();
 
-        if ($sent) {
-            updateStatus('factor.sells_report', $sell['id']);
-        }
+foreach ($sells_report as $sell) {
+    $sent = sendSellsReportMessage(
+        $sell['header'],
+        $sell['factor_type'],
+        $sell['selected_goods'],
+        $sell['low_quantity'],
+        $sell['destination'],
+        $sell['is_completed']
+    );
+
+    if ($sent) {
+        updateStatus('factor.sells_report', $sell['id']);
     }
-
-    foreach ($shortage_report as $shortage) {
-        $sent = sendPurchaseReportMessage($shortage['low_quantity']);
-        if ($sent) {
-            updateStatus('factor.shortage_report', $shortage['id']);
-        }
-    }
-    echo " -------------------- DONE " . date("H:m:i");
-} catch (\Throwable $th) {
-    throw $th;
 }
+
+foreach ($shortage_report as $shortage) {
+    $sent = sendPurchaseReportMessage($shortage['low_quantity']);
+    if ($sent) {
+        updateStatus('factor.shortage_report', $shortage['id']);
+    }
+}
+
+$now = date('H:i:s');
+echo "\n\n*************** Factor sells Report job started ( $now ) ************************\n\n";
 
 function sendPurchaseReportMessage($lowQuantity)
 {
@@ -49,7 +49,6 @@ function sendPurchaseReportMessage($lowQuantity)
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
     $result = curl_exec($ch);
     curl_close($ch);
@@ -74,7 +73,6 @@ function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuanti
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
     $result = curl_exec($ch);
     curl_close($ch);

@@ -6,9 +6,10 @@ error_reporting(E_ALL);
 require_once './config/constants.php';
 require_once './database/db_connect.php';
 
-echo "\n\n*************** Cron job started ( $now ) ************************\n\n";
-$queuedJobs = getJobs();
+$now = date('H:i:s');
+echo "\n\n*************** Bill cron jobs started ( $now ) ************************\n\n";
 
+$queuedJobs = getJobs();
 foreach ($queuedJobs as $job) {
     $customer = json_decode($job['customer_info'], true);
     $factor = json_decode($job['factor_info'], true);
@@ -27,6 +28,9 @@ foreach ($queuedJobs as $job) {
         markAsCompleted($job['id']);
     }
 }
+
+$now = date('H:i:s');
+echo "\n\n*************** Bill cron jobs started ( $now ) ************************\n\n";
 
 function markAsCompleted($jobId)
 {
