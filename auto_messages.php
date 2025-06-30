@@ -4,70 +4,59 @@ require_once './database/db_connect.php';
 require_once './utilities/callcenter/DollarRateHelper.php';
 require_once './app/controller/telegram/AutoMessageController.php';
 $status = getStatus();
-// function boot()
-// {
-//     $now = date('H:i:s');
-//     echo "\n\n*************** Cron job started ( $now ) ************************\n\n";
-//     // API endpoint URL
-//     $apiUrl = 'http://auto.yadak.center/';
+function boot()
+{
+    $now = date('H:i:s');
+    echo "\n\n*************** Cron job started ( $now ) ************************\n\n";
+    // API endpoint URL
+    $apiUrl = 'http://auto.yadak.center/';
 
-//     $postData = [
-//         'getMessagesAuto' => 'getMessagesAuto'
-//     ];
+    $postData = [
+        'getMessagesAuto' => 'getMessagesAuto'
+    ];
 
-//     // Initialize curl
-//     $curl = curl_init();
+    // Initialize curl
+    $curl = curl_init();
 
-//     // Set the curl options
-//     curl_setopt_array($curl, [
-//         CURLOPT_URL => $apiUrl,
-//         CURLOPT_RETURNTRANSFER => true, // Return response as a string instead of outputting it
-//         CURLOPT_FOLLOWLOCATION => true, // Follow redirects
-//         CURLOPT_MAXREDIRS => 10, // Maximum number of redirects to follow
-//         CURLOPT_TIMEOUT => 600, // Timeout in seconds
-//         CURLOPT_POST => true, // Set as POST request
-//         CURLOPT_POSTFIELDS => http_build_query($postData), // Encode data as URL-encoded format
-//         CURLOPT_HTTPHEADER => [ // Optional headers
-//             'Content-Type: application/x-www-form-urlencoded',
-//         ],
-//     ]);
+    // Set the curl options
+    curl_setopt_array($curl, [
+        CURLOPT_URL => $apiUrl,
+        CURLOPT_RETURNTRANSFER => true, // Return response as a string instead of outputting it
+        CURLOPT_FOLLOWLOCATION => true, // Follow redirects
+        CURLOPT_MAXREDIRS => 10, // Maximum number of redirects to follow
+        CURLOPT_TIMEOUT => 600, // Timeout in seconds
+        CURLOPT_POST => true, // Set as POST request
+        CURLOPT_POSTFIELDS => http_build_query($postData), // Encode data as URL-encoded format
+        CURLOPT_HTTPHEADER => [ // Optional headers
+            'Content-Type: application/x-www-form-urlencoded',
+        ],
+    ]);
 
-//     // Execute the request
-//     $response = curl_exec($curl);
+    // Execute the request
+    $response = curl_exec($curl);
 
-//     // Check for errors
-//     if (curl_errno($curl)) {
-//         $errorMessage = curl_error($curl);
-//         // Handle the error
-//         echo "cURL error: $errorMessage";
-//     } else {
-//         // Handle the response` 
-//         $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE); // Get HTTP status code
-//         if ($statusCode >= 200 && $statusCode < 300) {
-//             // Request was successful
-//             $response = json_decode($response, true);
-//             validateMessages($response);
-//         } else {
-//             // Request failed
-//             echo "Request failed with status code $statusCode";
-//             // You can handle different status codes here
-//         }
-//     }
-
-//     // Close curl
-//     curl_close($curl);
-// }
-
-$response = '{"169785118":
-    {"info":[
-    {"code":"553113f700\n","message":"86511-1J010\n\n\n?","date":1751180238}],
-    "name":["\u0641\u0631\u0648\u0634\u06af\u0627\u0647 \u0631\u062d\u0645\u062a\u06cc (\u0639\u0644\u06cc \u0635\u0627\u0644\u062d\u06cc )"],
-    "userName":[169785118],
-    "profile":["images.png"]
+    // Check for errors
+    if (curl_errno($curl)) {
+        $errorMessage = curl_error($curl);
+        // Handle the error
+        echo "cURL error: $errorMessage";
+    } else {
+        // Handle the response` 
+        $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE); // Get HTTP status code
+        if ($statusCode >= 200 && $statusCode < 300) {
+            // Request was successful
+            $response = json_decode($response, true);
+            validateMessages($response);
+        } else {
+            // Request failed
+            echo "Request failed with status code $statusCode";
+            // You can handle different status codes here
+        }
     }
-}';
 
-validateMessages(json_decode($response, true));
+    // Close curl
+    curl_close($curl);
+}
 
 function validateMessages($messages)
 {
@@ -259,8 +248,8 @@ function getSpecification($completeCode)
     return $finalResult;
 }
 
-// if ($status) {
-//     boot();
-// } else {
-//     echo 'ارسال پیام خودکار غیرفعال است' . "\n";
-// }
+if ($status) {
+    boot();
+} else {
+    echo 'ارسال پیام خودکار غیرفعال است' . "\n";
+}

@@ -49,6 +49,7 @@ function sendPurchaseReportMessage($lowQuantity)
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
     $result = curl_exec($ch);
     curl_close($ch);
@@ -73,6 +74,7 @@ function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuanti
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
     $result = curl_exec($ch);
     curl_close($ch);
