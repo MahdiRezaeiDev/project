@@ -30,7 +30,7 @@ function getSpecification($explodedCodes)
     $explodedCodes = explode("\n", $explodedCodes);
     $nonExistingCodes = [];
 
-    // Cleaning and filtering codes
+    // Step 1: Clean and filter codes
     $sanitizedCodes = array_map(function ($code) {
         return strtoupper(preg_replace('/[^a-z0-9]/i', '', $code));
     }, $explodedCodes);
@@ -39,12 +39,9 @@ function getSpecification($explodedCodes)
         return strlen($code) > 6;
     });
 
-    // Remove duplicate codes
     $explodedCodes = array_unique($sanitizedCodes);
 
-    $existing_code = []; // This array will hold the id and partNumber of the existing codes in DB
-
-    // Prepare SQL statement outside the loop for better performance
+    $existing_code = [];
     $sql = "SELECT id, partnumber FROM yadakshop.nisha WHERE partnumber LIKE :partNumber";
     $stmt = PDO_CONNECTION->prepare($sql);
 
@@ -61,8 +58,32 @@ function getSpecification($explodedCodes)
         }
     }
 
+    // Step 2: Keep only one code per relation
+    $relationToCode = [];
+    $codesToRemove = [];
+
+    foreach ($explodedCodes as $code) {
+        if (!in_array($code, $nonExistingCodes)) {
+            foreach ($existing_code[$code] as $item) {
+                $relation_exist = isInRelation($item['id']);
+                if ($relation_exist) {
+                    if (!isset($relationToCode[$relation_exist])) {
+                        $relationToCode[$relation_exist] = $code;
+                    } else {
+                        $codesToRemove[] = $code;
+                    }
+                }
+            }
+        }
+    }
+
+    $codesToRemove = array_unique($codesToRemove);
+    $explodedCodes = array_values(array_diff($explodedCodes, $codesToRemove));
+
+    // Step 3: Process goodDetails
     $goodDetails = [];
     $relation_id = [];
+
     foreach ($explodedCodes as $code) {
         if (!in_array($code, $nonExistingCodes)) {
             foreach ($existing_code[$code] as $item) {
@@ -70,7 +91,7 @@ function getSpecification($explodedCodes)
 
                 if ($relation_exist) {
                     if (!in_array($relation_exist, $relation_id)) {
-                        array_push($relation_id, $relation_exist);
+                        $relation_id[] = $relation_exist;
                         $goodDescription = relations($relation_exist, true);
                         $goodDetails[$code][$item['partnumber']]['existing'] = $goodDescription['existing'];
                         $goodDetails[$code][$item['partnumber']]['sorted'] = $goodDescription['sorted'];
@@ -87,23 +108,19 @@ function getSpecification($explodedCodes)
         }
     }
 
-    // Custom comparison function to sort inner arrays by values in descending order
+    // Step 4: Sort each inner set by 'sorted' values
     function customSort($a, $b)
     {
-        $sumA = array_sum($a['sorted']); // Calculate the sum of values in $a
-        $sumB = array_sum($b['sorted']); // Calculate the sum of values in $b
-
-        // Compare the sums in descending order
-        if ($sumA == $sumB) {
-            return 0;
-        }
-        return ($sumA > $sumB) ? -1 : 1;
+        $sumA = array_sum($a['sorted']);
+        $sumB = array_sum($b['sorted']);
+        return $sumB <=> $sumA;
     }
 
     foreach ($goodDetails as &$record) {
-        uasort($record, 'customSort'); // Sort the inner array by values
+        uasort($record, 'customSort');
     }
 
+    // Step 5: Extract final part numbers
     $finalGoods = [];
     foreach ($goodDetails as $good) {
         foreach ($good as $key => $item) {
@@ -113,24 +130,37 @@ function getSpecification($explodedCodes)
     }
 
     $goodDetails = $finalGoods;
-    $detailKeys = array_keys($goodDetails);
-    $existingKeys = array_keys($existing_code);
 
-    $equal = array_combine($existingKeys, $detailKeys);
+    // Step 6: Build equal mapping (safe)
+    $equal = [];
 
+    foreach ($goodDetails as $partNumber => $_) {
+        foreach ($existing_code as $inputCode => $matches) {
+            foreach ($matches as $item) {
+                if ($item['partnumber'] === $partNumber) {
+                    $equal[$inputCode] = $partNumber;
+                    break 2;
+                }
+            }
+        }
+    }
+
+    // Step 7: Calculate prices and brands
     $finalResult = [];
 
     foreach ($goodDetails as $partNumber => $goodDetail) {
         $brands = [];
+
         foreach ($goodDetail['existing'] as $item) {
             if (count($item)) {
-                array_push($brands, array_keys($item));
+                $brands[] = array_keys($item);
             }
         }
+
         $brands = [...array_unique(array_merge(...$brands))];
         $goodDetails[$partNumber]['brands'] = addRelatedBrands($brands);
         $goodDetails[$partNumber]['finalPrice'] = getFinalSanitizedPrice($goodDetail['givenPrice'], $goodDetails[$partNumber]['brands']);
-        $finalResult[$partNumber]['finalPrice'] = getFinalSanitizedPrice($goodDetail['givenPrice'], $goodDetails[$partNumber]['brands']);
+        $finalResult[$partNumber]['finalPrice'] = $goodDetails[$partNumber]['finalPrice'];
     }
 
     return [
