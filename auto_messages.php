@@ -18,19 +18,20 @@ function boot()
     // Initialize curl
     $curl = curl_init();
 
-    // Set the curl options
     curl_setopt_array($curl, [
         CURLOPT_URL => $apiUrl,
-        CURLOPT_RETURNTRANSFER => true, // Return response as a string instead of outputting it
-        CURLOPT_FOLLOWLOCATION => true, // Follow redirects
-        CURLOPT_MAXREDIRS => 10, // Maximum number of redirects to follow
-        CURLOPT_TIMEOUT => 600, // Timeout in seconds
-        CURLOPT_POST => true, // Set as POST request
-        CURLOPT_POSTFIELDS => http_build_query($postData), // Encode data as URL-encoded format
-        CURLOPT_HTTPHEADER => [ // Optional headers
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_MAXREDIRS => 5,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => http_build_query($postData),
+        CURLOPT_HTTPHEADER => [
             'Content-Type: application/x-www-form-urlencoded',
         ],
     ]);
+
 
     // Execute the request
     $response = curl_exec($curl);
@@ -166,6 +167,8 @@ function validateMessages($messages)
             }
         }
     }
+    $now = date('H:i:s');
+    echo "\n\n*************** Cron job ENDED ( $now ) ************************\n\n";
 }
 
 
