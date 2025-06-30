@@ -6,29 +6,35 @@ error_reporting(E_ALL);
 require_once './config/constants.php';
 require_once './database/db_connect.php';
 
-$sells_report = getAllReports();
-$shortage_report = getShortageReport();
+try {
+    echo " -------------------- STARTED " . date("H:m:i");
+    $sells_report = getAllReports();
+    $shortage_report = getShortageReport();
 
-foreach ($sells_report as $sell) {
-    $sent = sendSellsReportMessage(
-        $sell['header'],
-        $sell['factor_type'],
-        $sell['selected_goods'],
-        $sell['low_quantity'],
-        $sell['destination'],
-        $sell['is_completed']
-    );
+    foreach ($sells_report as $sell) {
+        $sent = sendSellsReportMessage(
+            $sell['header'],
+            $sell['factor_type'],
+            $sell['selected_goods'],
+            $sell['low_quantity'],
+            $sell['destination'],
+            $sell['is_completed']
+        );
 
-    if ($sent) {
-        updateStatus('factor.sells_report', $sell['id']);
+        if ($sent) {
+            updateStatus('factor.sells_report', $sell['id']);
+        }
     }
-}
 
-foreach ($shortage_report as $shortage) {
-    $sent = sendPurchaseReportMessage($shortage['low_quantity']);
-    if ($sent) {
-        updateStatus('factor.shortage_report', $shortage['id']);
+    foreach ($shortage_report as $shortage) {
+        $sent = sendPurchaseReportMessage($shortage['low_quantity']);
+        if ($sent) {
+            updateStatus('factor.shortage_report', $shortage['id']);
+        }
     }
+    echo " -------------------- DONE " . date("H:m:i");
+} catch (\Throwable $th) {
+    throw $th;
 }
 
 function sendPurchaseReportMessage($lowQuantity)
