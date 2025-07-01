@@ -178,39 +178,50 @@ function getStatus()
 
 function sendMessageWithTemplate($receiver, $template)
 {
-    // Prepare POST data
     $postData = http_build_query([
-        'sendMessageWithTemplate' => 'sendMessageWithTemplate',
+        'sendMessage' => 'AutoMessage',
         'receiver' => $receiver,
-        'message' => $template
+        'message' => $template,
     ]);
 
-    // Initialize cURL session
-    $ch = curl_init();
+    // Update this URL if your Telegram bot endpoint is different
+    $url = "http://telegram.yadak.center/send";
 
-    // Set cURL options
-    curl_setopt($ch, CURLOPT_URL, "http://auto.yadak.center/");
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $parts = parse_url($url);
+    $scheme = $parts['scheme'] ?? 'http';
+    $host = $parts['host'] ?? '';
+    $port = ($scheme === 'https') ? 443 : 80;
+    $path = $parts['path'] ?? '/';
 
-    // Execute cURL session
-    $response = curl_exec($ch);
+    // Open socket connection
+    $fp = fsockopen(
+        ($scheme === 'https' ? 'ssl://' : '') . $host,
+        $port,
+        $errno,
+        $errstr,
+        2
+    );
 
-    // Check for errors
-    if (curl_errno($ch)) {
-        // Handle cURL error
-        $error = curl_error($ch);
-        curl_close($ch);
-        return "Error: " . $error;
+    if (!$fp) {
+        echo "Failed to connect to Telegram endpoint: $errstr ($errno)\n";
+        return false;
     }
 
-    // Close cURL session
-    curl_close($ch);
+    // Build HTTP POST request
+    $out = "POST $path HTTP/1.1\r\n";
+    $out .= "Host: $host\r\n";
+    $out .= "Content-Type: application/x-www-form-urlencoded\r\n";
+    $out .= "Content-Length: " . strlen($postData) . "\r\n";
+    $out .= "Connection: Close\r\n\r\n";
+    $out .= $postData;
 
-    // Return response
-    return $response;
+    // Send the request and close immediately (non-blocking)
+    fwrite($fp, $out);
+    fclose($fp);
+
+    return true;
 }
+
 
 function saveConversation($receiver, $request, $response)
 {

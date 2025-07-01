@@ -153,6 +153,9 @@ function validateMessages($messages)
                             // Add the code to sentMessages before sending the template
                             $sentMessages[$sender][] = $code;
                             sendMessageWithTemplate($sender, $template);
+
+                            usleep(200000); // Optional: 200ms delay between sends
+
                             $template = '';
                         }
                     }
