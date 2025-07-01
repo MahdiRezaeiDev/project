@@ -35,49 +35,67 @@ foreach ($shortage_report as $shortage) {
 }
 
 $now = date('H:i:s');
-echo "\n\n*************** Factor sells Report job started ( $now ) ************************\n\n";
+echo "\n\n*************** Factor sells Report job finished ( $now ) ************************\n\n";
+
 
 function sendPurchaseReportMessage($lowQuantity)
 {
-    $postData = [
+    $postData = http_build_query([
         "sendMessage" => "PurchaseReport",
         "lowQuantity" => $lowQuantity,
-    ];
+    ]);
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://delivery.yadak.center/");
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    $result = curl_exec($ch);
-    curl_close($ch);
-
-    return $result !== false;
+    $url = "http://delivery.yadak.center/";
+    return fireAndForget($url, $postData);
 }
 
 function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete)
 {
     $typeID = !$isComplete ? ($factorType == 0 ? 3516 : 3514) : 17815;
 
-    $postData = [
+    $postData = http_build_query([
         "sendMessage" => "sellsReportTest",
         "header" => $header,
         "topic_id" => $typeID,
         "selectedGoods" => $selectedGoods,
         "lowQuantity" => $lowQuantity,
-    ];
+    ]);
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $destination);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    return fireAndForget($destination, $postData);
+}
 
-    $result = curl_exec($ch);
-    curl_close($ch);
+function fireAndForget($url, $postData)
+{
+    $parts = parse_url($url);
+    $scheme = $parts['scheme'] ?? 'http';
+    $host = $parts['host'] ?? '';
+    $port = $scheme === 'https' ? 443 : 80;
+    $path = $parts['path'] ?? '/';
 
-    return $result !== false;
+    $fp = fsockopen(
+        ($scheme === 'https' ? 'ssl://' : '') . $host,
+        $port,
+        $errno,
+        $errstr,
+        2
+    );
+
+    if (!$fp) {
+        echo "Failed to connect: $errstr ($errno)\n";
+        return false;
+    }
+
+    $out = "POST $path HTTP/1.1\r\n";
+    $out .= "Host: $host\r\n";
+    $out .= "Content-Type: application/x-www-form-urlencoded\r\n";
+    $out .= "Content-Length: " . strlen($postData) . "\r\n";
+    $out .= "Connection: Close\r\n\r\n";
+    $out .= $postData;
+
+    fwrite($fp, $out);
+    fclose($fp); // Immediately close connection
+
+    return true;
 }
 
 function getAllReports()
