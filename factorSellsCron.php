@@ -12,6 +12,7 @@ echo "\n\n*************** Factor sells Report job started ( $now ) *************
 $sells_report = getAllReports();
 $shortage_report = getShortageReport();
 
+// Process sales report
 foreach ($sells_report as $sell) {
     $sent = sendSellsReportMessage(
         $sell['header'],
@@ -25,19 +26,26 @@ foreach ($sells_report as $sell) {
     if ($sent) {
         updateStatus('factor.sells_report', $sell['id']);
     }
+
+    // Delay 200ms to avoid conflict
+    usleep(200000);
 }
 
+// Process shortage report
 foreach ($shortage_report as $shortage) {
     $sent = sendPurchaseReportMessage($shortage['low_quantity']);
     if ($sent) {
         updateStatus('factor.shortage_report', $shortage['id']);
     }
+
+    // Delay 200ms between requests
+    usleep(200000);
 }
 
 $now = date('H:i:s');
 echo "\n\n*************** Factor sells Report job finished ( $now ) ************************\n\n";
 
-
+// Send purchase (shortage) report message
 function sendPurchaseReportMessage($lowQuantity)
 {
     $postData = http_build_query([
@@ -49,6 +57,7 @@ function sendPurchaseReportMessage($lowQuantity)
     return fireAndForget($url, $postData);
 }
 
+// Send sells report message
 function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete)
 {
     $typeID = !$isComplete ? ($factorType == 0 ? 3516 : 3514) : 17815;
@@ -64,12 +73,13 @@ function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuanti
     return fireAndForget($destination, $postData);
 }
 
+// Fire-and-forget HTTP POST (non-blocking)
 function fireAndForget($url, $postData)
 {
     $parts = parse_url($url);
     $scheme = $parts['scheme'] ?? 'http';
     $host = $parts['host'] ?? '';
-    $port = $scheme === 'https' ? 443 : 80;
+    $port = ($scheme === 'https') ? 443 : 80;
     $path = $parts['path'] ?? '/';
 
     $fp = fsockopen(
@@ -93,11 +103,12 @@ function fireAndForget($url, $postData)
     $out .= $postData;
 
     fwrite($fp, $out);
-    fclose($fp); // Immediately close connection
+    fclose($fp); // Close immediately, don't wait for response
 
     return true;
 }
 
+// Fetch pending sells reports
 function getAllReports()
 {
     $stmt = PDO_CONNECTION->prepare("SELECT * FROM factor.sells_report WHERE status = 0");
@@ -105,6 +116,7 @@ function getAllReports()
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Fetch pending shortage reports
 function getShortageReport()
 {
     $stmt = PDO_CONNECTION->prepare("SELECT * FROM factor.shortage_report WHERE status = 0");
@@ -112,6 +124,7 @@ function getShortageReport()
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Mark report as processed
 function updateStatus($table, $id)
 {
     $stmt = PDO_CONNECTION->prepare("UPDATE $table SET status = 1 WHERE id = :id");
