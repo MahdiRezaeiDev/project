@@ -26,9 +26,6 @@ foreach ($sells_report as $sell) {
     if ($sent) {
         updateStatus('factor.sells_report', $sell['id']);
     }
-
-    // Delay 200ms to avoid conflict
-    usleep(200000);
 }
 
 // Process shortage report
@@ -37,9 +34,6 @@ foreach ($shortage_report as $shortage) {
     if ($sent) {
         updateStatus('factor.shortage_report', $shortage['id']);
     }
-
-    // Delay 200ms between requests
-    usleep(200000);
 }
 
 $now = date('H:i:s');
