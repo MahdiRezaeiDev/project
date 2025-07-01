@@ -13,7 +13,7 @@
     </div>
     <div class="headline">
         <h2 style="margin-bottom: 7px;">نسخه حسابداری</h2>
-        <h2 style="margin-bottom: 7px;"><?= $subTitle; ?></h2>
+        <h2 style="margin-bottom: 7px;" class="element"><?= $subTitle; ?></h2>
     </div>
     <div class="log_section">
         <svg width="64px" height="64px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

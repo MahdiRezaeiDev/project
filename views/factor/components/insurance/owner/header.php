@@ -13,7 +13,7 @@
     </div>
     <div class="headline">
         <h2 style="margin-bottom: 7px;">نسخه کارشناس فنی</h2>
-        <h2 style="margin-bottom: 7px;"><?= $subTitle; ?></h2>
+        <h2 style="margin-bottom: 7px;" class="element"><?= $subTitle; ?></h2>
     </div>
     <div class="log_section">
         <svg height="80px" width="80px" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">

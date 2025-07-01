@@ -26,6 +26,23 @@ require_once '../../layouts/callcenter/sidebar.php';
         font-weight: bold;
     }
 </style>
+<style>
+    @media print {
+        body::before {
+            content: "امانت نامه";
+            position: fixed;
+            top: 40%;
+            left: 20%;
+            transform: rotate(-30deg);
+            font-size: 80px;
+            color: rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+    }
+</style>
+
 <link rel="stylesheet" href="./assets/css/bill.css" />
 <script src="./assets/js/html2pdf.js"></script>
 <script>

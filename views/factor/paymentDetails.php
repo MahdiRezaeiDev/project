@@ -47,7 +47,7 @@ $remainingAmount = $factorInfo['total'] - $totalPayment;
             </tr>
             <tr class="border-b">
                 <td class="border-l px-2 py-1 font-semibold w-32">اسم مشتری:</td>
-                <td class="px-2 py-1"><?= $factorInfo['name'] ?? '---' ?></td>
+                <td class="px-2 py-1"><?= $factorInfo['name'] . '' . $factorInfo['family'] ?></td>
                 <td class="border-l px-2 py-1 font-semibold w-32">شماره تماس:</td>
                 <td class="px-2 py-1"><?= $factorInfo['phone'] ?></td>
             </tr>
