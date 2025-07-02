@@ -82,9 +82,9 @@ if (isset($_POST['filterRequest'])) {
 
         echo "<td class='border px-2 py-1 text-center'>{$p['bill_number']}</td>";
         echo "<td class='border px-2 py-1'>{$p['customer_name']} {$p['customer_family']}</td>";
-        echo "<td class='border px-2 py-1 text-right'>" . number_format($p['total']) . " تومان</td>";
+        echo "<td class='border px-2 py-1 text-right'>" . number_format($p['total']) . " ریال</td>";
         echo "<td class='border px-2 py-1'>{$p['user_name']} {$p['user_family']}</td>";
-        echo "<td class='border px-2 py-1 text-right'>" . number_format($p['amount']) . " تومان</td>";
+        echo "<td class='border px-2 py-1 text-right'>" . number_format($p['amount']) . " ریال</td>";
         echo "<td class='border px-2 py-1'>{$p['date']}</td>";
         echo "<td class='border px-2 py-1'>{$p['account']}</td>";
 
