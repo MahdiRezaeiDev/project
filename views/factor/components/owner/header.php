@@ -134,7 +134,7 @@
             let originalPrice = item.original_price; // assuming `item` is a JS object
             let LRTemplate = '';
 
-            if (originalPrice.includes('(LR)')) {
+            if (originalPrice?.includes('(LR)')) {
                 LRTemplate = '●';
             }
 
