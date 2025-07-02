@@ -76,8 +76,10 @@ if (isset($_POST['filterRequest'])) {
         </tr>";
         exit;
     };
+    $totalPayment = 0;
 
     foreach ($AllPayments as $p) {
+        $totalPayment += $payment['amount'];
         echo "<tr class='border-t hover:bg-gray-50'>";
 
         echo "<td class='border px-2 py-1 text-center'>{$p['bill_number']}</td>";
@@ -104,7 +106,15 @@ if (isset($_POST['filterRequest'])) {
         echo !empty($p['approved_by_name']) ? "{$p['approved_by_name']} {$p['approved_by_family']}" : '—';
         echo "</span>";
         echo "</td>";
-
         echo "</tr>";
     }
+
+    echo '<tr class="border-t bg-gray-800 text-white">
+        <td class="px-3 py-2 font-semibold text-left" colspan="4">
+            مجموع واریزی
+        </td>
+        <td class="px-3 py-2 text-right font-semibold" colspan="5">'
+        . number_format($totalPayment) .
+        '</td>
+    </tr>';
 }
