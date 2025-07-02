@@ -79,7 +79,7 @@ if (isset($_POST['filterRequest'])) {
     $totalPayment = 0;
 
     foreach ($AllPayments as $p) {
-        $totalPayment += $payment['amount'];
+        $totalPayment += $p['amount'];
         echo "<tr class='border-t hover:bg-gray-50'>";
 
         echo "<td class='border px-2 py-1 text-center'>{$p['bill_number']}</td>";
@@ -117,4 +117,32 @@ if (isset($_POST['filterRequest'])) {
         . number_format($totalPayment) .
         '</td>
     </tr>';
+}
+
+if (isset($_POST['updateApproval'])) {
+    $paymentId = intval($_POST['payment_id']);
+    $approved = intval($_POST['approved']);
+    $approvedBy = $_SESSION['id'] ?? null;
+
+    if (!$paymentId) {
+        echo json_encode(['success' => false, 'error' => 'Invalid request']);
+        exit;
+    }
+
+    if ($approved) {
+        $query = "UPDATE factor.payments SET approved_by = :approved_by WHERE id = :id";
+        $stmt = PDO_CONNECTION->prepare($query);
+        $success = $stmt->execute([
+            ':id' => $paymentId,
+            ':approved_by' => $approvedBy
+        ]);
+    } else {
+        $query = "UPDATE factor.payments SET approved_by = NULL WHERE id = :id";
+        $stmt = PDO_CONNECTION->prepare($query);
+        $success = $stmt->execute([
+            ':id' => $paymentId
+        ]);
+    }
+
+    echo json_encode(['success' => $success]);
 }
