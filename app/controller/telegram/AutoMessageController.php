@@ -185,7 +185,7 @@ function sendMessageWithTemplate($receiver, $template)
     ]);
 
     // Update this URL if your Telegram bot endpoint is different
-    $url = "http://telegram.yadak.center/send";
+    $url = "http://telegram.yadak.center/send"; 
 
     $parts = parse_url($url);
     $scheme = $parts['scheme'] ?? 'http';

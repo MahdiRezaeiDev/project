@@ -43,7 +43,7 @@ $remainingAmount = $factorInfo['total'] - $totalPayment;
                 <td class="border-l px-2 py-1 font-semibold w-32">نمبر مسلسل:</td>
                 <td class="px-2 py-1"><?= $factorInfo['bill_number'] ?></td>
                 <td class="border-l px-2 py-1 font-semibold w-32">اسم مشتری:</td>
-                <td class="px-2 py-1"><?= $factorInfo['name'] ?? '---' ?></td>
+                <td class="px-2 py-1"><?= $factorInfo['name'] . '' . $factorInfo['family'] ?></td>
             </tr>
             <tr class="border-b">
                 <td class="border-l px-2 py-1 font-semibold w-32">اسم مشتری:</td>
@@ -52,19 +52,19 @@ $remainingAmount = $factorInfo['total'] - $totalPayment;
                 <td class="px-2 py-1"><?= $factorInfo['phone'] ?></td>
             </tr>
             <tr class="border-b">
-                <td class="border-l px-2 py-1 font-semibold">تاریخ سفارش:</td>
+                <td class="border-l px-2 py-1 font-semibold">تاریخ فاکتور:</td>
                 <td class="px-2 py-1" dir="ltr">
                     <?= ($factorInfo['bill_date']) ?>
                 </td>
                 <td class="border-l px-2 py-1 font-semibold">مبلغ فاکتور</td>
                 <td class="px-2 py-1" dir="ltr">
-                    <?= number_format($factorInfo['total']) ?> تومان
+                    <?= number_format($factorInfo['total']) ?> ریال
                 </td>
             </tr>
             <tr class="border-b">
                 <td class="border-l px-2 py-1 font-semibold">باقی مانده:</td>
                 <td class="px-2 py-1" dir="ltr">
-                    <?= number_format($remainingAmount) ?> تومان
+                    <?= number_format($remainingAmount) ?> ریال
                 </td>
                 <td class="border-l px-2 py-1 font-semibold">ثبت کننده:</td>
                 <td class="px-2 py-1"><?= $factorInfo['user_name'] . ' ' . $factorInfo['user_family'] ?? '---' ?></td>
@@ -87,7 +87,7 @@ foreach ($payments as $payment): ?>
             <tbody>
                 <tr class="border-b">
                     <td class="border-l px-2 py-1 font-semibold w-32">مبلغ واریزی:</td>
-                    <td class="px-2 py-1"><?= number_format($payment['amount']) ?> تومان</td>
+                    <td class="px-2 py-1"><?= number_format($payment['amount']) ?> ریال</td>
                 </tr>
                 <tr class="border-b">
                     <td class="border-l px-2 py-1 font-semibold w-32">شماره حساب:</td>
@@ -102,6 +102,10 @@ foreach ($payments as $payment): ?>
                 <tr class="border-b">
                     <td class="border-l px-2 py-1 font-semibold">ثبت کننده:</td>
                     <td class="px-2 py-1"><?= htmlspecialchars($payment['user_name'] . ' ' . $payment['user_family']) ?></td>
+                </tr>
+                <tr class="border-b">
+                    <td class="border-l px-2 py-1 font-semibold">ذی نفع:</td>
+                    <td class="px-2 py-1"><?= htmlspecialchars($payment['description']) ?></td>
                 </tr>
                 <tr class="border-b">
                     <td class="border-l px-2 py-1 font-semibold">عکس رسید:</td>

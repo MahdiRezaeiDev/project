@@ -47,13 +47,82 @@ function getAllPayments()
 }
 
 ?>
+<style>
+    /* Hide everything except #factor_table for print */
+    @media print {
+        @page {
+            size: auto;
+            /* auto is the default size */
+            margin: 0;
+            /* remove default margin */
+        }
+
+        body {
+            margin: 20px;
+            padding: 0 !important;
+            /* remove body margin */
+        }
+
+        nav,
+        aside,
+        .hide_while_print,
+        #operation_message,
+        #tvMessage {
+            display: none !important;
+        }
+
+        #wrapper {
+            padding: 0;
+            margin: 0;
+            /* Remove padding and margin */
+            box-shadow: none;
+        }
+    }
+</style>
 <div class="p-6">
     <div class="flex justify-between mb-5">
         <h2 class="text-xl font-bold mb-4">لیست واریزی‌ها</h2>
-        <input class="text-xs border rounded-md px-3 py-2 text-right"
-            data-gdate="<?= date('Y/m/d') ?>"
-            value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>"
-            type="text" name="invoice_time" id="invoice_time">
+    </div>
+
+    <div>
+        <form id="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-white rounded-lg shadow mb-4">
+
+            <div>
+                <label class="text-sm">تاریخ فاکتور</label>
+                <input type="text" id="factor_date" name="factor_date_display"
+                    class="w-full border rounded px-2 py-1" autocomplete="off" />
+                <input type="hidden" name="factor_date" id="factor_date_real" />
+            </div>
+
+            <div>
+                <label class="text-sm">تاریخ واریزی</label>
+                <input type="text" id="payment_date" name="payment_date_display"
+                    class="w-full border rounded px-2 py-1" autocomplete="off" />
+                <input type="hidden" name="payment_date" id="payment_date_real" />
+            </div>
+
+            <div>
+                <label class="text-sm">شماره فاکتور</label>
+                <input type="text" name="factor_number" class="w-full border rounded px-2 py-1" />
+            </div>
+
+            <div>
+                <label class="text-sm">اسم مشتری</label>
+                <input type="text" name="customer_name" class="w-full border rounded px-2 py-1" />
+            </div>
+
+            <div class="flex items-end gap-2">
+                <button type="submit"
+                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full text-sm">
+                    اعمال فیلتر
+                </button>
+                <button type="button" id="clearFilters"
+                    class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 w-full text-sm">
+                    پاک کردن
+                </button>
+            </div>
+
+        </form>
     </div>
     <table class="w-full border border-gray-300 text-sm">
         <thead class="bg-gray-100">
@@ -70,38 +139,52 @@ function getAllPayments()
             </tr>
         </thead>
         <tbody id="result_box">
-            <?php foreach ($payments as $payment): ?>
-                <tr class="border-t">
-                    <td class="px-3 py-1 text-center"><?= $payment['bill_number'] ?></td>
-                    <td class="px-3 py-1"><?= $payment['customer_name'] . ' ' . $payment['customer_family'] ?></td>
-                    <td class="px-3 py-1"><?= number_format($payment['total']) ?>تومان</td>
-                    <td class="px-3 py-1"><?= $payment['user_name'] . ' ' . $payment['user_family'] ?></td>
-                    <td class="px-3 py-1 text-right"><?= number_format($payment['amount']) ?> تومان</td>
-                    <td class="px-3 py-1"><?= $payment['date'] ?></td>
-                    <td class="px-3 py-1"><?= $payment['account'] ?></td>
-                    <td class="px-3 py-1 text-center">
-                        <?php if (!empty($payment['photo'])): ?>
-                            <a href="../../app/controller/payment/<?= $payment['photo'] ?>" target="_blank" class="text-blue-600">نمایش</a>
-                        <?php else: ?>
-                            <span class="text-gray-400">ندارد</span>
-                        <?php endif; ?>
-                    </td>
-                    <td class="text-center">
-                        <input
-                            type="checkbox"
-                            <?= !empty($payment['approved_by']) ? 'checked' : '' ?>
-                            onchange="updateApproval(this, <?= $payment['id'] ?>)"
-                            name="approved">
-                        <br>
-                        <span class="text-xs text-gray-500">
-                            <?= !empty($payment['approved_by_name']) ?
-                                $payment['approved_by_name'] . ' ' . $payment['approved_by_family'] :
-                                '—' ?>
-                        </span>
 
+            <?php if (count($payments)):
+                $totalPayment = 0;
+                foreach ($payments as $payment):
+                    $totalPayment += $payment['amount']; ?>
+                    <tr class="border-t">
+                        <td class="px-3 py-1 text-center"><?= $payment['bill_number'] ?></td>
+                        <td class="px-3 py-1"><?= $payment['customer_name'] . ' ' . $payment['customer_family'] ?></td>
+                        <td class="px-3 py-1"><?= number_format($payment['total']) ?>ریال</td>
+                        <td class="px-3 py-1"><?= $payment['user_name'] . ' ' . $payment['user_family'] ?></td>
+                        <td class="px-3 py-1 text-right"><?= number_format($payment['amount']) ?> ریال</td>
+                        <td class="px-3 py-1"><?= $payment['date'] ?></td>
+                        <td class="px-3 py-1"><?= $payment['account'] ?></td>
+                        <td class="px-3 py-1 text-center">
+                            <?php if (!empty($payment['photo'])): ?>
+                                <a href="../../app/controller/payment/<?= $payment['photo'] ?>" target="_blank" class="text-blue-600">نمایش</a>
+                            <?php else: ?>
+                                <span class="text-gray-400">ندارد</span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="text-center">
+                            <input
+                                type="checkbox"
+                                <?= !empty($payment['approved_by']) ? 'checked' : '' ?>
+                                onchange="updateApproval(this, <?= $payment['id'] ?>)"
+                                name="approved">
+                            <br>
+                            <span class="text-xs text-gray-500">
+                                <?= !empty($payment['approved_by_name']) ?
+                                    $payment['approved_by_name'] . ' ' . $payment['approved_by_family'] :
+                                    '—' ?>
+                            </span>
+
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                <tr class="border-t bg-gray-800 text-white">
+                    <td class="px-3 py-2 font-semibold text-left" colspan="4">
+                        مجموع واریزی
+                    </td>
+                    <td class="px-3 py-2 text-right font-semibold" colspan="5">
+                        <?= number_format($totalPayment); ?>
                     </td>
                 </tr>
-            <?php endforeach;
+            <?php
+            endif;
             if (!count($payments)): ?>
                 <tr>
                     <td class="py-2 text-red-500 text-center font-semibold" colspan="8">
@@ -114,49 +197,45 @@ function getAllPayments()
 </div>
 <script>
     const result_box = document.getElementById('result_box');
+
+    // اتصال به تقویم شمسی
     $(function() {
-        $("#invoice_time").persianDatepicker({
-            months: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"],
-            dowTitle: ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه"],
-            shortDowTitle: ["ش", "ی", "د", "س", "چ", "پ", "ج"],
-            showGregorianDate: !1,
-            persianNumbers: !0,
+        $("#factor_date").persianDatepicker({
             formatDate: "YYYY/MM/DD",
-            selectedBefore: !1,
-            selectedDate: null,
-            startDate: null,
-            endDate: null,
-            prevArrow: '\u25c4',
-            nextArrow: '\u25ba',
-            theme: 'default',
-            alwaysShow: !1,
-            selectableYears: null,
-            selectableMonths: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-            cellWidth: 25, // by px
-            cellHeight: 20, // by px
-            fontSize: 13, // by px
-            isRTL: !1,
-            calendarPosition: {
-                x: 0,
-                y: 0,
-            },
-            onShow: function() {},
-            onHide: function() {},
             onSelect: function() {
-                const date = ($("#invoice_time").attr("data-gdate"));
-                var params = new URLSearchParams();
-                params.append('getPaymentReports', 'getPaymentReports');
-                params.append('date', date);
-                axios.post("../../app/api/payments/paymentApi.php", params)
-                    .then(function(response) {
-                        result_box.innerHTML = response.data;
-                    })
-                    .catch(function(error) {
-                        console.log(error);
-                    });
-            },
-            onRender: function() {}
+                const gdate = $("#factor_date").attr("data-gdate");
+                $("#factor_date_real").val(gdate);
+            }
         });
+
+        $("#payment_date").persianDatepicker({
+            formatDate: "YYYY/MM/DD",
+            onSelect: function() {
+                const gdate = $("#payment_date").attr("data-gdate");
+                $("#payment_date_real").val(gdate);
+            }
+        });
+    });
+
+    // گرفتن تمام داده‌های فرم و ارسال به API
+    document.getElementById("filterForm").addEventListener("submit", function(e) {
+        e.preventDefault(); // جلوگیری از ارسال پیش‌فرض فرم
+
+        const form = e.target;
+        const formData = new FormData(form);
+
+        // اضافه کردن یک فیلد اضافی (اختیاری)
+        formData.append("filterRequest", "true");
+
+        result_box.innerHTML = "<tr><td colspan='9' class='text-center py-4 text-gray-500'>در حال بارگذاری...</td></tr>";
+
+        axios.post("../../app/api/payments/paymentApi.php", formData)
+            .then(function(response) {
+                result_box.innerHTML = response.data;
+            })
+            .catch(function(error) {
+                console.error("خطا در ارسال فرم:", error);
+            });
     });
 
     function updateApproval(element, paymentId) {
@@ -182,6 +261,18 @@ function getAllPayments()
                 element.checked = !element.checked; // Revert checkbox
             });
     }
+
+    document.getElementById("clearFilters").addEventListener("click", function() {
+        const form = document.getElementById("filterForm");
+        form.reset();
+
+        // Also clear hidden inputs if needed
+        document.getElementById("factor_date_real").value = "";
+        document.getElementById("payment_date_real").value = "";
+
+        // Optionally, trigger form submission again to reset the results
+        // form.submit();
+    });
 </script>
 <?php
 require_once './components/footer.php';
