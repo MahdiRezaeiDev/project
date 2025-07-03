@@ -146,3 +146,19 @@ if (isset($_POST['updateApproval'])) {
 
     echo json_encode(['success' => $success]);
 }
+
+if (isset($_POST['updateDescription'])) {
+    $id = intval($_POST['id'] ?? 0);
+    $description = trim($_POST['description'] ?? '');
+
+    if ($id > 0) {
+        $stmt = $pdo->prepare("UPDATE factor.payments SET description = ? WHERE id = ?");
+        $success = $stmt->execute([$description, $id]);
+
+        echo json_encode(['status' => $success ? 'success' : 'error']);
+        exit;
+    }
+
+    echo json_encode(['status' => 'invalid_id']);
+    exit;
+}

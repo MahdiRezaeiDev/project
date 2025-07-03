@@ -40,6 +40,12 @@ function getFactors($start, $end, $user = null)
             ELSE FALSE 
         END AS exists_in_payments,
 
+        (
+            SELECT COUNT(*) 
+            FROM factor.payments pay
+            WHERE pay.bill_id = bill.id
+        ) AS payment_count,
+
         CASE 
             WHEN (
                 SELECT COALESCE(SUM(pay.amount), 0)
@@ -56,7 +62,8 @@ function getFactors($start, $end, $user = null)
     WHERE
         shomarefaktor.time < :end
         AND shomarefaktor.time >= :start
-    ";
+";
+
 
     if ($user !== null) {
         $query .= " AND shomarefaktor.user = :user";

@@ -201,8 +201,14 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                 <?php endif;
                                 if ($factor['is_paid_off']): ?>
                                     <td class="text-center align-middle hide_while_print hidden sm:table-cell">
-                                        <a href="../factor/paymentDetails.php?factor=<?= $factor['shomare'] ?>" class="text-xs bg-green-500 text-white cursor-pointer px-2 py-1 rounded">
+                                        <a href="../factor/paymentDetails.php?factor=<?= $factor['shomare'] ?>"
+                                            class="relative inline-block text-xs bg-green-500 text-white cursor-pointer px-3 py-1 rounded hover:bg-green-600 transition">
                                             مشاهده واریزی
+                                            <?php if ($factor['payment_count'] > 0): ?>
+                                                <span class="absolute -top-2 -left-2 bg-red-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow">
+                                                    <?= $factor['payment_count'] ?>
+                                                </span>
+                                            <?php endif; ?>
                                         </a>
                                     </td>
                                 <?php else: ?>

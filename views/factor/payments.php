@@ -35,8 +35,7 @@ function getAllPayments()
     WHERE 
         payments.created_at >= :startOfDay AND payments.created_at <= :endOfDay
     ORDER BY 
-        payments.created_at DESC
-");
+        payments.created_at DESC");
 
 
     $stmt->bindValue(':startOfDay', $startOfDay);
@@ -124,6 +123,10 @@ function getAllPayments()
 
         </form>
     </div>
+    <div id="description-success-msg"
+        class="hidden px-3 py-2 bg-green-100 border border-green-300 text-green-700 text-sm rounded mb-3 transition-all duration-300">
+    </div>
+
     <table class="w-full border border-gray-300 text-sm">
         <thead class="bg-gray-100">
             <tr>
@@ -135,6 +138,7 @@ function getAllPayments()
                 <th class="border px-3 py-2 text-right">تاریخ</th>
                 <th class="border px-3 py-2 text-right">شماره حساب</th>
                 <th class="border px-3 py-2 text-right">تصویر</th>
+                <th class="border px-3 py-2 text-right">ذی نفع</th>
                 <th class="border px-3 py-2 text-right">تایید کننده</th>
             </tr>
         </thead>
@@ -159,6 +163,12 @@ function getAllPayments()
                                 <span class="text-gray-400">ندارد</span>
                             <?php endif; ?>
                         </td>
+                        <td class="px-3 py-1">
+                            <textarea
+                                class="w-full text-xs border rounded p-1 focus:outline-none focus:ring focus:ring-blue-300"
+                                rows="3"
+                                onblur="updateDescription(this, <?= $payment['id'] ?>)"><?= htmlspecialchars($payment['description']) ?></textarea>
+                        </td>
                         <td class="text-center">
                             <input
                                 type="checkbox"
@@ -176,7 +186,7 @@ function getAllPayments()
                     </tr>
                 <?php endforeach; ?>
                 <tr class="border-t bg-gray-800 text-white">
-                    <td class="px-3 py-2 font-semibold text-left" colspan="4">
+                    <td class="px-3 py-2 font-semibold text-left" colspan="5">
                         مجموع واریزی
                     </td>
                     <td class="px-3 py-2 text-right font-semibold" colspan="5">
@@ -187,7 +197,7 @@ function getAllPayments()
             endif;
             if (!count($payments)): ?>
                 <tr>
-                    <td class="py-2 text-red-500 text-center font-semibold" colspan="8">
+                    <td class="py-2 text-red-500 text-center font-semibold" colspan="10">
                         واریزی ای ثبت نشده است.
                     </td>
                 </tr>
@@ -248,8 +258,10 @@ function getAllPayments()
             }))
             .then(response => {
                 if (response.data.success) {
-                    alert("عملیات موفقانه صورت گرفت.");
-                    location.reload();
+                    showSuccessMessage("تغیرات با موفقیت ذخیره شد");
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000)
                 } else {
                     alert('Failed to update approval');
                     element.checked = !element.checked; // Revert checkbox
@@ -273,6 +285,36 @@ function getAllPayments()
         // Optionally, trigger form submission again to reset the results
         // form.submit();
     });
+
+    function updateDescription(textarea, paymentId) {
+        const formData = new FormData();
+        formData.append('updateDescription', true);
+        formData.append('id', paymentId);
+        formData.append('description', textarea.value);
+        if (textarea.value.length >= 3)
+            axios.post('../../app/api/payments/paymentApi.php', formData)
+            .then(response => {
+                if (response.data.status === 'success') {
+                    showSuccessMessage("توضیحات با موفقیت ذخیره شد");
+                } else {
+                    alert('خطا در ذخیره توضیحات');
+                }
+            })
+            .catch(error => {
+                alert('خطا در اتصال به سرور');
+                console.error(error);
+            });
+    }
+
+    function showSuccessMessage(message) {
+        const msgDiv = document.getElementById('description-success-msg');
+        msgDiv.textContent = message;
+        msgDiv.classList.remove('hidden');
+
+        setTimeout(() => {
+            msgDiv.classList.add('hidden');
+        }, 3000); // مخفی کردن بعد از ۳ ثانیه
+    }
 </script>
 <?php
 require_once './components/footer.php';

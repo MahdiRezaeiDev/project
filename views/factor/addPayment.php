@@ -124,7 +124,7 @@ $success = false;
                     <input type="text" name="account_number" class="text-xs w-full border rounded-md px-3 py-2 text-right" required>
                 </div>
                 <!-- ذی نفع  -->
-                <div class="mb-2">
+                <div class="mb-2 hidden">
                     <label class="block mb-1 text-sm font-medium text-gray-700">ذی نفع</label>
                     <textarea class="text-xs w-full border rounded-md px-3 py-2 text-right" name="description" id="description"></textarea>
                 </div>
