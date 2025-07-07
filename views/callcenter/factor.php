@@ -125,7 +125,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                 <thead class="bg-gray-800">
                     <tr class="text-white">
                         <th class="p-3 text-sm font-semibold">شماره فاکتور</th>
-                        <th class="p-3 text-sm font-semibold hide_while_print"></th>
+                        <th class="p-3 text-sm font-semibold "></th>
                         <th class="p-3 text-sm font-semibold">خریدار</th>
                         <th class="p-3 text-sm font-semibold">کاربر</th>
                         <?php if (in_array($_SESSION['username'], $qualified)): ?>
@@ -136,7 +136,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                         if ($isAdmin) : ?>
                             <th class="p-3 text-sm font-semibold hide_while_print hidden sm:table-cell">ویرایش</th>
                         <?php endif; ?>
-                        <th class="p-3 text-sm font-semibold">واریزی</th>
+                        <th class="p-3 text-sm font-semibold hide_while_print">واریزی</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -161,19 +161,24 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                         <img src="./assets/img/copy.svg" alt="copy icon" />
                                     </span>
                                 </td>
-                                <td class="text-center align-middle hide_while_print">
+                                <td class="text-center align-middle ">
                                     <div class="flex items-center gap-2">
                                         <?php if ($factor['exists_in_bill']) : ?>
-                                            <a href="../factor/complete.php?factor_number=<?= $factor['bill_id'] ?>">
+                                            <a class="hide_while_print" href="../factor/complete.php?factor_number=<?= $factor['bill_id'] ?>">
                                                 <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده فاکتور" src="./assets/img/bill.svg" />
                                             </a>
                                         <?php endif; ?>
                                         <?php if ($factor['printed']) : ?>
-                                            <img class="w-6 cursor-pointer d-block" title="چاپ شده" src="./assets/img/printed.svg" />
+                                            <img class="w-6 hide_while_print cursor-pointer d-block" title="چاپ شده" src="./assets/img/printed.svg" />
                                         <?php endif; ?>
                                         <?php if ($factor['exists_in_payments']) : ?>
-                                            <a href="../factor/paymentDetails.php?factor=<?= $factor['shomare'] ?>">
-                                                <img class="w-6 cursor-pointer d-block" title="مشاهده واریزی ها" src="./assets/img/payment.svg" />
+                                            <a class="relative inline-block w-6 h-6" href="../factor/paymentDetails.php?factor=<?= $factor['shomare'] ?>">
+                                                <img class="w-full h-full cursor-pointer" title="مشاهده واریزی ها" src="./assets/img/payment.svg" />
+                                                <?php if ($factor['payment_count'] > 0): ?>
+                                                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center shadow">
+                                                        <?= $factor['payment_count'] ?>
+                                                    </span>
+                                                <?php endif; ?>
                                             </a>
                                         <?php endif; ?>
                                     </div>
@@ -199,10 +204,13 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                         </a>
                                     </td>
                                 <?php endif;
-                                if ($factor['is_paid_off']): ?>
+                                $payment_bg = 'bg-gray-400 hover:bg-gray-300';
+                                if ($factor['is_paid_off']):
+                                    $payment_bg = 'bg-green-500 hover:bg-green-600';
+                                ?>
                                     <td class="text-center align-middle hide_while_print hidden sm:table-cell">
                                         <a href="../factor/paymentDetails.php?factor=<?= $factor['shomare'] ?>"
-                                            class="relative inline-block text-xs bg-green-500 text-white cursor-pointer px-3 py-1 rounded hover:bg-green-600 transition">
+                                            class="relative inline-block text-xs <?= $payment_bg; ?>  text-white cursor-pointer px-3 py-1 rounded transition">
                                             مشاهده واریزی
                                             <?php if ($factor['payment_count'] > 0): ?>
                                                 <span class="absolute -top-2 -left-2 bg-red-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow">
@@ -211,10 +219,20 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                             <?php endif; ?>
                                         </a>
                                     </td>
-                                <?php else: ?>
+                                <?php else:
+                                    if ($factor['payment_count'] > 0):
+                                        $payment_bg = 'bg-cyan-500 hover:bg-cyan-600';
+                                    endif;
+                                ?>
                                     <td class="text-center align-middle hide_while_print hidden sm:table-cell">
-                                        <a href="../factor/addPayment.php?factor=<?= $factor['shomare'] ?>" class="text-xs bg-cyan-500 text-white cursor-pointer px-2 py-1 rounded">
+                                        <a href="../factor/addPayment.php?factor=<?= $factor['shomare'] ?>"
+                                            class="relative inline-block text-xs <?= $payment_bg; ?> text-white cursor-pointer px-3 py-1 transition rounded">
                                             ثبت واریزی
+                                            <?php if ($factor['payment_count'] > 0): ?>
+                                                <span class="absolute -top-2 -left-2 bg-red-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow">
+                                                    <?= $factor['payment_count'] ?>
+                                                </span>
+                                            <?php endif; ?>
                                         </a>
                                     </td>
                                 <?php endif; ?>

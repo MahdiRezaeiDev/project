@@ -16,6 +16,7 @@ function getAllPayments()
         payments.*,
         bill.total,
         bill.bill_number,
+        bill.bill_date,
         user.name AS user_name, 
         user.family AS user_family, 
         approved_user.name AS approved_by_name,
@@ -133,9 +134,10 @@ function getAllPayments()
                 <th class="border px-3 py-2 text-right">شماره فاکتور</th>
                 <th class="border px-3 py-2 text-right">مشتری</th>
                 <th class="border px-3 py-2 text-right">مبلغ فاکتور</th>
+                <th class="border px-3 py-2 text-right">تاریخ فاکتور</th>
                 <th class="border px-3 py-2 text-right">کاربر ثبت کننده</th>
                 <th class="border px-3 py-2 text-right">مبلغ واریزی</th>
-                <th class="border px-3 py-2 text-right">تاریخ</th>
+                <th class="border px-3 py-2 text-right">تاریخ واریزی</th>
                 <th class="border px-3 py-2 text-right">شماره حساب</th>
                 <th class="border px-3 py-2 text-right">تصویر</th>
                 <th class="border px-3 py-2 text-right">ذی نفع</th>
@@ -152,6 +154,7 @@ function getAllPayments()
                         <td class="px-3 py-1 text-center"><?= $payment['bill_number'] ?></td>
                         <td class="px-3 py-1"><?= $payment['customer_name'] . ' ' . $payment['customer_family'] ?></td>
                         <td class="px-3 py-1"><?= number_format($payment['total']) ?>ریال</td>
+                        <td class="px-3 py-1"><?= ($payment['bill_date']) ?></td>
                         <td class="px-3 py-1"><?= $payment['user_name'] . ' ' . $payment['user_family'] ?></td>
                         <td class="px-3 py-1 text-right"><?= number_format($payment['amount']) ?> ریال</td>
                         <td class="px-3 py-1"><?= $payment['date'] ?></td>
@@ -166,7 +169,7 @@ function getAllPayments()
                         <td class="px-3 py-1">
                             <textarea
                                 class="w-full text-xs border rounded p-1 focus:outline-none focus:ring focus:ring-blue-300"
-                                rows="3"
+                                rows="2"
                                 onblur="updateDescription(this, <?= $payment['id'] ?>)"><?= htmlspecialchars($payment['description']) ?></textarea>
                         </td>
                         <td class="text-center">
@@ -189,7 +192,7 @@ function getAllPayments()
                     <td class="px-3 py-2 font-semibold text-left" colspan="5">
                         مجموع واریزی
                     </td>
-                    <td class="px-3 py-2 text-right font-semibold" colspan="5">
+                    <td class="px-3 py-2 text-right font-semibold" colspan="6">
                         <?= number_format($totalPayment); ?>
                     </td>
                 </tr>

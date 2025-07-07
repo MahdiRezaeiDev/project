@@ -37,6 +37,7 @@ if (isset($_POST['filterRequest'])) {
     SELECT 
         payments.*,
         bill.total,
+        bill.bill_date,
         bill.bill_number,
         user.name AS user_name, 
         user.family AS user_family, 
@@ -85,6 +86,7 @@ if (isset($_POST['filterRequest'])) {
         echo "<td class='border px-2 py-1 text-center'>{$p['bill_number']}</td>";
         echo "<td class='border px-2 py-1'>{$p['customer_name']} {$p['customer_family']}</td>";
         echo "<td class='border px-2 py-1 text-right'>" . number_format($p['total']) . " ریال</td>";
+        echo "<td class='border px-2 py-1 text-right'>" . ($p['bill_date']) . " </td>";
         echo "<td class='border px-2 py-1'>{$p['user_name']} {$p['user_family']}</td>";
         echo "<td class='border px-2 py-1 text-right'>" . number_format($p['amount']) . " ریال</td>";
         echo "<td class='border px-2 py-1'>{$p['date']}</td>";
@@ -97,7 +99,12 @@ if (isset($_POST['filterRequest'])) {
             echo "<span class='text-gray-400'>ندارد</span>";
         }
         echo "</td>";
-
+        echo "<td class='px-3 py-1'>
+                <textarea
+                    class='w-full text-xs border rounded p-1 focus:outline-none focus:ring focus:ring-blue-300'
+                    rows='2'
+                    onblur='updateDescription(this, {$p['id']})'>" . htmlspecialchars($p['description']) . "</textarea>
+            </td>";
         echo "<td class='border px-2 py-1 text-center'>";
         echo "<input type='checkbox' ";
         echo !empty($p['approved_by']) ? 'checked ' : '';
@@ -110,7 +117,7 @@ if (isset($_POST['filterRequest'])) {
     }
 
     echo '<tr class="border-t bg-gray-800 text-white">
-        <td class="px-3 py-2 font-semibold text-left" colspan="4">
+        <td class="px-3 py-2 font-semibold text-left" colspan="6">
             مجموع واریزی
         </td>
         <td class="px-3 py-2 text-right font-semibold" colspan="5">'
