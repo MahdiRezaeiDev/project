@@ -15,35 +15,39 @@ if (isset($_POST['customer_search'])) {
 
 function search_customer($pattern)
 {
-    // Split the input pattern into name and family name
     $name_family = explode(' ', $pattern);
     $name = $name_family[0] ?? '';
     $family = $name_family[1] ?? $name;
 
-    // Prepare the base SQL query
     if (isset($name_family[1])) {
-        // If both name and family name are provided
-        $similar_sql = "SELECT id, name, family, phone, address, car 
-                        FROM callcenter.customer 
-                        WHERE name LIKE :name AND family LIKE :family";
+        // both name and family provided
+        $sql = "
+            SELECT c.id, c.name, c.family, c.phone, c.address, c.car, COUNT(b.id) AS bill_count
+            FROM callcenter.customer c
+            LEFT JOIN factor.bill b ON b.customer_id = c.id
+            WHERE c.name LIKE :name AND c.family LIKE :family
+            GROUP BY c.id
+            ORDER BY bill_count DESC
+        ";
     } else {
-        // If only one name is provided
-        $similar_sql = "SELECT id, name, family, phone, address, car 
-                        FROM callcenter.customer 
-                        WHERE name LIKE :name OR family LIKE :family";
+        // only one input provided
+        $sql = "
+            SELECT c.id, c.name, c.family, c.phone, c.address, c.car, COUNT(b.id) AS bill_count
+            FROM callcenter.customer c
+            LEFT JOIN factor.bill b ON b.customer_id = c.id
+            WHERE c.name LIKE :name OR c.family LIKE :family
+            GROUP BY c.id
+            ORDER BY bill_count DESC
+        ";
     }
 
-    // Prepare the PDO statement
-    $stmt = PDO_CONNECTION->prepare($similar_sql);
+    $stmt = PDO_CONNECTION->prepare($sql);
     $likeName = '%' . $name . '%';
     $likeFamily = '%' . $family . '%';
     $stmt->bindParam(':name', $likeName, PDO::PARAM_STR);
     $stmt->bindParam(':family', $likeFamily, PDO::PARAM_STR);
-
-    // Execute the statement
     $stmt->execute();
 
-    // Fetch the results
     $data = [];
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $data[] = $row;
@@ -51,6 +55,7 @@ function search_customer($pattern)
 
     return $data;
 }
+
 
 
 // END ------------------ THE SEARCHING FOR EXISTING CUSTOMER IN CUSTOMER LIST -----------------------------
@@ -69,7 +74,7 @@ function searchPartNumber($pattern)
     $sql = "SELECT * 
             FROM yadakshop.nisha
             WHERE partnumber LIKE :pattern";
-            
+
     $stmt = PDO_CONNECTION->query($sql);
 
     $pattern = $pattern . "%";
@@ -132,7 +137,7 @@ function searchPartNumberInStock($pattern)
         $sql2 = "SELECT qty 
                 FROM $stock.exitrecord 
                 WHERE qtyid = :id";
-                
+
         $stmt2 = PDO_CONNECTION->prepare($sql2);
         $stmt2->bindParam(':id', $item['id']);
         $stmt2->execute();

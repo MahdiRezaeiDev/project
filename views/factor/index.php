@@ -32,9 +32,19 @@ require_once '../../layouts/callcenter/sidebar.php';
         visibility: visible;
         transform: translateY(0);
     }
+
+    /* Smooth open accordion + arrow rotate */
+    input.accordion_condition:checked~.accordion__content {
+        max-height: 500px;
+        transition: max-height 0.3s ease-in-out;
+    }
+
+    input.accordion_condition:checked~label .accordion-arrow {
+        transform: rotate(180deg);
+    }
 </style>
-<div class="rtl min-h-screen grid grid-cols-1 md:grid-cols-6 gap-2 lg:gap-3 mb-4">
-    <div class="bg-white min-h-full md:col-span-3 shadow-md">
+<div class="min-h-screen grid grid-cols-1 md:grid-cols-5 gap-2 lg:gap-3 mb-4">
+    <div class="bg-white min-h-full md:col-span-2 shadow-md">
         <div class="flex items-center justify-between p-3 bg-gray-900">
             <h2 class="text-xl font-semibold text-white flex items-center gap-2">
                 <img class="w-7 h-7" src="./assets/img/incomplete.svg" alt="customer icon">
@@ -92,37 +102,72 @@ require_once '../../layouts/callcenter/sidebar.php';
         </div>
     </div>
 
-    <div class="bg-white min-h-full shadow-md md:col-span-1">
+    <div class="bg-white min-h-full md:col-span-1 shadow-md overflow-hidden flex flex-col">
+        <!-- Header -->
         <div class="p-3 bg-gray-900">
-            <h2 class="text-xl font-semibold text-white flex items-center gap-2">
-                <img class="w-7 h-7" src="./assets/img/select_user.svg" alt="inventory icon">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                <img class="w-6 h-6" src="./assets/img/select_user.svg" alt="user icon">
                 انتخاب کاربر
             </h2>
         </div>
+
         <div class="border-t border-gray-200"></div>
 
-        <div id="users_list" class="accordion flex flex-col min-h-screen py-3 px-2">
-            <select onchange="setUserId(this.value)" name="user_id" id="users" class="border-2 border-gray-300 text-gray-900 text-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2 outline-none">
-                <option class="text-sm">کاربر مد نظر خود را انتخاب کنید.</option>
-                <option class="text-sm" value="all">همه کاربران</option>
-                <?php
-                foreach ($users as $user) : ?>
-                    <option class="text-sm" <?= $user['id'] == $_SESSION['id'] ? 'selected' : '' ?> value="<?= $user['id'] ?>"><?= $user['name'] . " " . $user['family'] ?></option>
-                <?php endforeach; ?>
-            </select>
-            <div class="accordion flex flex-col w-full py-3">
-                <?php foreach (MONTHS as $index => $month) : ?>
-                    <div class="">
-                        <input class="accordion_condition hidden" type="checkbox" name="panel" id="month-<?= $index ?>">
-                        <label for="month-<?= $index ?>" class="cursor-pointer relative bg-gray-800 text-white p-2 shadow flex justify-between ">
-                            <span><?= $month ?></span>
+        <!-- Content -->
+        <div class="p-4 space-y-6 overflow-y-auto">
+
+            <!-- User Dropdown -->
+            <div>
+                <label for="users" class="block text-sm font-medium text-gray-700 mb-1">انتخاب کاربر</label>
+                <select onchange="setUserId(this.value)" name="user_id" id="users"
+                    class="block w-full px-3 py-2 border border-gray-300 bg-gray-50 text-sm rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500">
+                    <option class="text-sm">کاربر مد نظر خود را انتخاب کنید.</option>
+                    <option class="text-sm" value="all">همه کاربران</option>
+                    <?php foreach ($users as $user): ?>
+                        <option class="text-sm" <?= $user['id'] == $_SESSION['id'] ? 'selected' : '' ?> value="<?= $user['id'] ?>">
+                            <?= $user['name'] . " " . $user['family'] ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <!-- Month Accordion with Day Picker -->
+            <div class="space-y-3">
+                <?php foreach (MONTHS as $index => $month): ?>
+                    <div class="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+                        <input class="hidden accordion_condition" type="checkbox" id="month-<?= $index ?>" name="panel">
+
+                        <!-- Month Label -->
+                        <label for="month-<?= $index ?>" class="flex items-center justify-between px-4 py-3 cursor-pointer bg-gray-100 hover:bg-gray-200 transition">
+                            <span class="font-semibold text-gray-700 text-sm"><?= $month ?></span>
+                            <svg class="w-4 h-4 text-gray-500 transition-transform duration-300 accordion-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
                         </label>
-                        <div class="accordion__content overflow-hidden bg-grey-lighter">
-                            <div class="flex justify-center items-center">
-                                <div class="grid grid-cols-7 bg-gray-200 p-1 gap-0">
-                                    <?php
-                                    for ($counter = 1; $counter <= DAYS[$index]; $counter++) : ?>
-                                        <div onclick="selectDay(this)" data-day="<?= $counter ?>" data-month="<?= $index + 1 ?>" id="<?= $index . '-' . $counter . '-day' ?>" class="days w-8 h-8 flex justify-center items-center text-sm font-bold cursor-pointer hover:bg-gray-300"><?= $counter; ?></div>
+
+                        <!-- Day Grid -->
+                        <div class="accordion__content max-h-0 overflow-hidden transition-all duration-300 bg-gray-50">
+                            <div class="p-3">
+                                <div class="grid grid-cols-7 gap-1 mb-2 text-xs text-center text-gray-500 font-medium">
+                                    <div>ش</div>
+                                    <div>ی</div>
+                                    <div>د</div>
+                                    <div>س</div>
+                                    <div>چ</div>
+                                    <div>پ</div>
+                                    <div>ج</div>
+                                </div>
+
+                                <div class="grid grid-cols-7 gap-1">
+                                    <?php for ($counter = 1; $counter <= DAYS[$index]; $counter++): ?>
+                                        <div
+                                            onclick="selectDay(this)"
+                                            data-day="<?= $counter ?>"
+                                            data-month="<?= $index + 1 ?>"
+                                            id="<?= $index . '-' . $counter . '-day' ?>"
+                                            class="days w-8 h-8 text-xs flex justify-center items-center font-semibold text-gray-700 bg-white rounded-full border hover:bg-sky-100 hover:text-sky-700 cursor-pointer transition">
+                                            <?= $counter ?>
+                                        </div>
                                     <?php endfor; ?>
                                 </div>
                             </div>
@@ -131,8 +176,8 @@ require_once '../../layouts/callcenter/sidebar.php';
                 <?php endforeach; ?>
             </div>
         </div>
-
     </div>
+
 </div>
 <div id="success_message" class="transition-all opacity-0 fixed bg-green-600 text-white rounded-md text-sm font-bold bottom-5 right-5 px-5 py-3">
     پیش فاکتور شما با موفقیت ایجاد شد.
@@ -233,41 +278,41 @@ require_once '../../layouts/callcenter/sidebar.php';
                                 <img src="./assets/img/useFactorTemplate.svg" class="w-5 h-5 hover:scale-125 transition-transform" />
                             </button>
                             <button onClick="copyFactorInfo(this,'${factor.name}', '${factor.family}','${factor.bill_number}', '${formatAsMoney(factor.total)}')" title="کپی مشخصات">
-                                <img src="./assets/img/copy.svg" class="w-5 h-5 hover:scale-125 transition-transform" />
+                                <img src="./assets/img/copy.svg" class="w-6 h-6 hover:scale-125 transition-transform" />
                             </button>
                             <a href="./preSellFactorDetails.php?factor_number=${factor.id}" target="_blank" title="پیش‌فروش">
-                                <img src="./assets/img/sell.svg" class="w-5 h-5 hover:scale-125 transition-transform" />
+                                <img src="./assets/img/sell.svg" class="w-4 h-4 hover:scale-125 transition-transform" />
                             </a>
                         </div>
 
                         <!-- Top Info Grid -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-">
                             <div>
-                                <p class="text-xs text-gray-500">شماره فاکتور</p>
+                                <p class="text-sm text-gray-500">شماره فاکتور</p>
                                 <p class="font-semibold text-sm">${factor.bill_number}</p>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-500">تاریخ فاکتور</p>
-                                <p class="font-semibold text-xs">${factor.bill_date}</p>
+                                <p class="text-sm text-gray-500">تاریخ فاکتور</p>
+                                <p class="font-semibold text-sm">${factor.bill_date}</p>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-500">مشتری</p>
-                                <p class="font-semibold text-xs">${factor.name ?? ''} ${factor.family ?? ''}</p>
+                                <p class="text-sm text-gray-500">مشتری</p>
+                                <p class="font-semibold text-sm">${factor.name ?? ''} ${factor.family ?? ''}</p>
                             </div>
                         </div>
 
                         <!-- Bottom Row -->
                         <div class="flex flex-wrap md:flex-nowrap items-center justify-between gap-4 text-sm">
                             <div>
-                                <p class="text-xs text-gray-500"> اقلام / ردیف</p>
+                                <p class="text-sm text-gray-500"> اقلام / ردیف</p>
                                 <p class="font-semibold">${factor.quantity} / ${JSON.parse(factor.billDetails).length}</p>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-500">قیمت کل</p>
+                                <p class="text-sm text-gray-500">قیمت کل</p>
                                 <p class="font-semibold text-emerald-700">${formatAsMoney(factor.total)}</p>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="text-xs text-gray-500">کاربر ثبت‌ کننده</span>
+                                <span class="text-sm text-gray-500">کاربر ثبت‌ کننده</span>
                                 <img class="w-9 h-9 rounded-full border object-cover" src="../../public/userimg/${factor.user_id}.jpg" alt="User" />
                             </div>
                         </div>
@@ -334,38 +379,38 @@ require_once '../../layouts/callcenter/sidebar.php';
                         </button>` : ''
                     }
                     <button onClick="copyFactorInfo(this,'${factor.name}', '${factor.family}','${factor.bill_number}', '${formatAsMoney(factor.total)}')" title="کپی مشخصات">
-                        <img src="./assets/img/copy.svg" class="w-5 h-5 hover:scale-125 transition-transform" />
+                        <img src="./assets/img/copy.svg" class="w-6 h-6 hover:scale-125 transition-transform" />
                     </button>
                 </div>
 
                 <!-- Top Info Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-1">
                     <div>
-                        <p class="text-xs text-gray-500">شماره فاکتور</p>
+                        <p class="text-sm text-gray-500">شماره فاکتور</p>
                         <p class="font-semibold text-sm">${factor.bill_number}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-500">تاریخ فاکتور</p>
-                        <p class="font-semibold text-xs">${factor.bill_date}</p>
+                        <p class="text-sm text-gray-500">تاریخ فاکتور</p>
+                        <p class="font-semibold text-sm">${factor.bill_date}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-500">مشتری</p>
-                        <p class="font-semibold text-xs">${factor.name ?? ''} ${factor.family ?? ''}</p>
+                        <p class="text-sm text-gray-500">مشتری</p>
+                        <p class="font-semibold text-sm">${factor.name ?? ''} ${factor.family ?? ''}</p>
                     </div>
                 </div>
 
                 <!-- Bottom Row -->
                 <div class="flex flex-wrap md:flex-nowrap items-center justify-between gap-4 text-sm">
                     <div>
-                        <p class="text-xs text-gray-500">تعداد اقلام</p>
+                        <p class="text-sm text-gray-500">تعداد اقلام</p>
                         <p class="font-semibold">${factor.quantity}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-500">قیمت کل</p>
+                        <p class="text-sm text-gray-500">قیمت کل</p>
                         <p class="font-semibold text-emerald-700">${formatAsMoney(factor.total)}</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-xs text-gray-500">کاربر ثبت‌کننده</span>
+                        <span class="text-sm text-gray-500">کاربر ثبت‌کننده</span>
                         <img class="w-9 h-9 rounded-full border object-cover" src="../../public/userimg/${factor.user_id}.jpg" alt="User" />
                     </div>
                 </div>

@@ -48,6 +48,11 @@ function getAllPayments()
 
 ?>
 <style>
+    #customer_results.fade-out {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
     /* Hide everything except #factor_table for print */
     @media print {
         @page {
@@ -166,12 +171,25 @@ function getAllPayments()
                                 <span class="text-gray-400">ندارد</span>
                             <?php endif; ?>
                         </td>
-                        <td class="px-3 py-1">
-                            <textarea
-                                class="w-full text-xs border rounded p-1 focus:outline-none focus:ring focus:ring-blue-300"
-                                rows="2"
-                                onblur="updateDescription(this, <?= $payment['id'] ?>)"><?= htmlspecialchars($payment['description']) ?></textarea>
+                        <td class="px-3 py-1 relative">
+                            <!-- Input Field -->
+                            <input
+                                onkeyup="convertToPersian(this); searchCustomer(this.value, <?= $payment['id'] ?>)"
+                                type="text"
+                                name="customer"
+                                class="py-3 px-3 w-full border-2 text-xs border-gray-300 focus:outline-none text-gray-500"
+                                id="customer_name"
+                                value="<?= $payment['description'] ?>"
+                                placeholder="اسم کامل مشتری را وارد نمایید ..." />
+
+                            <!-- Results Dropdown ABOVE -->
+                            <div
+                                id="customer_results"
+                                class="absolute top-full mb-1 left-0 right-0 bg-white border border-gray-300 rounded-md shadow z-50 max-h-56 overflow-y-auto text-sm">
+                                <!-- Results will be injected here -->
+                            </div>
                         </td>
+
                         <td class="text-center">
                             <input
                                 type="checkbox"
@@ -289,16 +307,34 @@ function getAllPayments()
         // form.submit();
     });
 
-    function updateDescription(textarea, paymentId) {
+    function updateDescription(button) {
+        const name = button.dataset.name ?? '';
+        const family = button.dataset.family ?? '';
+        const paymentId = button.dataset.paymentId ?? '';
+
+        const fullName = (name + ' ' + family).trim();
+
         const formData = new FormData();
         formData.append('updateDescription', true);
         formData.append('id', paymentId);
-        formData.append('description', textarea.value);
-        if (textarea.value.length >= 3)
-            axios.post('../../app/api/payments/paymentApi.php', formData)
+        formData.append('description', fullName);
+
+        axios.post('../../app/api/payments/paymentApi.php', formData)
             .then(response => {
                 if (response.data.status === 'success') {
                     showSuccessMessage("توضیحات با موفقیت ذخیره شد");
+
+                    // ✅ 1. Set the input text to selected customer name
+                    const customerInput = document.getElementById('customer_name');
+                    if (customerInput) {
+                        customerInput.value = fullName;
+                    }
+
+                    // ✅ 2. Clear result list
+                    const customerResults = document.getElementById('customer_results');
+                    if (customerResults) {
+                        customerResults.innerHTML = '';
+                    }
                 } else {
                     alert('خطا در ذخیره توضیحات');
                 }
@@ -307,6 +343,59 @@ function getAllPayments()
                 alert('خطا در اتصال به سرور');
                 console.error(error);
             });
+    }
+
+
+
+    function searchCustomer(pattern, paymentId) {
+        const commonApiEndpoint = "../../app/api/factor/FactorCommonApi.php";
+        const customer_results = document.getElementById('customer_results');
+
+        pattern = pattern.trim();
+        if (pattern.length >= 3) {
+            customer_results.innerHTML = '<p class="text-sm text-gray-400">در حال جستجو...</p>';
+
+            const params = new URLSearchParams();
+            params.append("customer_search", "customer_search");
+            params.append("pattern", pattern);
+
+            axios.post(commonApiEndpoint, params)
+                .then(function(response) {
+                    let template = "";
+
+                    if (response.data.length > 0) {
+                        for (const customer of response.data) {
+                            template += `
+                            <div class="w-full flex items-center justify-between gap-2 border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition mb-2 bg-white">
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-bold text-gray-800">${customer.name} ${customer.family}</span>
+                                    <span class="text-xs text-gray-500">${customer.phone}</span>
+                                </div>
+                                <button
+                                    onclick="updateDescription(this)"
+                                    data-payment-id="${paymentId}"
+                                    data-name="${customer.name}"
+                                    data-family="${customer.family}"
+                                    class="w-6 h-6 flex items-center justify-center bg-green-500 hover:bg-green-600 text-white rounded-full shadow transition"
+                                    title="انتخاب مشتری"
+                                >
+                                    <i class="material-icons text-xs">add</i>
+                                </button>
+                            </div>
+                        `;
+                        }
+                    } else {
+                        template += `<p class="text-sm text-gray-500 text-center">مشتری یافت نشد.</p>`;
+                    }
+
+                    customer_results.innerHTML = template;
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
+        } else {
+            customer_results.innerHTML = "";
+        }
     }
 
     function showSuccessMessage(message) {
@@ -318,6 +407,16 @@ function getAllPayments()
             msgDiv.classList.add('hidden');
         }, 3000); // مخفی کردن بعد از ۳ ثانیه
     }
+
+    const customerResults = document.getElementById('customer_results');
+    if (customerResults) {
+        customerResults.classList.add('fade-out');
+        setTimeout(() => {
+            customerResults.innerHTML = '';
+            customerResults.classList.remove('fade-out');
+        }, 300);
+    }
 </script>
+
 <?php
 require_once './components/footer.php';

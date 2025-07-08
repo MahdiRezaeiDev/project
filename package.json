@@ -6,7 +6,7 @@
     "tailwindcss": "^3.4.4"
   },
   "scripts": {
-    "build:css": "npx postcss public/css/generalStyles.css -o output.css",
-    "watch:css": "npx postcss public/css/generalStyles.css -o output.css --watch"
+    "build:css": "npx postcss public/css/generalStyles.css -o public/css/output.css",
+    "watch:css": "npx postcss public/css/generalStyles.css -o public/css/output.css --watch"
   }
 }

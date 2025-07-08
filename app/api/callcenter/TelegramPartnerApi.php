@@ -101,7 +101,7 @@ if (isset($_POST['logAction'])) {
     $log_info = $_POST;
 
     // Convert the data to a string
-    $log_data = json_encode($log_info);
+    $log_data = json_encode($log_info, JSON_UNESCAPED_UNICODE);
 
     // Define the file path
     $log_file = 'telegram_partner_log.txt';
