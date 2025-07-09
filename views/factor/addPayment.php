@@ -59,6 +59,40 @@ $success = false;
         </tbody>
     </table>
 </div>
+
+<div class="flex items-center justify-center w-2/4 mx-auto rounded shadow-lg bg-white mb-10">
+    <?php if (isset($_GET['error'])):
+
+        switch ($_GET['error']):
+            case 1: ?>
+                <div class="mt-4 text-red-600 bg-red-100 border border-red-300 rounded px-3 py-2 mb-5 text-xs">
+                    مبلغ وارد شده معتبر نیست یا بیشتر از باقیمانده فاکتور است.
+                </div>
+            <?php
+                break;
+            case 2: ?>
+                <div class="mt-4 text-red-600 bg-red-100 border border-red-300 rounded px-3 py-2 mb-5 text-xs">
+                    شماره حساب وارد نشده است.
+                </div>
+            <?php
+                break;
+            case 3: ?>
+                <div class="mt-4 text-red-600 bg-red-100 border border-red-300 rounded px-3 py-2 mb-5 text-xs">
+                    مبلغ ذخیره شده بیشتر از باقی مانده فاکتور بود.
+                </div>
+        <?php
+                break;
+        endswitch;
+
+    elseif (isset($_GET['success'])): ?>
+        <div class="relative group inline-block">
+            <div class="text-green-600 bg-green-100 border border-green-300 rounded px-3 py-2 mb-5 text-xs">
+                پرداخت با موفقیت در سیستم ذخیره شد.
+            </div>
+        </div>
+    <?php endif; ?>
+</div>
+
 <?php if ($remainingAmount <= 0): ?>
     <div class="flex items-center justify-center w-2/4 mx-auto rounded shadow-lg bg-gray-100 mb-10">
         <div class="bg-white rounded-xl shadow-lg w-full p-5 text-center">
@@ -84,30 +118,6 @@ $success = false;
                     <p>* لطفاً توجه داشته باشید که پس از ثبت پرداخت، امکان ویرایش اطلاعات وجود ندارد.</p>
                     <p>* در صورت نیاز به تغییر اطلاعات، لطفاً با پشتیبانی تماس بگیرید.</p>
                 </div>
-                <?php if (isset($_GET['error'])):
-
-                    switch ($_GET['error']):
-                        case 1: ?>
-                            <div class="mt-4 text-red-600 bg-red-100 border border-red-300 rounded px-3 py-2 mb-5 text-xs">
-                                مبلغ وارد شده معتبر نیست یا بیشتر از باقیمانده فاکتور است.
-                            </div>
-                        <?php
-                            break;
-                        case 2: ?>
-                            <div class="mt-4 text-red-600 bg-red-100 border border-red-300 rounded px-3 py-2 mb-5 text-xs">
-                                شماره حساب وارد نشده است.
-                            </div>
-                    <?php
-                            break;
-                    endswitch;
-
-                elseif (isset($_GET['success'])): ?>
-                    <div class="relative group inline-block">
-                        <div class="text-green-600 bg-green-100 border border-green-300 rounded px-3 py-2 mb-5 text-xs">
-                            پرداخت با موفقیت در سیستم ذخیره شد.
-                        </div>
-                    </div>
-                <?php endif; ?>
                 <!-- مبلغ -->
                 <div class="mb-2">
                     <label class="block mb-1 text-sm font-medium text-gray-700">مبلغ واریزی</label>

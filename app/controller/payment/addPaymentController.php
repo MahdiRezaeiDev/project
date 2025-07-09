@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $remainingAmount = getRemainingAmount($factorInfo);
 
     if ($isOverpaid) {
-        header("Location: ../../../views/factor/addPayment.php?factor=" . urlencode($factor) . "&success=1&overpaid=1");
+        header("Location: ../../../views/factor/addPayment.php?factor=" . urlencode($factor) . "&success=1&error=3");
         exit;
     } elseif ($remainingAmount > 0) {
         header("Location: ../../../views/factor/addPayment.php?factor=" . urlencode($factor) . "&success=1");
