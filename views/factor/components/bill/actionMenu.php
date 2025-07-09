@@ -6,6 +6,12 @@
         <p class="action_tooltip text-sm">فاکتور یدک شاپ</p>
     </li>
     <li style="position: relative;">
+        <a target="_blank" class="action_button print bg-sky-600 rounded-full flex justify-center items-center text-white text-sm" href="./addPayment.php?factor=<?= $BillInfo['bill_number'] ?>">
+            وازیزی
+        </a>
+        <p class="action_tooltip text-sm">ثبت واریزی</p>
+    </li>
+    <li style="position: relative;">
         <a class="action_button print bg-green-500 rounded-full flex justify-center items-center text-white text-sm" href="./insuranceFactor.php?factorNumber=<?= $BillInfo['id'] ?>">بیمه</a>
         <p class="action_tooltip">فاکتور بیمه</p>
     </li>

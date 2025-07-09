@@ -27,18 +27,24 @@ require_once '../../layouts/callcenter/sidebar.php';
     }
 </style>
 <style>
+    body::before {
+        content: "امانت نامه";
+        position: fixed;
+        top: 40%;
+        left: 40%;
+        /* Default for screen */
+        transform: rotate(-30deg);
+        font-size: 80px;
+        color: rgba(0, 0, 0, 0.4);
+        z-index: 9999;
+        pointer-events: none;
+        white-space: nowrap;
+    }
+
     @media print {
         body::before {
-            content: "امانت نامه";
-            position: fixed;
-            top: 40%;
-            left: 20%;
-            transform: rotate(-30deg);
-            font-size: 80px;
-            color: rgba(0, 0, 0, 0.1);
-            z-index: 9999;
-            pointer-events: none;
-            white-space: nowrap;
+            left: 25%;
+            color: rgba(0, 0, 0, 0.2);
         }
     }
 </style>

@@ -1,6 +1,7 @@
 <?php
 require_once '../../../config/constants.php';
 require_once '../../../database/db_connect.php';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $factor = intval($_POST['factor'] ?? 0);
@@ -11,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $remainingAmount = getRemainingAmount($factorInfo);
 
     $amount = intval(str_replace(',', '', $_POST['amount'] ?? 0));
-    $account = trim($_POST['account_number']);
+    $account = trim($_POST['account_number'] ?? '');
     $description = trim($_POST['description']);
     $date = trim($_POST['invoice_time']) . ' ' . trim($_POST['time']) . ':00';
     $customer_id = intval($_POST['customer_id']);
@@ -21,51 +22,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $updated_at = $created_at;
     $photoPath = null;
 
-    $account = trim($_POST['account_number'] ?? '');
+    $isOverpaid = $amount > $remainingAmount;
 
-    // Validation
+    // Validation (except overpaid)
     if ($amount <= 0) {
-        $errorMessage = "مبلغ وارد شده معتبر نیست.";
-        header("Location: ../../../views/factor/addPayment.php?factor=" . urlencode($factor) . "&error=1");
-        exit;
-    } elseif ($amount > $remainingAmount) {
-        $errorMessage = "مبلغ وارد شده بیشتر از باقیمانده فاکتور است.";
         header("Location: ../../../views/factor/addPayment.php?factor=" . urlencode($factor) . "&error=1");
         exit;
     } elseif (empty($account)) {
         header("Location: ../../../views/factor/addPayment.php?factor=" . urlencode($factor) . "&error=2");
         exit;
-    } else {
-        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-            $targetDir = '../../../uploads/payments/';
-            if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
+    }
 
-            $datePrefix = date('Ymd'); // e.g. 20250702
-            $uniqueId = uniqid('payment_');
-            $extension = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
+    // Handle photo upload if exists
+    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+        $targetDir = '../../../uploads/payments/';
+        if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
 
-            $fileName = $datePrefix . '_' . $uniqueId . '.' . $extension;
-            $targetFile = $targetDir . $fileName;
+        $datePrefix = date('Ymd');
+        $uniqueId = uniqid('payment_');
+        $extension = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
 
-            if (move_uploaded_file($_FILES['photo']['tmp_name'], $targetFile)) {
-                $photoPath = $targetFile;
-            }
-        }
+        $fileName = $datePrefix . '_' . $uniqueId . '.' . $extension;
+        $targetFile = $targetDir . $fileName;
 
-
-        // Store payment
-        $result = storePayment($amount, $account, $date, $customer_id, $user_id, $bill_id, $photoPath, $created_at, $updated_at, $factor, $description);
-
-        $remainingAmount = getRemainingAmount($factorInfo);
-        if ($remainingAmount) {
-            header("Location: ../../../views/factor/addPayment.php?factor=" . urlencode($factor) . "&success=1");
-            exit;
-        } else {
-            header("Location: ../../../views/factor/addPayment.php?factor=" . urlencode($factor));
-            exit;
+        if (move_uploaded_file($_FILES['photo']['tmp_name'], $targetFile)) {
+            $photoPath = $targetFile;
         }
     }
+
+    // Store payment
+    $result = storePayment(
+        $amount,
+        $account,
+        $date,
+        $customer_id,
+        $user_id,
+        $bill_id,
+        $photoPath,
+        $created_at,
+        $updated_at,
+        $factor,
+        $description
+    );
+
+    $remainingAmount = getRemainingAmount($factorInfo);
+
+    if ($isOverpaid) {
+        header("Location: ../../../views/factor/addPayment.php?factor=" . urlencode($factor) . "&success=1&overpaid=1");
+        exit;
+    } elseif ($remainingAmount > 0) {
+        header("Location: ../../../views/factor/addPayment.php?factor=" . urlencode($factor) . "&success=1");
+        exit;
+    } else {
+        header("Location: ../../../views/factor/addPayment.php?factor=" . urlencode($factor));
+        exit;
+    }
 }
+
 // === Helper Functions ===
 
 function storePayment(
@@ -123,18 +136,17 @@ function getFactorInfo($factorNumber)
 
 function getPayments($billId)
 {
-    $stmt = PDO_CONNECTION->prepare("SELECT payments.*, user.name AS user_name, user.family AS user_family FROM factor.payments
-    JOIN yadakshop.users AS user ON payments.user_id = user.id
-     WHERE bill_id = ?");
+    $stmt = PDO_CONNECTION->prepare("SELECT payments.*, user.name AS user_name, user.family AS user_family 
+        FROM factor.payments
+        JOIN yadakshop.users AS user ON payments.user_id = user.id
+        WHERE bill_id = ?");
     $stmt->execute([$billId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
 
 function getRemainingAmount($factorInfo)
 {
     $payments = getPayments($factorInfo['id']);
     $totalPayment = array_sum(array_column($payments, 'amount'));
-    $remainingAmount = $factorInfo['total'] - $totalPayment;
-    return $remainingAmount;
+    return $factorInfo['total'] - $totalPayment;
 }

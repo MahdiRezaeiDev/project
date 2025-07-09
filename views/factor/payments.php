@@ -177,16 +177,17 @@ function getAllPayments()
                                 onkeyup="convertToPersian(this); searchCustomer(this.value, <?= $payment['id'] ?>)"
                                 type="text"
                                 name="customer"
-                                class="py-3 px-3 w-full border-2 text-xs border-gray-300 focus:outline-none text-gray-500"
-                                id="customer_name"
+                                data-payment-id="<?= $payment['id'] ?>"
+                                class="py-3 px-3 w-full border-2 text-xs border-gray-300 focus:outline-none text-gray-900 font-semibold"
+                                id="customer_name_<?= $payment['id'] ?>"
                                 value="<?= $payment['description'] ?>"
                                 placeholder="اسم کامل مشتری را وارد نمایید ..." />
 
+
                             <!-- Results Dropdown ABOVE -->
                             <div
-                                id="customer_results"
-                                class="absolute top-full mb-1 left-0 right-0 bg-white border border-gray-300 rounded-md shadow z-50 max-h-56 overflow-y-auto text-sm">
-                                <!-- Results will be injected here -->
+                                id="customer_results_<?= $payment['id'] ?>"
+                                class="absolute top-full mb-1 left-0 right-0 bg-white rounded-md shadow z-50 max-h-56 overflow-y-auto text-sm">
                             </div>
                         </td>
 
@@ -324,32 +325,24 @@ function getAllPayments()
                 if (response.data.status === 'success') {
                     showSuccessMessage("توضیحات با موفقیت ذخیره شد");
 
-                    // ✅ 1. Set the input text to selected customer name
-                    const customerInput = document.getElementById('customer_name');
-                    if (customerInput) {
-                        customerInput.value = fullName;
-                    }
+                    const input = document.querySelector(`#customer_name_${paymentId}`);
+                    if (input) input.value = fullName;
 
-                    // ✅ 2. Clear result list
-                    const customerResults = document.getElementById('customer_results');
-                    if (customerResults) {
-                        customerResults.innerHTML = '';
-                    }
+                    const resultBox = document.getElementById('customer_results_' + paymentId);
+                    if (resultBox) resultBox.innerHTML = '';
                 } else {
                     alert('خطا در ذخیره توضیحات');
                 }
             })
             .catch(error => {
-                alert('خطا در اتصال به سرور');
                 console.error(error);
+                alert('خطا در ارتباط با سرور');
             });
     }
 
-
-
     function searchCustomer(pattern, paymentId) {
         const commonApiEndpoint = "../../app/api/factor/FactorCommonApi.php";
-        const customer_results = document.getElementById('customer_results');
+        const customer_results = document.getElementById('customer_results_' + paymentId);
 
         pattern = pattern.trim();
         if (pattern.length >= 3) {
@@ -361,7 +354,17 @@ function getAllPayments()
 
             axios.post(commonApiEndpoint, params)
                 .then(function(response) {
-                    let template = "";
+                    let template = `
+                    <div class="w-full flex items-center justify-between gap-2 border border-red-300 rounded-lg p-3 shadow-sm hover:shadow-md transition mb-2 bg-red-50">
+                        <span class="text-xs font-bold text-gray-700">حذف مشتری</span>
+                        <button
+                            onclick="clearCustomer(${paymentId})"
+                            class="w-6 h-6 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-full shadow transition"
+                            title="پاک کردن مشتری">
+                            <i class="material-icons text-xs">delete</i>
+                        </button>
+                    </div>
+                `;
 
                     if (response.data.length > 0) {
                         for (const customer of response.data) {
@@ -377,8 +380,7 @@ function getAllPayments()
                                     data-name="${customer.name}"
                                     data-family="${customer.family}"
                                     class="w-6 h-6 flex items-center justify-center bg-green-500 hover:bg-green-600 text-white rounded-full shadow transition"
-                                    title="انتخاب مشتری"
-                                >
+                                    title="انتخاب مشتری">
                                     <i class="material-icons text-xs">add</i>
                                 </button>
                             </div>
@@ -391,12 +393,40 @@ function getAllPayments()
                     customer_results.innerHTML = template;
                 })
                 .catch(function(error) {
-                    console.log(error);
+                    console.error(error);
+                    customer_results.innerHTML = `<p class="text-sm text-red-500 text-center">خطا در دریافت داده‌ها</p>`;
                 });
         } else {
             customer_results.innerHTML = "";
         }
     }
+
+    function clearCustomer(paymentId) {
+        const formData = new FormData();
+        formData.append('updateDescription', true);
+        formData.append('id', paymentId);
+        formData.append('description', '');
+
+        axios.post('../../app/api/payments/paymentApi.php', formData)
+            .then(response => {
+                if (response.data.status === 'success') {
+                    showSuccessMessage("مشتری با موفقیت حذف شد");
+
+                    const input = document.querySelector(`#customer_name_${paymentId}`);
+                    if (input) input.value = '';
+
+                    const resultBox = document.getElementById('customer_results_' + paymentId);
+                    if (resultBox) resultBox.innerHTML = '';
+                } else {
+                    alert('خطا در حذف مشتری');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('خطا در حذف مشتری از پایگاه داده');
+            });
+    }
+
 
     function showSuccessMessage(message) {
         const msgDiv = document.getElementById('description-success-msg');

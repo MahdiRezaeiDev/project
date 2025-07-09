@@ -78,43 +78,56 @@ if (isset($_POST['filterRequest'])) {
         exit;
     };
     $totalPayment = 0;
+     foreach ($AllPayments as $p): ?>
+    <?php $totalPayment += $p['amount']; ?>
+    <tr class='border-t hover:bg-gray-50'>
+        <td class='border px-2 py-1 text-center'><?= $p['bill_number'] ?></td>
+        <td class='border px-2 py-1'><?= $p['customer_name'] ?> <?= $p['customer_family'] ?></td>
+        <td class='border px-2 py-1 text-right'><?= number_format($p['total']) ?> ریال</td>
+        <td class='border px-2 py-1 text-right'><?= $p['bill_date'] ?></td>
+        <td class='border px-2 py-1'><?= $p['user_name'] ?> <?= $p['user_family'] ?></td>
+        <td class='border px-2 py-1 text-right'><?= number_format($p['amount']) ?> ریال</td>
+        <td class='border px-2 py-1'><?= $p['date'] ?></td>
+        <td class='border px-2 py-1'><?= $p['account'] ?></td>
 
-    foreach ($AllPayments as $p) {
-        $totalPayment += $p['amount'];
-        echo "<tr class='border-t hover:bg-gray-50'>";
+        <td class="px-3 py-1 text-center">
+            <?php if (!empty($p['photo'])): ?>
+                <a href='../../app/controller/payment/<?= $p['photo'] ?>' target="_blank" class='text-blue-600'>نمایش</a>
+            <?php else: ?>
+                <span class='text-gray-400'>ندارد</span>
+            <?php endif; ?>
+        </td>
 
-        echo "<td class='border px-2 py-1 text-center'>{$p['bill_number']}</td>";
-        echo "<td class='border px-2 py-1'>{$p['customer_name']} {$p['customer_family']}</td>";
-        echo "<td class='border px-2 py-1 text-right'>" . number_format($p['total']) . " ریال</td>";
-        echo "<td class='border px-2 py-1 text-right'>" . ($p['bill_date']) . " </td>";
-        echo "<td class='border px-2 py-1'>{$p['user_name']} {$p['user_family']}</td>";
-        echo "<td class='border px-2 py-1 text-right'>" . number_format($p['amount']) . " ریال</td>";
-        echo "<td class='border px-2 py-1'>{$p['date']}</td>";
-        echo "<td class='border px-2 py-1'>{$p['account']}</td>";
+        <td class="px-3 py-1 relative">
+            <!-- Input Field -->
+            <input
+                onkeyup="convertToPersian(this); searchCustomer(this.value, <?= $p['id'] ?>)"
+                type="text"
+                name="customer"
+                data-payment-id="<?= $p['id'] ?>"
+                class="py-3 px-3 w-full border-2 text-xs border-gray-300 focus:outline-none text-gray-900 font-semibold"
+                id="customer_name_<?= $p['id'] ?>"
+                value="<?= $p['description'] ?>"
+                placeholder="اسم کامل مشتری را وارد نمایید ..." />
 
-        echo "<td class='px-3 py-1 text-center'>";
-        if (!empty($p['photo'])) {
-            echo "<a href='../../app/controller/payment/{$p['photo']}' target='_blank' class='text-blue-600'>نمایش</a>";
-        } else {
-            echo "<span class='text-gray-400'>ندارد</span>";
-        }
-        echo "</td>";
-        echo "<td class='px-3 py-1'>
-                <textarea
-                    class='w-full text-xs border rounded p-1 focus:outline-none focus:ring focus:ring-blue-300'
-                    rows='2'
-                    onblur='updateDescription(this, {$p['id']})'>" . htmlspecialchars($p['description']) . "</textarea>
-            </td>";
-        echo "<td class='border px-2 py-1 text-center'>";
-        echo "<input type='checkbox' ";
-        echo !empty($p['approved_by']) ? 'checked ' : '';
-        echo "onchange='updateApproval(this, {$p['id']})' name='approved'> <br />";
-        echo "<span class='text-xs text-gray-500'>";
-        echo !empty($p['approved_by_name']) ? "{$p['approved_by_name']} {$p['approved_by_family']}" : '—';
-        echo "</span>";
-        echo "</td>";
-        echo "</tr>";
-    }
+            <!-- Results Dropdown -->
+            <div
+                id="customer_results_<?= $p['id'] ?>"
+                class="absolute top-full mb-1 left-0 right-0 bg-white rounded-md shadow z-50 max-h-56 overflow-y-auto text-sm">
+            </div>
+        </td>
+
+        <td class='border px-2 py-1 text-center'>
+            <input type='checkbox'
+                   <?= !empty($p['approved_by']) ? 'checked' : '' ?>
+                   onchange='updateApproval(this, <?= $p['id'] ?>)' name='approved'>
+            <br />
+            <span class='text-xs text-gray-500'>
+                <?= !empty($p['approved_by_name']) ? "{$p['approved_by_name']} {$p['approved_by_family']}" : '—' ?>
+            </span>
+        </td>
+    </tr>
+<?php endforeach; 
 
     echo '<tr class="border-t bg-gray-800 text-white">
         <td class="px-3 py-2 font-semibold text-left" colspan="6">

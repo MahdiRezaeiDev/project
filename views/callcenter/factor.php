@@ -212,11 +212,6 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                         <a href="../factor/paymentDetails.php?factor=<?= $factor['shomare'] ?>"
                                             class="relative inline-block text-xs <?= $payment_bg; ?>  text-white cursor-pointer px-3 py-1 rounded transition">
                                             مشاهده واریزی
-                                            <?php if ($factor['payment_count'] > 0): ?>
-                                                <span class="absolute -top-2 -left-2 bg-red-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow">
-                                                    <?= $factor['payment_count'] ?>
-                                                </span>
-                                            <?php endif; ?>
                                         </a>
                                     </td>
                                 <?php else:
@@ -228,11 +223,6 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                         <a href="../factor/addPayment.php?factor=<?= $factor['shomare'] ?>"
                                             class="relative inline-block text-xs <?= $payment_bg; ?> text-white cursor-pointer px-3 py-1 transition rounded">
                                             ثبت واریزی
-                                            <?php if ($factor['payment_count'] > 0): ?>
-                                                <span class="absolute -top-2 -left-2 bg-red-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow">
-                                                    <?= $factor['payment_count'] ?>
-                                                </span>
-                                            <?php endif; ?>
                                         </a>
                                     </td>
                                 <?php endif; ?>

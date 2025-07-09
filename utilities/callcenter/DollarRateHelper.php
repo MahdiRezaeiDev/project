@@ -173,46 +173,44 @@ function applyDollarRateNotRounded($price, $priceDate)
 {
     $priceDate = date('Y-m-d', strtotime($priceDate));
     $rate = 0;
-    foreach ($GLOBALS['rateSpecification'] as $rate) {
-        if ($priceDate <= $rate['created_at']) {
-            $rate = $rate['rate'];
+
+    foreach ($GLOBALS['rateSpecification'] as $option) {
+        if ($priceDate <= $option['created_at']) {
+            $rate = $option['rate'];
             break;
         }
     }
 
     $GLOBALS['appliedRate'] = $rate;
-    // Split the input string into words using space as the delimiter
-    $words = explode(' ', $price);
 
-    // Iterate through the words and modify numbers with optional forward slashes
-    foreach ($words as &$word) {
-        // Define a regular expression pattern to match numbers with optional forward slashes
-        $pattern = '/(\d+(?:\/\d+)?)/';
+    // Match numbers: integers, decimals, or fractions
+    $pattern = '/\d+(?:[\/.]\d+)?/';
 
-        // Check if the word matches the pattern
-        if (preg_match($pattern, $word)) {
-            // Extract the matched number, removing any forward slashes
-            $number = preg_replace('/\//', '', $word);
+    $modifiedString = preg_replace_callback($pattern, function ($matches) use ($rate) {
+        $original = $matches[0];
 
-
-            if (ctype_digit($number)) {
-                // Increase the matched number by 2%
-                $modifiedNumber = $number + (($number * $rate) / 100);
-                if (floor($modifiedNumber) == $modifiedNumber) {
-                    $modifiedNumber = number_format($modifiedNumber, 0); // Display without decimals
-                } else {
-                    $modifiedNumber = number_format($modifiedNumber, 1); // Display with 2 decimal places
-                }
-                // Replace the word with the modified number
-                $word = str_replace($number, $modifiedNumber, $word);
-            }
+        // Handle fractions like 3/4
+        if (strpos($original, '/') !== false) {
+            list($num, $den) = explode('/', $original);
+            if ($den == 0) return $original; // prevent division by zero
+            $value = floatval($num) / floatval($den);
+        } else {
+            $value = floatval($original); // handles both decimals and integers
         }
-    }
-    // Reconstruct the modified string by joining the words with spaces
-    $modifiedString = implode(' ', $words);
+
+        $modified = $value + ($value * $rate / 100);
+
+        // Format: show one decimal if needed
+        if (floor($modified) == $modified) {
+            return number_format($modified, 0);
+        } else {
+            return number_format($modified, 1);
+        }
+    }, $price);
 
     return $modifiedString;
 }
+
 
 function checkDateIfOkay($applyDate, $priceDate)
 {
