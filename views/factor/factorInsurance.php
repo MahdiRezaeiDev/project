@@ -25,13 +25,16 @@ require_once '../../layouts/callcenter/sidebar.php';
         border-radius: 7px;
         font-weight: bold;
     }
-</style>
-<style>
-    body::before {
+    
+    .bill {
+        position: relative !important;
+    }
+
+    .bill::before {
         content: "امانت نامه";
-        position: fixed;
+        position: absolute;
         top: 40%;
-        left: 40%;
+        left: 25%;
         /* Default for screen */
         transform: rotate(-30deg);
         font-size: 80px;
@@ -42,7 +45,7 @@ require_once '../../layouts/callcenter/sidebar.php';
     }
 
     @media print {
-        body::before {
+        .bill::before {
             left: 25%;
             color: rgba(0, 0, 0, 0.2);
         }
