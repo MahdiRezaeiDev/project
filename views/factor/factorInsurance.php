@@ -25,7 +25,8 @@ require_once '../../layouts/callcenter/sidebar.php';
         border-radius: 7px;
         font-weight: bold;
     }
-    
+</style>
+<style>
     .bill {
         position: relative !important;
     }

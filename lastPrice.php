@@ -20,7 +20,7 @@ header("Content-Type: application/json"); // Allow requests from any origin
 if (isset($_POST['code'])) {
     //remove all the special characters from the user input
     $code = [htmlspecialchars($_POST['code'])];
-    // $code = ["351002E\n351002G"];
+    // $code = ["581012B"];
     $finalResult = getSpecification($code[0]);
     echo json_encode($finalResult);
 }
@@ -78,7 +78,8 @@ function getSpecification($explodedCodes)
     }
 
     $codesToRemove = array_unique($codesToRemove);
-    $explodedCodes = array_values(array_diff($explodedCodes, $codesToRemove));
+    if (count($explodedCodes) > 1)
+        $explodedCodes = array_values(array_diff($explodedCodes, $codesToRemove));
 
     // Step 3: Process goodDetails
     $goodDetails = [];
