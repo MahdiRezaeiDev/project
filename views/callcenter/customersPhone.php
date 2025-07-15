@@ -270,7 +270,7 @@ $search = isset($_GET['search']) ? trim($_GET['search']) : null;
         duplicate_relation.classList.add('hidden');
         // Accessing the form fields to get thier value for an ajax store operation
         const customer_name = document.getElementById('customer_name').value;
-        const is_verified = document.getElementById("is_verified").checked;
+        const is_verified = document.getElementById("is_verified")?.checked;
         const admin_des = document.getElementById("admin_des").value;
         const finance_des = document.getElementById("finance_des").value;
         // Defining a params instance to be attached to the axios request

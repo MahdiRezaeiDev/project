@@ -1,6 +1,6 @@
 <?php
 $pageTitle = "مدیریت فاکتورها";
-$iconUrl = 'factor.svg';
+$iconUrl = 'management.svg';
 require_once './components/header.php';
 require_once '../../app/controller/factor/ManageFactorsController.php';
 require_once '../../layouts/callcenter/nav.php';

@@ -1,5 +1,4 @@
 <?php
-
 $myAttendanceReportStart = getUserAttendanceReportTooltip('start', $_SESSION['id']);
 $myAttendanceReportEnd = getUserAttendanceReportTooltip('leave', $_SESSION['id']);
 

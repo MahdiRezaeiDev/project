@@ -448,6 +448,7 @@ require_once './components/factor.php';
             params.append('completeCode', value);
             axios.post(BRANDS_ENDPOINT, params).then(response => {
                 const data = response.data;
+
                 const key = Object.keys(data)[0];
                 if (key) {
                     ItemsBrands[key] = data[key]['prices'];

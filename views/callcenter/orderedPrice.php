@@ -226,7 +226,7 @@ if ($isValidCustomer) :
             <section class="accordion mb-10">
                 <?php foreach ($explodedCodes as $code_index => $code) {
 
-                    $relation_id =  array_key_exists($code, $relation_ids) ? $relation_ids[$code] : 'xxx';
+                    $relation_id = array_key_exists($code, $relation_ids) ? $relation_ids[$code] : 'xxx';
                     $max = 0;
                     if (array_key_exists($code, $existing)) {
                         foreach ($existing[$code] as $item) {

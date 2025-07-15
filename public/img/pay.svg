@@ -1,0 +1,18 @@
+<svg version="1.1" id="Uploaded to svgrepo.com"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink" width="64px" height="64px" viewBox="0 0 32 32" xml:space="preserve" fill="#000000">
+    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+    <g id="SVGRepo_iconCarrier">
+        <style type="text/css"> .pictogram_een{fill:#F4D6B0;} .pictogram_twee{fill:#F8AD89;} .pictogram_drie{fill:#F27261;} .pictogram_vier{fill:#E54D2E;} .pictogram_vijf{fill:#01A59C;} .st0{fill:#0C6667;} .st1{fill:none;} .st2{clip-path:url(#SVGID_2_);fill:#F27261;} .st3{clip-path:url(#SVGID_2_);fill:none;} .st4{clip-path:url(#SVGID_6_);fill:#F4D6B0;} .st5{clip-path:url(#SVGID_8_);fill:#F27261;} .st6{clip-path:url(#SVGID_8_);fill:none;} .st7{clip-path:url(#SVGID_10_);fill:#F27261;} .st8{clip-path:url(#SVGID_10_);fill:none;} .st9{fill:#F4D6B0;} </style>
+        <g>
+            <path class="pictogram_vier" d="M16,0.05V0C7.163,0,0,7.163,0,16s7.163,16,16,16v0.05c8.837,0,16-7.163,16-16S24.837,0.05,16,0.05z "></path>
+            <path class="pictogram_drie" d="M16,0.05v32c8.837,0,16-7.163,16-16S24.837,0.05,16,0.05z"></path>
+            <g>
+                <path class="pictogram_een" d="M15,21h4V9h-4V21z M16.994,13.521c0.817-0.003,1.482,0.656,1.485,1.473 c0.003,0.817-0.656,1.482-1.473,1.485s-1.482-0.656-1.485-1.473C15.517,14.189,16.177,13.524,16.994,13.521z"></path>
+                <path class="pictogram_vijf" d="M19,6h-4c-1.65,0-3,1.35-3,3v12c0,1.65,1.35,3,3,3h4c1.65,0,3-1.35,3-3V9C22,7.35,20.65,6,19,6z M19,21h-4V9h4V21z M15.521,15.006c-0.003-0.817,0.656-1.482,1.473-1.485s1.482,0.656,1.485,1.473 c0.003,0.817-0.656,1.482-1.473,1.485S15.524,15.823,15.521,15.006z"></path>
+            </g>
+            <path class="pictogram_twee" d="M30,17.5c0,0.825-0.675,1.5-1.5,1.5H22v-3h6.5C29.325,16,30,16.675,30,17.5z M22,9v0.208 l0.92-0.268c0.792-0.23,1.252-1.067,1.021-1.859c-0.23-0.792-1.067-1.252-1.859-1.021L20.62,6.485C21.447,7.02,22,7.947,22,9z M22,15h6.5c0.825,0,1.5-0.675,1.5-1.5S29.325,12,28.5,12H22V15z M26.5,20H22v1c0,0.77-0.302,1.467-0.783,2H26.5 c0.825,0,1.5-0.675,1.5-1.5S27.325,20,26.5,20z M6.05,23v1c0,1.65,1.35,3,3,3H22.5c0.825,0,1.5-0.675,1.5-1.5S23.325,24,22.5,24H15 c-1.65,0-3-1.35-3-3V9c0-0.136,0.023-0.266,0.04-0.398L8.983,9.262C7.37,9.609,6.05,11.35,6.05,13H0.291 C0.106,13.973,0,14.974,0,16c0,2.514,0.596,4.883,1.629,7H6.05z"></path>
+        </g>
+    </g>
+</svg>

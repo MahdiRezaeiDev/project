@@ -1,6 +1,6 @@
 <?php
 $pageTitle = "واریزی ها";
-$iconUrl = 'factor.svg';
+$iconUrl = 'pay.svg';
 require_once './components/header.php';
 require_once '../../layouts/callcenter/nav.php';
 require_once '../../layouts/callcenter/sidebar.php';
