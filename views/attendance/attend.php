@@ -13,7 +13,6 @@ function isMobile()
 }
 
 if (!isMobile()): ?>
-
     <div class="bg-gray-100 flex items-center justify-center min-h-screen">
         <div class="max-w-md w-full bg-white rounded-3xl shadow-xl p-10 text-center space-y-6 border border-gray-300">
             <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto w-20 h-20 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -21,13 +20,10 @@ if (!isMobile()): ?>
                 <path stroke-linecap="round" stroke-linejoin="round" d="M11 17h2" />
             </svg>
             <h1 class="text-3xl font-bold text-gray-800">دسترسی فقط از طریق موبایل</h1>
-            <p class="text-gray-600 text-base">
-                لطفاً برای استفاده از این صفحه، با استفاده از گوشی موبایل خود وارد شوید.
-            </p>
+            <p class="text-gray-600 text-base">لطفاً برای استفاده از این صفحه، با استفاده از گوشی موبایل خود وارد شوید.</p>
         </div>
     </div>
-<?php
-    exit;
+<?php exit;
 endif;
 
 function getUserInfo($username)
@@ -39,6 +35,11 @@ function getUserInfo($username)
 }
 
 $userInfo = getUserInfo($_GET['user']);
+
+if (empty($userInfo)) {
+    showAlertAndExit('لینک اشتباه است');
+}
+
 $userId = $userInfo['id'];
 $userAccessToken = $userInfo['access_token'];
 
@@ -95,12 +96,24 @@ $showLeaveCard = $isPresent && date('H:i') >= '17:50';
     </div>
 <?php endif; ?>
 
+<!-- ✅ Message if entry recorded but not yet time for leave -->
+<?php if (!$showStartCard && !$showLeaveCard && $isPresent): ?>
+    <div class="fixed inset-0 z-40 flex items-center justify-center p-6 hide_while_print bg-black/20 backdrop-blur-sm animate-fadeIn">
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 text-center">
+            <h2 class="text-xl font-bold text-green-700 mb-2">✅ ورود شما ثبت شده است</h2>
+            <p class="text-gray-700">
+                ساعت ورود شما ثبت شده است. برای ثبت ساعت خروج، لطفاً تا پایان روز کاری منتظر بمانید.
+            </p>
+        </div>
+    </div>
+<?php endif; ?>
+
 <script>
     const ENDPOINT = '../../app/api/callcenter/AttendanceApi.php';
     const USERNAME = <?= json_encode($_GET['user']) ?>;
     const PRESET_ACTION = <?= json_encode($showStartCard ? 'start' : 'leave') ?>;
     const token = localStorage.getItem("attend_token");
-    const USER_ID = <?= $userId; ?>
+    const USER_ID = <?= $userId; ?>;
     let canSubmit = false;
 
     function updateClock() {
@@ -112,6 +125,7 @@ $showLeaveCard = $isPresent && date('H:i') >= '17:50';
             el.textContent = `${hours}:${minutes}:${seconds}`;
         });
     }
+
     setInterval(updateClock, 1000);
     updateClock();
 
@@ -164,4 +178,5 @@ $showLeaveCard = $isPresent && date('H:i') >= '17:50';
         document.getElementById("status").textContent = "توکن یافت نشد. لطفاً ثبت‌نام کنید.";
     }
 </script>
+
 <?php require_once './components/footer.php'; ?>

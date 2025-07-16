@@ -73,7 +73,7 @@ require_once '../../database/db_connect.php';
     // $allowedHost = '192.168.9.14';
     $allowedHost = '84.241.41.22:9002';
 
-    if ($_SERVER['HTTP_HOST'] !== $allowedHost) {
-        http_response_code(403); // Forbidden
-        showAlertAndExit("دسترسی غیرمجاز. فقط از طریق $allowedHost مجاز است.");
-    }
+    // if ($_SERVER['HTTP_HOST'] !== $allowedHost) {
+    //     http_response_code(403); // Forbidden
+    //     showAlertAndExit("دسترسی غیرمجاز. فقط از طریق $allowedHost مجاز است.");
+    // }

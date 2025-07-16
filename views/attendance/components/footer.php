@@ -15,12 +15,12 @@
         return ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 768;
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        if (!isRealMobileDevice()) {
-            document.getElementById('attendanceCard')?.classList.add('hidden');
-            document.getElementById('desktopOnlyWarning')?.classList.remove('hidden');
-        }
-    });
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     if (!isRealMobileDevice()) {
+    //         document.getElementById('attendanceCard')?.classList.add('hidden');
+    //         document.getElementById('desktopOnlyWarning')?.classList.remove('hidden');
+    //     }
+    // });
 </script>
 
 </body>
