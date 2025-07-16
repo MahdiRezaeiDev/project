@@ -94,31 +94,6 @@ $showLeaveCard = $isPresent && date('H:i') >= '17:50';
         </div>
     </div>
 <?php endif; ?>
-<style>
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-
-    .animate-fadeIn {
-        animation: fadeIn 0.3s ease-out forwards;
-    }
-
-    @media (min-width: 640px) {
-        .hide_while_print .fixed.inset-0 {
-            justify-content: flex-end;
-            align-items: flex-end;
-            padding: 1rem;
-        }
-    }
-</style>
 
 <script>
     const ENDPOINT = '../../app/api/callcenter/AttendanceApi.php';

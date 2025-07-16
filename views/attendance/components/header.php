@@ -7,7 +7,7 @@ require_once '../../database/db_connect.php';
 
 <head>
     <meta charset="utf-8">
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="This is a simple CMS for tracing goods based on their serial or part number.">
     <meta name="author" content="Mahdi Rezaei">
     <title id="customer_factor"><?= $pageTitle ?></title>
@@ -19,6 +19,31 @@ require_once '../../database/db_connect.php';
 
     <script src="../../public/js/assets/jquery.min.js"></script>
     <script src="../../public/js/assets/axios.js"></script>
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @media (min-width: 640px) {
+            .hide_while_print .fixed.inset-0 {
+                justify-content: flex-end;
+                align-items: flex-end;
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 
 <body class="min-h-screen bg-gray-50 pt-14">
@@ -46,8 +71,9 @@ require_once '../../database/db_connect.php';
     }
 
     // $allowedHost = '192.168.9.14';
+    $allowedHost = '84.241.41.22:9002';
 
-    // if ($_SERVER['HTTP_HOST'] !== $allowedHost) {
-    //     http_response_code(403); // Forbidden
-    //     showAlertAndExit("دسترسی غیرمجاز. فقط از طریق $allowedHost مجاز است.");
-    // }
+    if ($_SERVER['HTTP_HOST'] !== $allowedHost) {
+        http_response_code(403); // Forbidden
+        showAlertAndExit("دسترسی غیرمجاز. فقط از طریق $allowedHost مجاز است.");
+    }
