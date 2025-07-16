@@ -157,11 +157,13 @@ $users = getUsers();
                         <td class='px-2 py-4'>
                             <input class="user-<?= $user['id'] ?>" onclick="updateUserAuthority(this)" type="checkbox" <?= (isset($auth['hamkarTelegram']) ? $auth['hamkarTelegram'] : '') ? 'checked' : '' ?> data-authority="hamkarTelegram" data-user='<?= $user['id'] ?>'>
                         </td>
-                        <td class='px-2 py-4'>
+                        <td class='flex px-2 py-4'>
                             <a href="./updateUserProfile.php?user=<?= $user['id'] ?>">
                                 <i data-user="<?= $user['id'] ?>" class="material-icons cursor-pointer text-indigo-600 hover:text-indigo-800">edit</i>
                             </a>
                             <i onclick="deleteUser(this)" data-user="<?= $user['id'] ?>" class="material-icons cursor-pointer text-red-600 hover:text-red-800">do_not_disturb_on</i>
+                            <img title="اشتراک لینک حضور و غیاب" onclick="shareRegisterToken(<?= $user['id'] ?>)" class="w-5 h-5 cursor-pointer" src="./assets/img/share.svg" alt="share icon">
+                            <img title="حذف توکن ثبت موبایل کاربر" onclick="DeleteRegisterToken(<?= $user['id'] ?>)" class="w-5 h-5 cursor-pointer" src="./assets/img/token.svg" alt="share icon">
                         </td>
                     </tr>
                 <?php
@@ -171,5 +173,76 @@ $users = getUsers();
     </div>
 </div>
 <script src="./assets/js/usersManagement.js"></script>
+<script>
+    function shareRegisterToken(userId) {
+        const ENDPOINT = '../../app/api/attendance/AttendanceApi.php';
+        const params = new URLSearchParams();
+        params.append('createRegistrationToken', 'createRegistrationToken');
+        params.append('user_id', userId);
+
+        axios.post(ENDPOINT, params)
+            .then((response) => {
+                const token = response.data.token;
+                const URL = 'http://192.168.9.14/YadakShop-APP/views/attendance/register.php?token=' + token;
+
+                if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                    navigator.clipboard.writeText(URL)
+                        .then(() => {
+                            alert("توکن با موفقیت ایجاد و در کلیپ‌بورد کپی شد:\n" + URL);
+                        })
+                        .catch((err) => {
+                            console.error("خطا در کپی توکن:", err);
+                            fallbackCopyText(URL);
+                        });
+                } else {
+                    fallbackCopyText(URL);
+                }
+            })
+            .catch((error) => {
+                console.error("خطا در ایجاد توکن:", error);
+                alert("خطایی در ایجاد توکن رخ داد.");
+            });
+    }
+
+    function fallbackCopyText(text) {
+        // ایجاد یک input موقت برای کپی دستی
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed"; // جلوگیری از اسکرول
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                alert("توکن ایجاد شد و در کلیپ‌بورد کپی شد:\n" + text);
+            } else {
+                alert("توکن ایجاد شد اما امکان کپی خودکار نبود:\n" + text);
+            }
+        } catch (err) {
+            console.error("کپی دستی نیز با خطا مواجه شد:", err);
+            alert("توکن: " + text);
+        }
+
+        document.body.removeChild(textarea);
+    }
+
+    function DeleteRegisterToken(USERID) {
+        const ENDPOINT = '../../app/api/attendance/AttendanceApi.php';
+        const params = new URLSearchParams();
+        params.append('delete_token', 'delete_token');
+        params.append('user_id', USERID);
+
+        axios.post(ENDPOINT, params)
+            .then((response) => {
+                alert('توکت دسترسی حضور و غیاب کاربر مشخص شده حذف گردید.')
+            })
+            .catch((error) => {
+                console.error("خطا در ایجاد توکن:", error);
+                alert("خطایی در ایجاد توکن رخ داد.");
+            });
+    }
+</script>
 <?php
 require_once './components/footer.php';

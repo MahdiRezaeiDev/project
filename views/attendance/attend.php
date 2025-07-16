@@ -16,12 +16,10 @@ if (!isMobile()): ?>
 
     <div class="bg-gray-100 flex items-center justify-center min-h-screen">
         <div class="max-w-md w-full bg-white rounded-3xl shadow-xl p-10 text-center space-y-6 border border-gray-300">
-            <!-- Inline mobile SVG icon -->
             <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto w-20 h-20 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M7 2h10a2 2 0 012 2v16a2 2 0 01-2 2H7a2 2 0 01-2-2V4a2 2 0 012-2z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M11 17h2" />
             </svg>
-
             <h1 class="text-3xl font-bold text-gray-800">دسترسی فقط از طریق موبایل</h1>
             <p class="text-gray-600 text-base">
                 لطفاً برای استفاده از این صفحه، با استفاده از گوشی موبایل خود وارد شوید.
@@ -29,10 +27,21 @@ if (!isMobile()): ?>
         </div>
     </div>
 <?php
-    exit; // Stop further execution for desktop users
+    exit;
 endif;
 
-$userId = getUserId($_GET['user']);
+function getUserInfo($username)
+{
+    $stmt = PDO_CONNECTION->prepare("SELECT id, access_token FROM users WHERE username = :username");
+    $stmt->bindParam(':username', $username);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+$userInfo = getUserInfo($_GET['user']);
+$userId = $userInfo['id'];
+$userAccessToken = $userInfo['access_token'];
+
 $myAttendanceReportStart = getUserAttendanceReportTooltip('start', $userId);
 $myAttendanceReportEnd = getUserAttendanceReportTooltip('leave', $userId);
 
@@ -46,14 +55,6 @@ function getUserAttendanceReportTooltip($action, $user_id)
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function getUserId($userName)
-{
-    $stmt = PDO_CONNECTION->prepare("SELECT id FROM users WHERE username = :username");
-    $stmt->bindParam(':username', $userName);
-    $stmt->execute();
-    return $stmt->fetchColumn();
-}
-
 $presentCount = count($myAttendanceReportStart);
 $absentCount = count($myAttendanceReportEnd);
 $isPresent = ($presentCount > $absentCount);
@@ -61,28 +62,26 @@ $isAbsent = ($presentCount == $absentCount);
 
 $showStartCard = $isAbsent;
 $showLeaveCard = $isPresent && date('H:i') >= '17:50';
-if ($showStartCard || $showLeaveCard): ?>
+?>
+
+<?php if ($showStartCard || $showLeaveCard): ?>
     <div class="fixed inset-0 z-50 flex items-center justify-center p-6 hide_while_print bg-black/30 backdrop-blur-sm animate-fadeIn">
         <div id="attendanceCard"
             class="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-10 text-center space-y-6 cursor-pointer transition-all hover:shadow-3xl hover:scale-105 duration-300 relative"
             onclick="handleCardClick()">
 
-            <!-- Profile Section -->
             <div id="profile" class="hidden space-y-2">
                 <img id="profilePic" class="w-20 h-20 rounded-full mx-auto" src="default-avatar.png" alt="User image">
                 <div id="name" class="text-lg font-semibold text-gray-800"></div>
                 <div id="username" class="text-sm text-gray-500"></div>
             </div>
 
-            <!-- Error if no token -->
             <div id="status" class="text-red-600 font-medium"></div>
 
-            <!-- Icon -->
             <div class="flex justify-center">
                 <img class="w-20 h-20" src="<?= $showStartCard ? '../../public/icons/start.svg' : '../../public/icons/leave.svg' ?>" alt="">
             </div>
 
-            <!-- Action text -->
             <div class="space-y-2">
                 <h2 class="text-2xl font-bold <?= $showStartCard ? 'text-green-700' : 'text-rose-700' ?>">
                     <?= $showStartCard ? 'ثبت ساعت ورود' : 'ثبت ساعت خروج' ?>
@@ -95,24 +94,6 @@ if ($showStartCard || $showLeaveCard): ?>
         </div>
     </div>
 <?php endif; ?>
-
-<!-- Desktop warning card, initially hidden -->
-<div id="desktopOnlyWarning" class="hidden fixed inset-0 z-50 bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="max-w-md w-full bg-white rounded-3xl shadow-xl p-10 text-center space-y-6 border border-gray-300">
-        <!-- Inline mobile SVG icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto w-20 h-20 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M7 2h10a2 2 0 012 2v16a2 2 0 01-2 2H7a2 2 0 01-2-2V4a2 2 0 012-2z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M11 17h2" />
-        </svg>
-
-        <h1 class="text-3xl font-bold text-gray-800">دسترسی فقط از طریق موبایل</h1>
-        <p class="text-gray-600 text-base">
-            لطفاً برای استفاده از این صفحه، با استفاده از گوشی موبایل خود وارد شوید.
-        </p>
-    </div>
-</div>
-
-<!-- ✅ Custom Animations -->
 <style>
     @keyframes fadeIn {
         from {
@@ -141,8 +122,10 @@ if ($showStartCard || $showLeaveCard): ?>
 
 <script>
     const ENDPOINT = '../../app/api/callcenter/AttendanceApi.php';
-    const USER_ID = <?= json_encode($userId) ?>;
+    const USERNAME = <?= json_encode($_GET['user']) ?>;
     const PRESET_ACTION = <?= json_encode($showStartCard ? 'start' : 'leave') ?>;
+    const token = localStorage.getItem("attend_token");
+    const USER_ID = <?= $userId; ?>
     let canSubmit = false;
 
     function updateClock() {
@@ -150,16 +133,13 @@ if ($showStartCard || $showLeaveCard): ?>
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
-
-        Array.from(document.getElementsByClassName('clock')).forEach((item) => {
-            item.textContent = `${hours}:${minutes}:${seconds}`;
+        document.querySelectorAll('.clock').forEach(el => {
+            el.textContent = `${hours}:${minutes}:${seconds}`;
         });
     }
-
     setInterval(updateClock, 1000);
     updateClock();
 
-    // 🧠 Main click handler (not directly on card to allow condition check)
     function handleCardClick() {
         if (!canSubmit) {
             alert("توکن نامعتبر یا یافت نشد.");
@@ -171,8 +151,10 @@ if ($showStartCard || $showLeaveCard): ?>
     function setWorkingHour(action) {
         const params = new URLSearchParams();
         params.append('action', 'setWorkingHour');
-        params.append('user_id', USER_ID);
+        params.append('user', USERNAME);
+        params.append('token', token);
         params.append('preform', action);
+        params.append('user_id', USER_ID);
 
         axios.post(ENDPOINT, params).then((response) => {
             alert(response.data.message);
@@ -184,16 +166,12 @@ if ($showStartCard || $showLeaveCard): ?>
         });
     }
 
-    // 🔐 Token check + show user profile
-    const token = localStorage.getItem("attend_token");
-
     if (token) {
         fetch("verify.php?token=" + token)
             .then(res => res.json())
             .then(data => {
-                if (data.status === "ok") {
+                if (data.status === "ok" && data.username === USERNAME) {
                     canSubmit = true;
-                    // Show profile info
                     document.getElementById("profile").classList.remove("hidden");
                     document.getElementById("status").classList.add("hidden");
                     document.getElementById("name").textContent = data.name + ' ' + data.family;
@@ -201,7 +179,7 @@ if ($showStartCard || $showLeaveCard): ?>
                     document.getElementById("profilePic").src =
                         data.id ? '../../public/userimg/' + data.id + '.jpg' : "default-avatar.png";
                 } else {
-                    document.getElementById("status").textContent = "توکن نامعتبر است.";
+                    document.getElementById("status").textContent = "شما اجازه ثبت ورود و خروج را برای این کاربر ندارید.";
                 }
             }).catch(err => {
                 console.error("خطا در بررسی توکن:", err);
@@ -210,21 +188,5 @@ if ($showStartCard || $showLeaveCard): ?>
     } else {
         document.getElementById("status").textContent = "توکن یافت نشد. لطفاً ثبت‌نام کنید.";
     }
-
-    function isRealMobileDevice() {
-        const hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-        const isSmallScreen = window.innerWidth <= 768;
-        return hasTouch && isSmallScreen;
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        if (!isRealMobileDevice()) {
-            // Hide attendance card
-            document.getElementById('attendanceCard')?.classList.add('hidden');
-            // Show desktop warning card
-            document.getElementById('desktopOnlyWarning')?.classList.remove('hidden');
-            // Remove any alert, we show the card instead
-        }
-    });
 </script>
 <?php require_once './components/footer.php'; ?>

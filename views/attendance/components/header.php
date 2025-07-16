@@ -39,11 +39,15 @@ require_once '../../database/db_connect.php';
             <div class="max-w-md w-full <?= $color['bg'] ?> border <?= $color['border'] ?> rounded-xl shadow-md p-8 text-center">
                 <h1 class="text-2xl font-bold mb-4 <?= $color['text'] ?>">پیغام</h1>
                 <p class="text-lg text-gray-700 mb-6"><?= htmlspecialchars($message) ?></p>
-                <a href="javascript:history.back()" class="inline-block px-6 py-2 bg-gray-200 rounded hover:bg-gray-300 transition">
-                    بازگشت
-                </a>
             </div>
         </div>
     <?php
         exit;
     }
+
+    // $allowedHost = '192.168.9.14';
+
+    // if ($_SERVER['HTTP_HOST'] !== $allowedHost) {
+    //     http_response_code(403); // Forbidden
+    //     showAlertAndExit("دسترسی غیرمجاز. فقط از طریق $allowedHost مجاز است.");
+    // }

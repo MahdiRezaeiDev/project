@@ -26,6 +26,7 @@ if ($user['access_token']) {
 
 // Generate token and store in database
 $token = bin2hex(random_bytes(16));
+
 $update = $pdo->prepare("UPDATE users SET access_token = ? WHERE id = ?");
 $update->execute([$token, $user['id']]);
 
