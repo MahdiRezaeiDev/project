@@ -163,7 +163,9 @@ $users = getUsers();
                             </a>
                             <i onclick="deleteUser(this)" data-user="<?= $user['id'] ?>" class="material-icons cursor-pointer text-red-600 hover:text-red-800">do_not_disturb_on</i>
                             <img title="اشتراک لینک حضور و غیاب" onclick="shareRegisterToken(<?= $user['id'] ?>)" class="w-5 h-5 cursor-pointer" src="./assets/img/share.svg" alt="share icon">
-                            <img title="حذف توکن ثبت موبایل کاربر" onclick="DeleteRegisterToken(<?= $user['id'] ?>)" class="w-5 h-5 cursor-pointer" src="./assets/img/token.svg" alt="share icon">
+                            <?php if ($user['access_token']): ?>
+                                <img title="حذف توکن ثبت موبایل کاربر" onclick="DeleteRegisterToken(<?= $user['id'] ?>)" class="w-5 h-5 cursor-pointer" src="./assets/img/token.svg" alt="share icon">
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php

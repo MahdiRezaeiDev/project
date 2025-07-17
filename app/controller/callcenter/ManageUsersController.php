@@ -6,7 +6,7 @@ if (!isset($dbname)) {
 // This functions are related to the user management page
 function getUsers()
 {
-    $users_sql = "SELECT users.id, name, family, username, authorities.user_authorities AS auth FROM yadakshop.users AS users
+    $users_sql = "SELECT users.id, name, family, username, access_token, authorities.user_authorities AS auth FROM yadakshop.users AS users
                     INNER JOIN yadakshop.authorities AS authorities ON yadakshop.authorities.user_id = yadakshop.users.id
                     WHERE users.password IS NOT NULL AND users.password !=''";
 

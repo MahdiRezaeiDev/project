@@ -87,10 +87,11 @@ function getAllPayments()
 <div class="p-6">
     <div class="flex justify-between mb-5">
         <h2 class="text-xl font-bold mb-4">لیست واریزی‌ها</h2>
+        <button class="rounded-md bg-sky-800 hover:bg-sky-600 text-white px-5 print:hidden" onclick="window.print()">پرینت</button>
     </div>
 
-    <div>
-        <form id="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-white rounded-lg shadow mb-4">
+    <div class="print:hidden">
+        <form id="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 p-4 bg-white rounded-lg shadow mb-4">
 
             <div>
                 <label class="text-sm">تاریخ فاکتور</label>
@@ -115,6 +116,10 @@ function getAllPayments()
                 <label class="text-sm">اسم مشتری</label>
                 <input type="text" name="customer_name" class="w-full border rounded px-2 py-1" />
             </div>
+            <div>
+                <label class="text-sm">صاحب حساب</label>
+                <input type="text" name="card_number" class="w-full border rounded px-2 py-1" />
+            </div>
 
             <div class="flex items-end gap-2">
                 <button type="submit"
@@ -136,6 +141,7 @@ function getAllPayments()
     <table class="w-full border border-gray-300 text-sm">
         <thead class="bg-gray-100">
             <tr>
+                <th class="border px-3 py-2 text-right">#</th>
                 <th class="border px-3 py-2 text-right">شماره فاکتور</th>
                 <th class="border px-3 py-2 text-right">مشتری</th>
                 <th class="border px-3 py-2 text-right">مبلغ فاکتور</th>
@@ -153,32 +159,35 @@ function getAllPayments()
 
             <?php if (count($payments)):
                 $totalPayment = 0;
-                foreach ($payments as $payment):
+                foreach ($payments as $index => $payment):
                     $totalPayment += $payment['amount']; ?>
                     <tr class="border-t">
-                        <td class="px-3 py-1 text-center"><?= $payment['bill_number'] ?></td>
-                        <td class="px-3 py-1"><?= $payment['customer_name'] . ' ' . $payment['customer_family'] ?></td>
-                        <td class="px-3 py-1"><?= number_format($payment['total']) ?>ریال</td>
-                        <td class="px-3 py-1"><?= ($payment['bill_date']) ?></td>
-                        <td class="px-3 py-1"><?= $payment['user_name'] . ' ' . $payment['user_family'] ?></td>
-                        <td class="px-3 py-1 text-right"><?= number_format($payment['amount']) ?> ریال</td>
-                        <td class="px-3 py-1"><?= $payment['date'] ?></td>
-                        <td class="px-3 py-1"><?= $payment['account'] ?></td>
-                        <td class="px-3 py-1 text-center">
+                        <td class="px-3 py-1 print:text-xs text-center"><?= ++$index; ?></td>
+                        <td class="px-3 py-1 print:text-xs text-center"><?= $payment['bill_number'] ?></td>
+                        <td class="px-3 py-1 print:text-xs"><?= $payment['customer_name'] . ' ' . $payment['customer_family'] ?></td>
+                        <td class="px-3 py-1 print:text-xs"><?= number_format($payment['total']) ?>ریال</td>
+                        <td class="px-3 py-1 print:text-xs"><?= ($payment['bill_date']) ?></td>
+                        <td class="px-3 py-1 print:text-xs"><?= $payment['user_name'] . ' ' . $payment['user_family'] ?></td>
+                        <td class="px-3 py-1 print:text-xs text-right"><?= number_format($payment['amount']) ?> ریال</td>
+                        <td class="px-3 py-1 print:text-xs"><?= $payment['date'] ?></td>
+                        <td class="px-3 py-1 print:text-xs"><?= $payment['account'] ?></td>
+                        <td class="px-3 py-1 print:text-xs text-center">
                             <?php if (!empty($payment['photo'])): ?>
                                 <a href="../../app/controller/payment/<?= $payment['photo'] ?>" target="_blank" class="text-blue-600">نمایش</a>
                             <?php else: ?>
                                 <span class="text-gray-400">ندارد</span>
                             <?php endif; ?>
                         </td>
-                        <td class="px-3 py-1 relative">
+                        <td class="px-3 py-1 print:text-xs relative">
                             <!-- Input Field -->
                             <input
                                 onkeyup="convertToPersian(this); searchCustomer(this.value, <?= $payment['id'] ?>)"
                                 type="text"
                                 name="customer"
                                 data-payment-id="<?= $payment['id'] ?>"
-                                class="py-3 px-3 w-full border-2 text-xs border-gray-300 focus:outline-none text-gray-900 font-semibold"
+                                class="py-3 px-3 w-full
+                                print:border-none
+                                 border-2 text-xs border-gray-300 focus:outline-none text-gray-900 font-semibold"
                                 id="customer_name_<?= $payment['id'] ?>"
                                 value="<?= $payment['description'] ?>"
                                 placeholder="اسم کامل مشتری را وارد نمایید ..." />
@@ -208,7 +217,7 @@ function getAllPayments()
                     </tr>
                 <?php endforeach; ?>
                 <tr class="border-t bg-gray-800 text-white">
-                    <td class="px-3 py-2 font-semibold text-left" colspan="5">
+                    <td class="px-3 py-2 font-semibold text-left" colspan="6">
                         مجموع واریزی
                     </td>
                     <td class="px-3 py-2 text-right font-semibold" colspan="6">
@@ -219,7 +228,7 @@ function getAllPayments()
             endif;
             if (!count($payments)): ?>
                 <tr>
-                    <td class="py-2 text-red-500 text-center font-semibold" colspan="10">
+                    <td class="py-2 text-red-500 text-center font-semibold" colspan="12">
                         واریزی ای ثبت نشده است.
                     </td>
                 </tr>

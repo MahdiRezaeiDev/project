@@ -45,13 +45,13 @@ $success = false;
                 </td>
                 <td class="border-l px-2 py-1 font-semibold">مبلغ فاکتور</td>
                 <td class="px-2 py-1" dir="ltr">
-                    <?= number_format($factorInfo['total']) ?> تومان
+                    <?= number_format($factorInfo['total']) ?> ریال
                 </td>
             </tr>
             <tr class="border-b">
                 <td class="border-l px-2 py-1 font-semibold">باقی مانده:</td>
                 <td class="px-2 py-1" dir="ltr">
-                    <?= number_format($remainingAmount) ?> تومان
+                    <?= number_format($remainingAmount) ?> ریال
                 </td>
                 <td class="border-l px-2 py-1 font-semibold">ثبت کننده:</td>
                 <td class="px-2 py-1"><?= $factorInfo['user_name'] . ' ' . $factorInfo['user_family'] ?? '---' ?></td>
@@ -128,9 +128,9 @@ $success = false;
                     <input type="hidden" name="bill_id" value="<?= $factorInfo['id'] ?>" required>
                     <input type="hidden" name="factor" value="<?= $_GET['factor'] ?>" required>
                 </div>
-                <!-- شماره حساب -->
+                <!-- صاحب حساب -->
                 <div class="mb-2">
-                    <label class="block mb-1 text-sm font-medium text-gray-700">شماره حساب</label>
+                    <label class="block mb-1 text-sm font-medium text-gray-700">صاحب حساب</label>
                     <input type="text" name="account_number" class="text-xs w-full border rounded-md px-3 py-2 text-right" required>
                 </div>
                 <!-- ذی نفع  -->

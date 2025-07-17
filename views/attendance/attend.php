@@ -109,7 +109,7 @@ $showLeaveCard = $isPresent && date('H:i') >= '17:50';
 <?php endif; ?>
 
 <script>
-    const ENDPOINT = '../../app/api/callcenter/AttendanceApi.php';
+    const ENDPOINT = '../../app/api/attendance/AttendanceApi.php';
     const USERNAME = <?= json_encode($_GET['user']) ?>;
     const PRESET_ACTION = <?= json_encode($showStartCard ? 'start' : 'leave') ?>;
     const token = localStorage.getItem("attend_token");

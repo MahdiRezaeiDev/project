@@ -10,6 +10,13 @@ require_once '../../../database/db_connect.php';
 
 if (isset($_POST['action'])) {
     $action = $_POST['action'];
+    $token = $_POST['token'];
+
+    if (!validateAccessToken($_POST['user_id'], $token)) {
+        echo json_encode(['status' => 'error', 'message' => 'شما اجازه ثبت حضور و غباب ندارید']);
+        exit();
+    }
+
     switch ($action) {
         case 'updateWorkHour':
             updateWorkHour();
@@ -39,6 +46,24 @@ if (isset($_POST['createRegistrationToken'])) {
 if (isset($_POST['delete_token'])) {
     $user_id = $_POST['user_id'];
     echo deleteAccessToken($user_id);
+}
+
+function validateAccessToken($userID, $token)
+{
+    // Sanitize input
+    $userID = (int) $userID;
+
+    // Prepare and execute query
+    $stmt = PDO_CONNECTION->prepare("SELECT access_token FROM users WHERE id = ?");
+    $stmt->execute([$userID]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Return false if no user found or token mismatch
+    if (!$user || !$user['access_token']) {
+        return false;
+    }
+
+    return hash_equals($user['access_token'], $token);
 }
 
 
