@@ -201,35 +201,55 @@ $today = date('Y-m-d');
 
         element.innerText = 'لطفا صبور باشید...';
         element.disabled = true;
-        axios({
-            url: REPORT_END_POINT, // No need to append query parameters here
-            method: 'POST',
-            data: param, // Send the parameters in the `data` field for POST
-            responseType: 'blob', // Set responseType to 'blob' to handle binary data (like files)
-        }).then((response) => {
-            // Create a URL for the blob (file)
-            const url = window.URL.createObjectURL(new Blob([response.data]));
 
-            // Create a link element to trigger the download
+        axios({
+            url: REPORT_END_POINT,
+            method: 'POST',
+            data: param,
+            responseType: 'blob',
+        }).then((response) => {
+            // Download Excel
+            const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-
-            // Set filename from content-disposition header (if available)
             const filename = response.headers['content-disposition']?.split('filename=')[1] || 'report.xlsx';
-
             link.setAttribute('download', filename);
             document.body.appendChild(link);
-            link.click(); // Trigger download
-
-            // Cleanup
+            link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
+
+            setTimeout(() => {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = './attendance-display.php';
+
+                const fields = {
+                    start: startDate,
+                    end: endDate,
+                    user: user
+                };
+
+                for (const key in fields) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = fields[key];
+                    form.appendChild(input);
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+            }, 1000);
+
+
+        }).catch((e) => {
+            console.error('Download failed', e);
             element.innerText = 'گزارش';
             element.disabled = false;
-        }).catch((e) => {
-            console.log('Download failed', e);
         });
     }
+
 
     $(function() {
         const datepickerConfig = {

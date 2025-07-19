@@ -57,10 +57,14 @@ if (filter_has_var(INPUT_POST, 'pattern')) :
         WHERE 
             LOWER(REPLACE(estelam.codename, ' ', '')) LIKE CONCAT('', LOWER(REPLACE(:pattern, ' ', '')), '%')
             OR LOWER(REPLACE(seller.name, ' ', '')) LIKE CONCAT('%', LOWER(REPLACE(:pattern, ' ', '')), '%')
-        ORDER BY 
-            estelam.time DESC
-        LIMIT 
-            50";
+         ORDER BY 
+                estelam.time DESC,
+                CASE 
+                    WHEN estelam.price REGEXP '^[0-9]+$' THEN 0
+                    ELSE 1
+                END,
+                CAST(estelam.price AS UNSIGNED) ASC
+            LIMIT 50";
 
     // Prepare the statement
     $stmt = PDO_CONNECTION->prepare($sql);
