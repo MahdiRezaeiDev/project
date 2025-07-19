@@ -77,19 +77,19 @@ if (!isset($dbname)) {
                 </a>
                 <ul class="drop_down_menu_aside bg-gray-800 border border-gray-800">
                     <li>
-                        <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="usersManagement.php">
+                        <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="<?= $append ?>usersManagement.php">
                             <img src="../inventory/assets/icons/manage.svg" alt="save icon">
                             مدیریت کاربران
                         </a>
                     </li>
                     <li>
-                        <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="attendanceReport.php">
+                        <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="<?= $append ?>attendanceReport.php">
                             <img src="../../layouts/callcenter/icons/attendance.svg" alt="save icon">
                             گزارش حضور و غیاب
                         </a>
                     </li>
                     <li>
-                        <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="attendance.php">
+                        <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="<?= $append ?>attendance.php">
                             <img src="../../layouts/callcenter/icons/attendance.svg" alt="save icon">
                             مدیریت حضور و غیاب
                         </a>
