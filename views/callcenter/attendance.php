@@ -72,6 +72,9 @@ $users = getUsers();
                                 تاخیر مجاز
                             </th>
                             <th scope="col" class="font-semibold text-sm text-right text-gray-800 px-6 py-3">
+                                شامل گزارش
+                            </th>
+                            <th scope="col" class="font-semibold text-sm text-right text-gray-800 px-6 py-3">
                                 عملیات
                             </th>
                         </tr>
@@ -98,6 +101,9 @@ $users = getUsers();
                                 <td class="px-6 py-3  font-semibold text-right text-gray-800">
                                     <?= $user['max_late_minutes'] ?>
                                     دقیقه
+                                </td>
+                                <td class="px-6 py-3  font-semibold text-right text-gray-800">
+                                    <input onchange="handleActivation(this.checked, <?= $user['id'] ?>)" type="checkbox" name="active" <?= $user['is_active'] ? 'checked' : '' ?>>
                                 </td>
                                 <td class="px-6 py-3  font-semibold text-right text-gray-800">
                                     <span
@@ -161,6 +167,9 @@ $users = getUsers();
         axios.post(ENDPOINTADDR, params)
 
             .then(data => {
+                console.log(data);
+                return;
+
                 if (data.status == 200) {
                     message.innerText = data.data.message;
                     setTimeout(() => {
@@ -173,6 +182,33 @@ $users = getUsers();
                 message.innerText = error.response.data.message;
             });
     }
+
+    function handleActivation(status, userID) {
+
+        const is_active = status ? 1 : 0;
+        const params = new URLSearchParams({
+            action: 'toggleActivation',
+            status: is_active,
+            userID
+        });
+
+        axios.post(ENDPOINTADDR, params)
+            .then(response => {
+                if (response.status === 200) {
+                    message.innerText = response.data.message;
+                    setTimeout(() => {
+                        closeModal();
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    message.innerText = 'پاسخ نامعتبر از سرور';
+                }
+            })
+            .catch(error => {
+                message.innerText = error?.response?.data?.message || 'خطا در ارسال';
+            });
+    }
+
 
     function toggleModal() {
 

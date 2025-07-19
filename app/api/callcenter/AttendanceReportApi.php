@@ -159,7 +159,7 @@ function getUsers($id = null)
 {
     $sql = "SELECT users.id, name, family, settings.user_id AS selectedUser FROM yadakshop.users AS users 
             INNER JOIN yadakshop.attendance_settings AS settings ON settings.user_id = users.id
-            WHERE users.password IS NOT NULL AND users.password != '' AND username != 'tv'";
+            WHERE users.password IS NOT NULL AND users.password != '' AND username != 'tv' AND settings.is_active != 0";
 
     if (!empty($id)) {
         $sql .= " AND user_id = :id";

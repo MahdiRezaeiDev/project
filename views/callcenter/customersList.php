@@ -20,6 +20,31 @@ $totalPages = ceil($customersCount / $fetchLimit);
             <button id="searchButton" class="bg-sky-600 text-sm text-white rounded-e px-4 py-2">جستجو</button>
         </div>
     </div>
+    <div class="w-4/5 mx-auto flex justify-end items-center my-3">
+        <div>
+            <input type="text" name="phone_number" id="phone_number" placeholder="شماره تماس مشتری"
+                class="border-2 border-gray-300 focus:border-gray-500 py-2 px-3 text-sm outline-none">
+            <button type="button" id="saveCustomerBtn"
+                class="bg-sky-600 text-sm text-white rounded-e px-4 py-2">
+                ذخیره مشتری
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('saveCustomerBtn').addEventListener('click', function() {
+            const phoneInput = document.getElementById('phone_number');
+            const phone = encodeURIComponent(phoneInput.value.trim());
+
+            if (phone) {
+                // Replace '/your-route' with your actual route
+                window.location.href = `./main.php?phone=${phone}`;
+            } else {
+                alert("لطفاً شماره تلفن را وارد کنید.");
+            }
+        });
+    </script>
+
     <table class="w-4/5 mx-auto">
         <thead>
             <tr class="bg-gray-800 border border-gray-800">

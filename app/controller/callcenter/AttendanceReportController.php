@@ -10,7 +10,7 @@ function getUsers()
                         settings.max_late_minutes, settings.user_id AS selectedUser
                     FROM yadakshop.users AS users
                     INNER JOIN yadakshop.attendance_settings AS settings ON yadakshop.settings.user_id = yadakshop.users.id
-                    WHERE users.password IS NOT NULL AND users.password !='' AND username != 'tv'";
+                    WHERE users.password IS NOT NULL AND users.password !='' AND username != 'tv' AND settings.is_active != 0";
 
     $stmt = PDO_CONNECTION->prepare($users_sql);
     $stmt->execute();

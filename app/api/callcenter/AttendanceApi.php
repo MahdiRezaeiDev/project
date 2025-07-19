@@ -23,11 +23,40 @@ if (isset($_POST['action'])) {
         case 'SetOffDay':
             SetOffDay();
             break;
+        case 'toggleActivation':
+            echo toggleActivation();
+            break;
         default:
             echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
             break;
     }
 }
+
+function toggleActivation()
+{
+    $status = isset($_POST['status']) ? (int) $_POST['status'] : null; // ✅ cast to int
+    $userID = $_POST['userID'] ?? null;
+
+    if ($status === null || $userID === null) {
+        http_response_code(400);
+        echo json_encode(['message' => 'Missing required fields']);
+        exit;
+    }
+
+    $stmt = PDO_CONNECTION->prepare("UPDATE attendance_settings SET is_Active = :status WHERE user_id = :userID");
+    $stmt->bindParam(":status", $status, PDO::PARAM_INT); // ✅ explicitly bind as integer
+    $stmt->bindParam(":userID", $userID, PDO::PARAM_INT);
+
+    if ($stmt->execute()) {
+        echo json_encode(['message' => 'وضعیت با موفقیت تغییر کرد']);
+    } else {
+        http_response_code(500);
+        echo json_encode(['message' => 'خطا در اجرای درخواست']);
+    }
+
+    exit;
+}
+
 
 function SetOffDay()
 {
