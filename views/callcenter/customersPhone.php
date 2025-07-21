@@ -346,6 +346,23 @@ $search = isset($_GET['search']) ? trim($_GET['search']) : null;
         }
     }
 
+    function removeRelation(id) {
+        const params = new URLSearchParams();
+        params.append('remove_relation', 'remove_relation');
+        params.append('relation_id', id);
+
+        axios.post("../../app/api/callcenter/CustomersApi.php", params)
+            .then(function(response) {
+                alert(response.data == true ? 'رابطه با موفقیت حذف شد!' : 'خطا در حذف رابطه!');
+                setTimeout(() => {
+                    window.location.reload();
+                }, timeout = 1000);
+            })
+            .catch(function(error) {
+
+            });
+    }
+
     //This function helps to add all relations of a relationship into the selected items list
     const push_data = (data) => {
         for (const item of data) {

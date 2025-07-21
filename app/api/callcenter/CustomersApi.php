@@ -41,15 +41,20 @@ if (isset($_POST['searchCustomers'])) {
                     rounded-md px-4 py-3 mb-2 border-1 border-gray-300" id="search-<?= $item['id'] ?>">
                     <p class=' text-sm font-semibold text-gray-600'><?= $item['name'] . " " . $item['family'] ?></p>
                     <p class=' text-sm font-semibold text-gray-600'><?= $item['phone'] ?></p>
-                    <i
-                        data-name="<?= $item['name'] . " " . $item['family'] ?>"
-                        data-id="<?= $item['phone_relation_id'] ?>"
-                        data-pattern="<?= $item['phone_relation_id'] ?>"
-                        data-verified="<?= $item['is_verified'] ?>"
-                        data-admin_des="<?= $item['admin_des'] ?>"
-                        data-finance_des="<?= $item['finance_des'] ?>"
-                        class='material-icons add text-blue-600 cursor-pointer rounded-circle hover:bg-gray-200' onclick="load(this)">cloud_download
-                    </i>
+                    <div>
+                        <i
+                            data-name="<?= $item['name'] . " " . $item['family'] ?>"
+                            data-id="<?= $item['phone_relation_id'] ?>"
+                            data-pattern="<?= $item['phone_relation_id'] ?>"
+                            data-verified="<?= $item['is_verified'] ?>"
+                            data-admin_des="<?= $item['admin_des'] ?>"
+                            data-finance_des="<?= $item['finance_des'] ?>"
+                            class='material-icons add text-blue-600 cursor-pointer rounded-circle hover:bg-gray-200' onclick="load(this)">cloud_download
+                        </i>
+                        <i title="حذف رابطه"
+                            class="material-icons add text-red-600 cursor-pointer rounded-circle hover:bg-gray-200" onclick="removeRelation(<?= $item['phone_relation_id'] ?>)">do_not_disturb_on
+                        </i>
+                    </div>
                 </div>
             <?php
             } else {
@@ -172,4 +177,19 @@ function extract_id($array)
         array_push($selected_index, $value->id);
     }
     return array_unique($selected_index);
+}
+
+if (isset($_POST['remove_relation'])) {
+    $relation_id = $_POST['relation_id'];
+
+    $stmt = PDO_CONNECTION->prepare("DELETE FROM callcenter.phones WHERE relation_id = :relation_id");
+    $stmt->execute([':relation_id' => $relation_id]);
+
+    $stmt = PDO_CONNECTION->prepare("DELETE FROM callcenter.phones_relation WHERE id = :relation_id");
+    $stmt->execute([':relation_id' => $relation_id]);
+    if ($stmt->rowCount() > 0) {
+        echo 'true';
+    } else {
+        echo 'false';
+    }
 }
