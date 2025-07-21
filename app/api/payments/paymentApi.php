@@ -6,10 +6,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 require_once '../../../config/constants.php';
 require_once '../../../database/db_connect.php';
+$financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi', 'hadishasanpouri', 'rana'];
 
 if (isset($_POST['filterRequest'])) {
     $conditions = [];
-    $params = [];
+    $params = [];   
 
     if (!empty($_POST['factor_date'])) {
         $conditions[] = 'DATE(bill.created_at) = :factor_date';
@@ -94,7 +95,15 @@ if (isset($_POST['filterRequest'])) {
             <td class='border px-2 py-1'><?= $payment['user_name'] ?> <?= $payment['user_family'] ?></td>
             <td class='border px-2 py-1 text-right'><?= number_format($payment['amount']) ?> ریال</td>
             <td class='border px-2 py-1'><?= $payment['date'] ?></td>
-            <td class='border px-2 py-1'><?= $payment['account'] ?></td>
+            <td class='border px-2 py-1'>
+                <?php if (in_array($_SESSION['username'], $financeTeam)): ?>
+                    <input class="border-2 p-2" type="text" name="owner" id="owner"
+                        value="<?= $payment['account'] ?>" onchange="updateAccountOwner(this.value, <?= $payment['id'] ?>)">
+                <?php else:
+                    $payment['account'];
+                endif;
+                ?>
+            </td>
 
             <td class="px-3 py-1 text-center">
                 <?php if (!empty($payment['photo'])): ?>
@@ -180,6 +189,22 @@ if (isset($_POST['updateDescription'])) {
     if ($id > 0) {
         $stmt = $pdo->prepare("UPDATE factor.payments SET description = ? WHERE id = ?");
         $success = $stmt->execute([$description, $id]);
+
+        echo json_encode(['status' => $success ? 'success' : 'error']);
+        exit;
+    }
+
+    echo json_encode(['status' => 'invalid_id']);
+    exit;
+}
+
+if (isset($_POST['updateAccountOwner'])) {
+    $id = intval($_POST['id'] ?? 0);
+    $owner = trim($_POST['owner'] ?? '');
+
+    if ($id > 0) {
+        $stmt = $pdo->prepare("UPDATE factor.payments SET account = ? WHERE id = ?");
+        $success = $stmt->execute([$owner, $id]);
 
         echo json_encode(['status' => $success ? 'success' : 'error']);
         exit;

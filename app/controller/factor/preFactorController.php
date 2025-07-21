@@ -70,6 +70,31 @@ try {
         uasort($record, 'customSort'); // Sort the inner array by values
     }
 
+    foreach ($goodDetails as $parentCode => &$children) {
+        // Skip if not array or empty
+        if (!is_array($children) || empty($children)) continue;
+
+        // Separate givenPrice for appending later
+        $givenPrice = $children['givenPrice'] ?? null;
+        unset($children['givenPrice']); // Temporarily remove it
+
+        // Get the first child
+        $firstKey = array_key_first($children);
+        if ($firstKey && (empty($children[$firstKey]['givenPrice']) || !is_array($children[$firstKey]['givenPrice']))) {
+            // Remove first element and push it to the end
+            $element = array_shift($children);
+            $children[$firstKey] = $element;
+        }
+
+        // Restore givenPrice if it existed
+        if ($givenPrice !== null) {
+            $children['givenPrice'] = $givenPrice;
+        }
+
+        // Assign back to parent
+        $goodDetails[$parentCode] = $children;
+    }
+
     $finalGoods = [];
     foreach ($goodDetails as $good) {
         foreach ($good as $key => $item) {

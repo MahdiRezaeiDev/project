@@ -46,6 +46,8 @@ function getAllPayments()
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+$financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi', 'hadishasanpouri', 'rana'];
+
 ?>
 <style>
     #customer_results.fade-out {
@@ -146,10 +148,10 @@ function getAllPayments()
                 <th class="border px-3 py-2 text-right">مشتری</th>
                 <th class="border px-3 py-2 text-right">مبلغ فاکتور</th>
                 <th class="border px-3 py-2 text-right">تاریخ فاکتور</th>
-                <th class="border px-3 py-2 text-right">کاربر ثبت کننده</th>
+                <th class="border px-3 py-2 text-right">کاربر</th>
                 <th class="border px-3 py-2 text-right">مبلغ واریزی</th>
                 <th class="border px-3 py-2 text-right">تاریخ واریزی</th>
-                <th class="border px-3 py-2 text-right">شماره حساب</th>
+                <th class="border px-3 py-2 text-right">صاحب حساب</th>
                 <th class="border px-3 py-2 text-right">تصویر</th>
                 <th class="border px-3 py-2 text-right">ذی نفع</th>
                 <th class="border px-3 py-2 text-right">تایید کننده</th>
@@ -170,7 +172,15 @@ function getAllPayments()
                         <td class="px-3 py-1 print:text-xs"><?= $payment['user_name'] . ' ' . $payment['user_family'] ?></td>
                         <td class="px-3 py-1 print:text-xs text-right"><?= number_format($payment['amount']) ?> ریال</td>
                         <td class="px-3 py-1 print:text-xs"><?= $payment['date'] ?></td>
-                        <td class="px-3 py-1 print:text-xs"><?= $payment['account'] ?></td>
+                        <td class="px-3 py-1 print:text-xs">
+                            <?php if (in_array($_SESSION['username'], $financeTeam)): ?>
+                                <input class="border-2 p-2" type="text" name="owner" id="owner"
+                                    value="<?= $payment['account'] ?>" onchange="updateAccountOwner(this.value, <?= $payment['id'] ?>)">
+                            <?php else:
+                                $payment['account'];
+                            endif;
+                            ?>
+                        </td>
                         <td class="px-3 py-1 print:text-xs text-center">
                             <?php if (!empty($payment['photo'])): ?>
                                 <a href="../../app/controller/payment/<?= $payment['photo'] ?>" target="_blank" class="text-blue-600">نمایش</a>
@@ -436,7 +446,6 @@ function getAllPayments()
             });
     }
 
-
     function showSuccessMessage(message) {
         const msgDiv = document.getElementById('description-success-msg');
         msgDiv.textContent = message;
@@ -445,6 +454,26 @@ function getAllPayments()
         setTimeout(() => {
             msgDiv.classList.add('hidden');
         }, 3000); // مخفی کردن بعد از ۳ ثانیه
+    }
+
+    function updateAccountOwner(value, paymentId) {
+        const formData = new FormData();
+        formData.append('updateAccountOwner', true);
+        formData.append('id', paymentId);
+        formData.append('owner', value);
+
+        axios.post('../../app/api/payments/paymentApi.php', formData)
+            .then(response => {
+                if (response.data.status === 'success') {
+                    showSuccessMessage("توضیحات با موفقیت ذخیره شد");
+                } else {
+                    alert('خطا در ذخیره توضیحات');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('خطا در ارتباط با سرور');
+            });
     }
 
     const customerResults = document.getElementById('customer_results');
