@@ -154,7 +154,7 @@
                             ${LRTemplate}
                             ${price_template}
 
-                            </span>
+                            </span> 
                         </td>
                         <td style="padding:15px 0 !important; width:10px !important" class="text-sm ${item.quantity != 1 ? 'font-semibold' : ''}">
                             <span>${item.quantity}</span>

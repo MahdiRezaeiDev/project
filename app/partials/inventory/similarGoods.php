@@ -231,7 +231,7 @@ function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, 
     $edited = $isComplete ? ' ویرایش شده' : '*';
 
     // Construct the link URL
-    $destinationPage = $factorType == 0 ? 'complete.php' : 'complete.php';
+    $destinationPage = $factorType == 0 ? 'externalView.php' : 'externalView.php';
     $factorLink = "http://192.168.9.14/YadakShop-APP/views/factor/" . $destinationPage . "?factor_number=" . $billId;
     // Build the header message
     if ($isComplete) {
