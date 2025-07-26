@@ -179,13 +179,13 @@ function getStatus()
 function sendMessageWithTemplate($receiver, $template)
 {
     $postData = http_build_query([
-        'sendMessage' => 'AutoMessage',
+        'sendMessage' => 'sendMessage',
         'receiver' => $receiver,
         'message' => $template,
     ]);
 
     // Update this URL if your Telegram bot endpoint is different
-    $url = "http://telegram.yadak.center/send"; 
+    $url = "http://auto.yadak.center/send";
 
     $parts = parse_url($url);
     $scheme = $parts['scheme'] ?? 'http';
