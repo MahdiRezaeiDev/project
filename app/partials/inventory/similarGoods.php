@@ -232,7 +232,7 @@ function sendSalesReport($customer, $factorNumber, $factorType, $selectedGoods, 
 
     // Construct the link URL
     $destinationPage = $factorType == 0 ? 'externalView.php' : 'externalView.php';
-    $factorLink = "http://192.168.9.14/YadakShop-APP/views/factor/" . $destinationPage . "?factor_number=" . $billId;
+    $factorLink = "http://192.168.9.14/YadakShop-APP/views/factor/" . $destinationPage . "?factorNumber=" . $billId;
     // Build the header message
     if ($isComplete) {
         $header = sprintf(
