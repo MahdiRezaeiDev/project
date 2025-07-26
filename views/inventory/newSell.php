@@ -472,11 +472,19 @@ require_once '../../layouts/inventory/sidebar.php';
             'OEMAX': ['CHINA'],
             'JYR': ['CHINA'],
             'RB2': ['CHINA'],
+            'Rb2': ['CHINA'],
             'IRAN': ['CHINA'],
             'FAKE MOB': ['CHINA', 'KOREA'],
+            'FAKE GEN': ['CHINA', 'KOREA'],
+            'OE MAX': ['CHINA'],
+            'MAXFIT': ['CHINA'],
+            'ICBRI': ['CHINA'],
+            'HOH': ['CHINA'],
             'DOOWON': ['HCC', 'HANON', 'DOOWON'],
             'HANON': ['HCC', 'HANON', 'DOOWON'],
             'HCC': ['HCC', 'HANON', 'DOOWON'],
+
+            // KOREA
             'YONG': ['KOREA'],
             'YONG HOO': ['KOREA'],
             'OEM': ['KOREA'],
@@ -491,15 +499,29 @@ require_once '../../layouts/inventory/sidebar.php';
             'HYUNDAI BRAKE': ['KOREA'],
             'SAM YUNG': ['KOREA'],
             'BRC': ['KOREA'],
-            'FAKE GEN': ['CHINA', 'KOREA'],
-            'OE MAX': ['CHINA'],
-            'MAXFIT': ['CHINA'],
             'GEO SUNG': ['KOREA'],
             'YULIM': ['KOREA'],
             'CARTECH': ['KOREA'],
             'HSC': ['KOREA'],
             'KOREA STAR': ['KOREA'],
+            'DONI TEC': ['KOREA'],
+            'ATC': ['KOREA'],
+            'VALEO': ['KOREA'],
+            'MB KOREA': ['KOREA'],
+            'IACE': ['KOREA'],
+            'MB': ['KOREA'],
+            'PH': ['KOREA'],
+            'CAP': ['KOREA'],
+            'BRG': ['KOREA'],
+            'GMB': ['KOREA'],
+            'KGC': ['KOREA'],
+            'GATES': ['KOREA'],
+            'KOART': ['KOREA'],
+            'SAEHAN': ['KOREA'],
+            'FORCEONE': ['KOREA'],
+            'DAEWHA': ['KOREA']
         };
+
 
         // Normalize keywords to uppercase
         keywords = keywords.map(keyword => keyword.trim().toUpperCase());

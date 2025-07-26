@@ -226,8 +226,9 @@ $billItemsDescription = $preSellFactor ? (json_decode($preSellFactorItemsDescrip
                 <tfoot>
                     <tr class="bg-gray-100 font-semibold text-gray-800 border-t border-gray-300">
                         <td colspan="4" class="py-3 pr-3">
-                            <div class="flex justify-between items-center">
+                            <div class="flex gap-5 items-center">
                                 <span>جمع فاکتور</span>
+                                <span id="total_in_word_owner"></span>
                             </div>
                         </td>
                         <td class="border border-gray-300 text-center py-3"><?= $totalQuantity ?></td>
@@ -238,6 +239,12 @@ $billItemsDescription = $preSellFactor ? (json_decode($preSellFactorItemsDescrip
         </div>
     </div>
 
+    <script>
+        const total = <?= json_encode($totalPrice) ?>;
+        document.getElementById("total_in_word_owner").innerHTML = numberToPersianWords(
+            total
+        );
+    </script>
 
     <!-- Description section -->
     <div class="p-5 text-sm border border-gray-300 rounded-lg mt-6">

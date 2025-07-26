@@ -111,6 +111,9 @@ function displayUI($factors, $countFactorByUser)
                                         <a class="hide_while_print" href="../factor/complete.php?factor_number=<?= $factor['bill_id'] ?>">
                                             <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده فاکتور" src="./assets/img/bill.svg" />
                                         </a>
+                                        <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $factor['bill_id'] ?>">
+                                            <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده جزئیات" src="./assets/img/explore.svg" />
+                                        </a>
                                     <?php endif; ?>
                                     <?php if ($factor['printed']) : ?>
                                         <img class="w-6 cursor-pointer d-block hide_while_print" title="چاپ شده" src="./assets/img/printed.svg" />

@@ -30,9 +30,6 @@ if (isset($_GET['factorNumber']) && is_numeric($_GET['factorNumber'])) {
         echo "Bill not found";
         die();
     }
-} else {
-    echo "Invalid Request";
-    die();
 }
 
 
