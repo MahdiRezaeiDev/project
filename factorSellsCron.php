@@ -47,7 +47,7 @@ function sendPurchaseReportMessage($lowQuantity)
         "lowQuantity" => $lowQuantity,
     ]);
 
-    $url = "http://delivery.yadak.center/";
+    $url = "http://sells.yadak.center/";
     return fireAndForget($url, $postData);
 }
 
