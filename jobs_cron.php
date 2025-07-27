@@ -98,7 +98,7 @@ function fireAndForget($url, $postData)
 
 function getJobs()
 {
-    $sql = "SELECT * FROM factor.bill_jobs WHERE status = 0 ORDER BY created_at ASC";
+    $sql = "SELECT * FROM factor.bill_jobs WHERE status = 0 OR is_sms_sent = 0 ORDER BY created_at ASC";
     $stmt = PDO_CONNECTION->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
