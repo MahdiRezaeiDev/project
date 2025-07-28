@@ -184,7 +184,7 @@ function sendMessageWithTemplate($receiver, $template)
         'message' => $template,
     ]);
 
-    $url = "http://auto.yadak.center";
+    $url = "http://sells2.yadak.center";
 
     $ch = curl_init($url);
 
