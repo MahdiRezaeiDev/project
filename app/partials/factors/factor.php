@@ -78,7 +78,8 @@ function displayUI($factors, $countFactorByUser)
                     if ($isAdmin) : ?>
                         <th class="p-3 text-sm font-semibold hide_while_print" class="edit">ویرایش</th>
                     <?php endif; ?>
-                    <th class="p-3 text-sm font-semibold hide_while_print">عملیات</th>
+                    <th class="p-3 text-sm font-semibold hide_while_print">واریزی</th>
+                    <th class="p-3 text-sm font-semibold hide_while_print">خروج</th>
                 </tr>
             </thead>
             <tbody>
@@ -180,6 +181,11 @@ function displayUI($factors, $countFactorByUser)
                                     </a>
                                 </td>
                             <?php endif; ?>
+                            <td class="hide_while_print">
+                                <div class="flex justify-center items-center">
+                                    <input <?= ($factor["exists_in_extrecord"]) ? 'checked' : '' ?> type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
+                                </div>
+                            </td>
                         </tr>
                     <?php
                     endforeach;

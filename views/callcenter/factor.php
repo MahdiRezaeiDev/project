@@ -137,6 +137,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                             <th class="p-3 text-sm font-semibold hide_while_print hidden sm:table-cell">ویرایش</th>
                         <?php endif; ?>
                         <th class="p-3 text-sm font-semibold hide_while_print">واریزی</th>
+                        <th class="p-3 text-sm font-semibold hide_while_print">خروج</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -229,6 +230,11 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                         </a>
                                     </td>
                                 <?php endif; ?>
+                                <td class="hide_while_print">
+                                    <div class="flex justify-center items-center">
+                                        <input <?= ($factor["exists_in_extrecord"]) ? 'checked' : '' ?> type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
+                                    </div>
+                                </td>
                             </tr>
                         <?php
                         endforeach;

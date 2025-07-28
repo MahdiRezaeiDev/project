@@ -9,6 +9,7 @@ if (!isset($dbname)) {
  */
 function getFactors($start, $end, $user = null)
 {
+    global $stock;
     $query = "SELECT
         shomarefaktor.*,
         bill.id AS bill_id,
@@ -53,7 +54,16 @@ function getFactors($start, $end, $user = null)
                 WHERE pay.bill_id = bill.id
             ) >= bill.total THEN TRUE
             ELSE FALSE
-        END AS is_paid_off
+        END AS is_paid_off,
+
+        CASE 
+            WHEN EXISTS (
+                SELECT 1
+                FROM $stock.exitrecord er
+                WHERE er.invoice_number = shomarefaktor.shomare
+            ) THEN TRUE
+            ELSE FALSE
+        END AS exists_in_extrecord
 
     FROM
         factor.shomarefaktor
@@ -63,6 +73,7 @@ function getFactors($start, $end, $user = null)
         shomarefaktor.time < :end
         AND shomarefaktor.time >= :start
 ";
+
 
 
     if ($user !== null) {

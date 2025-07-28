@@ -42,13 +42,13 @@ echo "\n\n*************** Factor sells Report job finished ( $now ) ************
 // Send purchase (shortage) report message
 function sendPurchaseReportMessage($lowQuantity)
 {
-    $postData = http_build_query([
+    $postData = [
         "sendMessage" => "PurchaseReport",
         "lowQuantity" => $lowQuantity,
-    ]);
+    ];
 
     $url = "http://sells.yadak.center/";
-    return fireAndForget($url, $postData);
+    return postAndWait($url, $postData);
 }
 
 // Send sells report message
@@ -56,50 +56,40 @@ function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuanti
 {
     $typeID = !$isComplete ? ($factorType == 0 ? 3516 : 3514) : 17815;
 
-    $postData = http_build_query([
+    $postData = [
         "sendMessage" => "sellsReportTest",
         "header" => $header,
         "topic_id" => $typeID,
         "selectedGoods" => $selectedGoods,
         "lowQuantity" => $lowQuantity,
-    ]);
+    ];
 
-    return fireAndForget($destination, $postData);
+    return postAndWait($destination, $postData);
 }
 
-// Fire-and-forget HTTP POST (non-blocking)
-function fireAndForget($url, $postData)
+// Perform HTTP POST and wait for response
+function postAndWait($url, $postData)
 {
-    $parts = parse_url($url);
-    $scheme = $parts['scheme'] ?? 'http';
-    $host = $parts['host'] ?? '';
-    $port = ($scheme === 'https') ? 443 : 80;
-    $path = $parts['path'] ?? '/';
+    $ch = curl_init($url);
 
-    $fp = fsockopen(
-        ($scheme === 'https' ? 'ssl://' : '') . $host,
-        $port,
-        $errno,
-        $errstr,
-        2
-    );
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Capture response
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);          // Max execution time
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);    // Connection timeout
 
-    if (!$fp) {
-        echo "Failed to connect: $errstr ($errno)\n";
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    if (curl_errno($ch)) {
+        error_log("cURL Error: " . curl_error($ch));
+        curl_close($ch);
         return false;
     }
 
-    $out = "POST $path HTTP/1.1\r\n";
-    $out .= "Host: $host\r\n";
-    $out .= "Content-Type: application/x-www-form-urlencoded\r\n";
-    $out .= "Content-Length: " . strlen($postData) . "\r\n";
-    $out .= "Connection: Close\r\n\r\n";
-    $out .= $postData;
+    curl_close($ch);
 
-    fwrite($fp, $out);
-    fclose($fp); // Close immediately, don't wait for response
-
-    return true;
+    return $httpCode === 200;
 }
 
 // Fetch pending sells reports

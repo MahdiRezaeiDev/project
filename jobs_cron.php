@@ -17,20 +17,21 @@ foreach ($queuedJobs as $job) {
     $factorNumber = $job['factor_number'];
     $user_id = $job['user_id'];
 
-    // Send data to the external service
+    // Send data to the external service and wait for response
     $success = sendData($customer, $factor, $factorItems, $factorNumber, $user_id);
 
-    // Mark the job as completed regardless of response
+    // Mark the job as completed regardless of success
     markAsCompleted($job['id']);
 
     if ($success) {
-        // Optionally, mark SMS as sent
         markSMSAsSent($job['id']);
     }
 }
 
 $now = date('H:i:s');
 echo "\n\n*************** Bill cron jobs finished ( $now ) ************************\n\n";
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 function markAsCompleted($jobId)
 {
@@ -50,50 +51,41 @@ function markSMSAsSent($jobId)
 
 function sendData($customer, $factor, $factorItems, $factorNumber, $user_id)
 {
-    $postData = http_build_query([
+    $postData = [
         "GenerateCompleteFactor" => "GenerateCompleteFactor",
         "customer" => json_encode($customer),
         "factor" => json_encode($factor),
         "factorItems" => json_encode($factorItems),
         "user_id" => $user_id,
         "factorNumber" => $factorNumber
-    ]);
+    ];
 
     $url = "http://sells.yadak.shop/";
-    return fireAndForget($url, $postData);
+    return postAndWait($url, $postData);
 }
 
-function fireAndForget($url, $postData)
+function postAndWait($url, $postData)
 {
-    $parts = parse_url($url);
-    $scheme = $parts['scheme'] ?? 'http';
-    $host = $parts['host'] ?? '';
-    $port = ($scheme === 'https') ? 443 : 80;
-    $path = $parts['path'] ?? '/';
+    $ch = curl_init($url);
 
-    $fp = fsockopen(
-        ($scheme === 'https' ? 'ssl://' : '') . $host,
-        $port,
-        $errno,
-        $errstr,
-        2
-    );
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Wait for response
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Set timeout (seconds)
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3); // Connection timeout
 
-    if (!$fp) {
-        error_log("Connection failed: $errstr ($errno)");
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    if (curl_errno($ch)) {
+        error_log("cURL Error: " . curl_error($ch));
+        curl_close($ch);
         return false;
     }
 
-    $out = "POST $path HTTP/1.1\r\n";
-    $out .= "Host: $host\r\n";
-    $out .= "Content-Type: application/x-www-form-urlencoded\r\n";
-    $out .= "Content-Length: " . strlen($postData) . "\r\n";
-    $out .= "Connection: Close\r\n\r\n";
-    $out .= $postData;
+    curl_close($ch);
 
-    fwrite($fp, $out);
-    fclose($fp); // No response wait
-    return true;
+    return $httpCode === 200;
 }
 
 function getJobs()

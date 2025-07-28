@@ -45,7 +45,7 @@ function boot()
         // Handle the response` 
         $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE); // Get HTTP status code
         if ($statusCode >= 200 && $statusCode < 300) {
-            // Request was successful
+            // Request was successful]
             $response = json_decode($response, true);
             validateMessages($response);
         } else {

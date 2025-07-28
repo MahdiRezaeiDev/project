@@ -89,7 +89,8 @@ $billItemsDescription = $preSellFactor ? (json_decode($preSellFactorItemsDescrip
                         <th class="border border-gray-300 px-3 py-2 whitespace-nowrap">ردیف</th>
                         <th class="border border-gray-300 px-3 py-2 whitespace-nowrap">نام قطعه</th>
                         <th class="border border-gray-300 py-2 whitespace-nowrap text-left px-8">جزئیات</th>
-                        <th class="border border-gray-300 px-3 py-2 whitespace-nowrap text-center">قیمت ویژه</th>
+                        <th class="border border-gray-300 py-2 whitespace-nowrap text-left px-8">کسری</th>
+                        <th class="border border-gray-300 px-3 py-2 whitespace-nowrap text-center">گزارش فنی</th>
                         <th class="border border-gray-300 px-3 py-2 text-center whitespace-nowrap">تعداد</th>
                         <th class="border border-gray-300 px-3 py-2 text-center whitespace-nowrap">قیمت واحد</th>
                         <th class="border border-gray-300 px-3 py-2 text-center whitespace-nowrap">قیمت مجموع</th>
@@ -131,7 +132,7 @@ $billItemsDescription = $preSellFactor ? (json_decode($preSellFactorItemsDescrip
 
                         $price_difference = $item['price_per'] - $item['actual_price'];
                         $price_template = '';
-                        if ($price_difference > 0) {
+                        if ($price_difference > 0 && $price_difference !=  $item['price_per']) {
                             $price_template = "* " . number_format(abs($price_difference) / 10000, 0) . '+';
                         } elseif ($price_difference < 0) {
                             $price_template = "* " . number_format(abs($price_difference) / 10000, 0) . '-';
@@ -160,7 +161,7 @@ $billItemsDescription = $preSellFactor ? (json_decode($preSellFactorItemsDescrip
                                     - <span class="<?= $excludeClass ?>"><?= htmlspecialchars($nameParts[1]) ?></span>
                                 <?php endif; ?>
                             </td>
-                            <td class="flex justify-end px-5 border-b border-gray-300 text-sm py-2">
+                            <td class="flex justify-end px-5 border-l border-gray-300 text-sm py-2">
                                 <table style="direction:ltr !important; width: 100%;">
                                     <tbody>
                                         <?php foreach ($relatedPreSellItems as $preItem):
@@ -180,16 +181,6 @@ $billItemsDescription = $preSellFactor ? (json_decode($preSellFactorItemsDescrip
                                                         <?= (int)$preItem['quantity'] ?>
                                                     </p>
                                                 </td>
-                                                <td style="width: 30px; padding: 3px; font-size: 13px; text-align: left;">
-                                                    <?php if (!empty($preItem['required'])): ?>
-                                                        <svg width="20px" height="20px" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" fill="#ea5a47">
-                                                            <path d="m58.14 21.78-7.76-8.013-14.29 14.22-14.22-14.22-8.013 8.013 14.36 14.22-14.36 14.22 8.014 8.013 14.22-14.22 14.29 14.22 7.76-8.013-14.22-14.22z" />
-                                                        </svg>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td style="width: 20px; padding: 3px; font-size: 13px; text-align: left;">
-                                                    <?= htmlspecialchars($preItem['required'] ?? '') ?>
-                                                </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
@@ -200,6 +191,18 @@ $billItemsDescription = $preSellFactor ? (json_decode($preSellFactorItemsDescrip
                                         echo htmlspecialchars($billItemsDescription[$item['id']]);
                                     }
                                     ?>
+                                </div>
+                            </td>
+                            <td style="width: 30px; padding: 3px; font-size: 13px; text-align: left;">
+                                <div class="flex gap-2 items-center justify-center">
+                                    <?php if (!empty($preItem['required'])): ?>
+                                        <p style="width: 20px; padding: 3px; font-size: 13px; text-align: left;">
+                                            <?= htmlspecialchars($preItem['required'] ?? '') ?>
+                                        </p>
+                                        <svg width="20px" height="20px" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" fill="#ea5a47">
+                                            <path d="m58.14 21.78-7.76-8.013-14.29 14.22-14.22-14.22-8.013 8.013 14.36 14.22-14.36 14.22 8.014 8.013 14.22-14.22 14.29 14.22 7.76-8.013-14.22-14.22z" />
+                                        </svg>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                             <td class="border border-gray-300 text-sm text-center py-2">
@@ -225,7 +228,7 @@ $billItemsDescription = $preSellFactor ? (json_decode($preSellFactorItemsDescrip
                 </tbody>
                 <tfoot>
                     <tr class="bg-gray-100 font-semibold text-gray-800 border-t border-gray-300">
-                        <td colspan="4" class="py-3 pr-3">
+                        <td colspan="5" class="py-3 pr-3">
                             <div class="flex gap-5 items-center">
                                 <span>جمع فاکتور</span>
                                 <span id="total_in_word_owner"></span>
