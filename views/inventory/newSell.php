@@ -519,7 +519,8 @@ require_once '../../layouts/inventory/sidebar.php';
             'KOART': ['KOREA'],
             'SAEHAN': ['KOREA'],
             'FORCEONE': ['KOREA'],
-            'DAEWHA': ['KOREA']
+            'DAEWHA': ['KOREA'],
+            'AUTOFIX': ['KOREA']
         };
 
 
