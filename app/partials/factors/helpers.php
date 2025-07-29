@@ -55,16 +55,6 @@ function getFactors($start, $end, $user = null)
             ) >= bill.total THEN TRUE
             ELSE FALSE
         END AS is_paid_off,
-
-        CASE 
-            WHEN EXISTS (
-                SELECT 1
-                FROM $stock.exitrecord er
-                WHERE er.invoice_number = shomarefaktor.shomare
-            ) THEN TRUE
-            ELSE FALSE
-        END AS exists_in_extrecord
-
     FROM
         factor.shomarefaktor
     LEFT JOIN

@@ -183,7 +183,7 @@ function displayUI($factors, $countFactorByUser)
                             <?php endif; ?>
                             <td class="hide_while_print">
                                 <div class="flex justify-center items-center">
-                                    <input <?= ($factor["exists_in_extrecord"]) ? 'checked' : '' ?> type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
+                                    <input type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
                                 </div>
                             </td>
                         </tr>
