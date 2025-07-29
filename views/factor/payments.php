@@ -85,6 +85,70 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
             box-shadow: none;
         }
     }
+
+    @media print {
+        body {
+            font-size: 11px;
+            line-height: 1.2;
+        }
+
+        table {
+            font-size: 10px;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 3px 5px !important;
+        }
+
+        h2 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .text-xs {
+            font-size: 10px !important;
+        }
+
+        .text-sm {
+            font-size: 11px !important;
+        }
+
+        .py-1,
+        .py-2,
+        .py-3,
+        .py-4 {
+            padding-top: 2px !important;
+            padding-bottom: 2px !important;
+        }
+
+        .px-2,
+        .px-3,
+        .px-4,
+        .px-5 {
+            padding-left: 4px !important;
+            padding-right: 4px !important;
+        }
+
+        input[type="text"] {
+            font-size: 10px !important;
+            padding: 2px 4px !important;
+        }
+
+        .w-full {
+            width: 100% !important;
+        }
+
+        /* Optional: force full width */
+        html,
+        body,
+        #wrapper {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    }
 </style>
 <div class="p-6">
     <div class="flex justify-between mb-5">

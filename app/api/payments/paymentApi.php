@@ -77,7 +77,7 @@ if (isset($_POST['filterRequest'])) {
     if (count($AllPayments) === 0) {
         echo "
         <tr>
-            <td class='py-2 text-red-500 text-center font-semibold' colspan='9'>
+            <td class='py-2 text-red-500 text-center font-semibold' colspan='12'>
                هیچ پرداختی یافت نشد.
             </td>
         </tr>";
