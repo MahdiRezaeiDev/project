@@ -54,7 +54,7 @@ function getFactors($start, $end, $user = null)
                 WHERE pay.bill_id = bill.id
             ) >= bill.total THEN TRUE
             ELSE FALSE
-        END AS is_paid_off,
+        END AS is_paid_off
     FROM
         factor.shomarefaktor
     LEFT JOIN
