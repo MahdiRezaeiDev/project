@@ -6,11 +6,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 require_once '../../../config/constants.php';
 require_once '../../../database/db_connect.php';
+require_once '../../../utilities/jdf.php';
 $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi', 'hadishasanpouri', 'rana'];
 
 if (isset($_POST['filterRequest'])) {
     $conditions = [];
-    $params = [];   
+    $params = [];
 
     if (!empty($_POST['factor_date'])) {
         $conditions[] = 'DATE(bill.created_at) = :factor_date';
@@ -35,6 +36,11 @@ if (isset($_POST['filterRequest'])) {
     if (!empty($_POST['card_number'])) {
         $conditions[] = '(payments.account LIKE :card_number)';
         $params[':card_number'] = '%' . $_POST['card_number'] . '%';
+    }
+
+    if (!empty($_POST['user'])) {
+        $conditions[] = 'payments.user_id = :user_id';
+        $params[':user_id'] = $_POST['user'];
     }
 
     $where = count($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
@@ -72,86 +78,110 @@ if (isset($_POST['filterRequest'])) {
     }
     $stmt->execute();
 
-    $AllPayments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if (count($AllPayments) === 0) {
-        echo "
-        <tr>
-            <td class='py-2 text-red-500 text-center font-semibold' colspan='12'>
-               هیچ پرداختی یافت نشد.
-            </td>
-        </tr>";
-        exit;
-    };
-    $totalPayment = 0;
-    foreach ($AllPayments as $index => $payment): ?>
-        <?php $totalPayment += $payment['amount']; ?>
-        <tr class='border-t hover:bg-gray-50'>
-            <td class='border px-2 py-1 text-center'><?= ++$index; ?></td>
-            <td class='border px-2 py-1 text-center'><?= $payment['bill_number'] ?></td>
-            <td class='border px-2 py-1'><?= $payment['customer_name'] ?> <?= $payment['customer_family'] ?></td>
-            <td class='border px-2 py-1 text-right'><?= number_format($payment['total']) ?> ریال</td>
-            <td class='border px-2 py-1 text-right'><?= $payment['bill_date'] ?></td>
-            <td class='border px-2 py-1'><?= $payment['user_name'] ?> <?= $payment['user_family'] ?></td>
-            <td class='border px-2 py-1 text-right'><?= number_format($payment['amount']) ?> ریال</td>
-            <td class='border px-2 py-1'><?= $payment['date'] ?></td>
-            <td class='border px-2 py-1'>
+    if (count($payments)):
+        $totalPayment = 0;
+        foreach ($payments as $index => $payment):
+            $totalPayment += $payment['amount']; ?>
+            <tr class="border-t">
+                <td class="px-3 py-1 print:text-xs text-center"><?= ++$index; ?></td>
+                <td class="px-3 py-1 print:text-xs text-center"><?= $payment['bill_number'] ?></td>
+                <td class="px-3 py-1 print:text-xs"><?= $payment['customer_name'] . ' ' . $payment['customer_family'] ?></td>
+                <td class="px-3 py-1 print:text-xs"><?= number_format($payment['total']) ?>ریال</td>
+                <td class="px-3 py-1 print:text-xs"><?= $payment['bill_date'] ?></td>
+                <td class="px-3 py-1 print:text-xs"><?= $payment['user_name'] . ' ' . $payment['user_family'] ?></td>
+
                 <?php if (in_array($_SESSION['username'], $financeTeam)): ?>
-                    <input class="border-2 p-2" type="text" name="owner" id="owner"
-                        value="<?= $payment['account'] ?>" onchange="updateAccountOwner(this.value, <?= $payment['id'] ?>)">
-                <?php else:
-                    $payment['account'];
-                endif;
-                ?>
-            </td>
+                    <!-- Editable amount -->
+                    <td class="px-3 py-1 print:text-xs text-right">
+                        <input class="border-2 p-2 text-xs w-full" type="text"
+                            value="<?= number_format($payment['amount']) ?>"
+                            onchange="updatePaymentProperty(this.value, <?= $payment['id'] ?>, 'amount')">
+                    </td>
 
-            <td class="px-3 py-1 text-center">
-                <?php if (!empty($payment['photo'])): ?>
-                    <a href='../../app/controller/payment/<?= $payment['photo'] ?>' target="_blank" class='text-blue-600'>نمایش</a>
+                    <!-- Editable date -->
+                    <td class="px-3 py-1 print:text-xs text-right">
+                        <input
+                            type="text"
+                            class="border-2 p-2 text-xs w-full jalali-date"
+                            id="payment_date_<?= $payment['id'] ?>"
+                            data-payment-id="<?= $payment['id'] ?>"
+                            value="<?= jdate($payment['date']) ?>"
+                            data-original-date="<?= $payment['date'] ?>"
+                            readonly />
+                    </td>
+
+
+                    <!-- Editable account -->
+                    <td class="px-3 py-1 print:text-xs text-right">
+                        <input class="border-2 p-2 text-xs w-full" type="text"
+                            value="<?= $payment['account'] ?>"
+                            onchange="updatePaymentProperty(this.value, <?= $payment['id'] ?>)">
+                    </td>
                 <?php else: ?>
-                    <span class='text-gray-400'>ندارد</span>
+                    <!-- Read-only for non-finance -->
+                    <td class="px-3 py-1 print:text-xs text-right"><?= number_format($payment['amount']) ?></td>
+                    <td class="px-3 py-1 print:text-xs"><?= $payment['date'] ?></td>
+                    <td class="px-3 py-1 print:text-xs"><?= $payment['account'] ?></td>
                 <?php endif; ?>
+
+                <td class="px-3 py-1 print:text-xs text-center hide_while_print">
+                    <?php if (!empty($payment['photo'])): ?>
+                        <a href="../../app/controller/payment/<?= $payment['photo'] ?>" target="_blank" class="text-blue-600">نمایش</a>
+                    <?php else: ?>
+                        <span class="text-gray-400">ندارد</span>
+                    <?php endif; ?>
+                </td>
+
+                <!-- Description editable field -->
+                <td class="px-3 py-1 print:text-xs relative">
+                    <input
+                        onkeyup="convertToPersian(this); searchCustomer(this.value, <?= $payment['id'] ?>)"
+                        type="text"
+                        name="customer"
+                        data-payment-id="<?= $payment['id'] ?>"
+                        class="py-3 px-3 w-full print:border-none border-2 text-xs border-gray-300 focus:outline-none text-gray-900 font-semibold"
+                        id="customer_name_<?= $payment['id'] ?>"
+                        value="<?= $payment['description'] ?>"
+                        placeholder="اسم کامل مشتری را وارد نمایید ..." />
+
+                    <div
+                        id="customer_results_<?= $payment['id'] ?>"
+                        class="absolute top-full mb-1 left-0 right-0 bg-white rounded-md shadow z-50 max-h-56 overflow-y-auto text-sm">
+                    </div>
+                </td>
+
+                <!-- Approval -->
+                <td class="text-center">
+                    <input
+                        type="checkbox"
+                        <?= !empty($payment['approved_by']) ? 'checked' : '' ?>
+                        onchange="updateApproval(this, <?= $payment['id'] ?>)"
+                        name="approved">
+                    <br>
+                    <span class="text-xs text-gray-500">
+                        <?= !empty($payment['approved_by_name']) ? $payment['approved_by_name'] . ' ' . $payment['approved_by_family'] : '—' ?>
+                    </span>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        <!-- Total Row -->
+        <tr class="border-t bg-gray-800 text-white">
+            <td class="px-3 py-2 font-semibold text-left" colspan="6">
+                مجموع واریزی
             </td>
-
-            <td class="px-3 py-1 relative">
-                <!-- Input Field -->
-                <input
-                    onkeyup="convertToPersian(this); searchCustomer(this.value, <?= $payment['id'] ?>)"
-                    type="text"
-                    name="customer"
-                    data-payment-id="<?= $payment['id'] ?>"
-                    class="py-3 px-3 w-full border-2 text-xs border-gray-300 focus:outline-none text-gray-900 font-semibold"
-                    id="customer_name_<?= $payment['id'] ?>"
-                    value="<?= $payment['description'] ?>"
-                    placeholder="اسم کامل مشتری را وارد نمایید ..." />
-
-                <!-- Results Dropdown -->
-                <div
-                    id="customer_results_<?= $payment['id'] ?>"
-                    class="absolute top-full mb-1 left-0 right-0 bg-white rounded-md shadow z-50 max-h-56 overflow-y-auto text-sm">
-                </div>
-            </td>
-
-            <td class='border px-2 py-1 text-center'>
-                <input type='checkbox'
-                    <?= !empty($payment['approved_by']) ? 'checked' : '' ?>
-                    onchange='updateApproval(this, <?= $payment["id"] ?>)' name='approved'>
-                <br />
-                <span class='text-xs text-gray-500'>
-                    <?= !empty($payment['approved_by_name']) ? "{$payment['approved_by_name']} {$payment['approved_by_family']}" : '—' ?>
-                </span>
+            <td class="px-3 py-2 text-right font-semibold" colspan="6">
+                <?= number_format($totalPayment); ?>
             </td>
         </tr>
-<?php endforeach;
-
-    echo '<tr class="border-t bg-gray-800 text-white">
-        <td class="px-3 py-2 font-semibold text-left" colspan="6">
-            مجموع واریزی
-        </td>
-        <td class="px-3 py-2 text-right font-semibold" colspan="6">'
-        . number_format($totalPayment) .
-        '</td>
-    </tr>';
+    <?php else: ?>
+        <tr>
+            <td class="py-2 text-red-500 text-center font-semibold" colspan="12">
+                واریزی ای ثبت نشده است.
+            </td>
+        </tr>
+<?php endif;
 }
 
 if (isset($_POST['updateApproval'])) {
@@ -198,12 +228,20 @@ if (isset($_POST['updateDescription'])) {
     exit;
 }
 
-if (isset($_POST['updateAccountOwner'])) {
+if (isset($_POST['updateProperty'])) {
     $id = intval($_POST['id'] ?? 0);
     $owner = trim($_POST['owner'] ?? '');
+    $property = trim($_POST['property'] ?? 'account');
+
+    // Whitelist allowed columns
+    $allowedProperties = ['account', 'owner', 'status', 'amount',]; // Add your real columns here
+    if (!in_array($property, $allowedProperties)) {
+        echo json_encode(['status' => 'invalid_property']);
+        exit;
+    }
 
     if ($id > 0) {
-        $stmt = $pdo->prepare("UPDATE factor.payments SET account = ? WHERE id = ?");
+        $stmt = $pdo->prepare("UPDATE factor.payments SET `$property` = ? WHERE id = ?");
         $success = $stmt->execute([$owner, $id]);
 
         echo json_encode(['status' => $success ? 'success' : 'error']);

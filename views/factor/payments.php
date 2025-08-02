@@ -5,6 +5,7 @@ require_once './components/header.php';
 require_once '../../layouts/callcenter/nav.php';
 require_once '../../layouts/callcenter/sidebar.php';
 $payments = getAllPayments();
+$users = getAllUsers();
 
 function getAllPayments()
 {
@@ -43,6 +44,13 @@ function getAllPayments()
     $stmt->bindValue(':endOfDay', $endOfDay);
     $stmt->execute();
 
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getAllUsers()
+{
+    $stmt = PDO_CONNECTION->prepare("SELECT id, name, family FROM yadakshop.users WHERE password IS NOT NULL AND password != '' AND name is not null AND family is not null ORDER BY name, family");
+    $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
@@ -157,7 +165,7 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
     </div>
 
     <div class="print:hidden">
-        <form id="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 p-4 bg-white rounded-lg shadow mb-4">
+        <form id="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4 p-4 bg-white rounded-lg shadow mb-4">
 
             <div>
                 <label class="text-sm">تاریخ فاکتور</label>
@@ -186,11 +194,20 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
                 <label class="text-sm">صاحب حساب</label>
                 <input type="text" name="card_number" class="w-full border rounded px-2 py-1" />
             </div>
+            <div>
+                <label class="text-sm">کاربر</label>
+                <select type="text" name="user" class="w-full border rounded px-2 py-1">
+                    <option value="0">همه کاربران</option>
+                    <?php foreach ($users as $user): ?>
+                        <option value="<?= $user['id'] ?>"><?= $user['name'] . ' ' . $user['family'] ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
 
             <div class="flex items-end gap-2">
                 <button type="submit"
                     class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full text-sm">
-                    اعمال فیلتر
+                    فیلتر
                 </button>
                 <button type="button" id="clearFilters"
                     class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 w-full text-sm">
@@ -216,13 +233,12 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
                 <th class="border px-3 py-2 text-right">مبلغ واریزی</th>
                 <th class="border px-3 py-2 text-right">تاریخ واریزی</th>
                 <th class="border px-3 py-2 text-right">صاحب حساب</th>
-                <th class="border px-3 py-2 text-right">تصویر</th>
+                <th class="border px-3 py-2 text-right hide_while_print">تصویر</th>
                 <th class="border px-3 py-2 text-right">ذی نفع</th>
                 <th class="border px-3 py-2 text-right">تایید کننده</th>
             </tr>
         </thead>
         <tbody id="result_box">
-
             <?php if (count($payments)):
                 $totalPayment = 0;
                 foreach ($payments as $index => $payment):
@@ -232,48 +248,70 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
                         <td class="px-3 py-1 print:text-xs text-center"><?= $payment['bill_number'] ?></td>
                         <td class="px-3 py-1 print:text-xs"><?= $payment['customer_name'] . ' ' . $payment['customer_family'] ?></td>
                         <td class="px-3 py-1 print:text-xs"><?= number_format($payment['total']) ?>ریال</td>
-                        <td class="px-3 py-1 print:text-xs"><?= ($payment['bill_date']) ?></td>
+                        <td class="px-3 py-1 print:text-xs"><?= $payment['bill_date'] ?></td>
                         <td class="px-3 py-1 print:text-xs"><?= $payment['user_name'] . ' ' . $payment['user_family'] ?></td>
-                        <td class="px-3 py-1 print:text-xs text-right"><?= number_format($payment['amount']) ?> ریال</td>
-                        <td class="px-3 py-1 print:text-xs"><?= $payment['date'] ?></td>
-                        <td class="px-3 py-1 print:text-xs">
-                            <?php if (in_array($_SESSION['username'], $financeTeam)): ?>
-                                <input class="border-2 p-2" type="text" name="owner" id="owner"
-                                    value="<?= $payment['account'] ?>" onchange="updateAccountOwner(this.value, <?= $payment['id'] ?>)">
-                            <?php else:
-                                $payment['account'];
-                            endif;
-                            ?>
-                        </td>
-                        <td class="px-3 py-1 print:text-xs text-center">
+
+                        <?php if (in_array($_SESSION['username'], $financeTeam)): ?>
+                            <!-- Editable amount -->
+                            <td class="px-3 py-1 print:text-xs text-right">
+                                <input class="border-2 p-2 text-xs w-full" type="text"
+                                    value="<?= number_format($payment['amount']) ?>"
+                                    onchange="updatePaymentProperty(this.value, <?= $payment['id'] ?>, 'amount')">
+                            </td>
+
+                            <!-- Editable date -->
+                            <td class="px-3 py-1 print:text-xs text-right">
+                                <input
+                                    type="text"
+                                    class="border-2 p-2 text-xs w-full jalali-date"
+                                    id="payment_date_<?= $payment['id'] ?>"
+                                    data-payment-id="<?= $payment['id'] ?>"
+                                    value="<?= jdate($payment['date']) ?>"
+                                    data-original-date="<?= $payment['date'] ?>"
+                                    readonly />
+                            </td>
+
+
+                            <!-- Editable account -->
+                            <td class="px-3 py-1 print:text-xs text-right">
+                                <input class="border-2 p-2 text-xs w-full" type="text"
+                                    value="<?= $payment['account'] ?>"
+                                    onchange="updatePaymentProperty(this.value, <?= $payment['id'] ?>)">
+                            </td>
+                        <?php else: ?>
+                            <!-- Read-only for non-finance -->
+                            <td class="px-3 py-1 print:text-xs text-right"><?= number_format($payment['amount']) ?></td>
+                            <td class="px-3 py-1 print:text-xs"><?= $payment['date'] ?></td>
+                            <td class="px-3 py-1 print:text-xs"><?= $payment['account'] ?></td>
+                        <?php endif; ?>
+
+                        <td class="px-3 py-1 print:text-xs text-center hide_while_print">
                             <?php if (!empty($payment['photo'])): ?>
                                 <a href="../../app/controller/payment/<?= $payment['photo'] ?>" target="_blank" class="text-blue-600">نمایش</a>
                             <?php else: ?>
                                 <span class="text-gray-400">ندارد</span>
                             <?php endif; ?>
                         </td>
+
+                        <!-- Description editable field -->
                         <td class="px-3 py-1 print:text-xs relative">
-                            <!-- Input Field -->
                             <input
                                 onkeyup="convertToPersian(this); searchCustomer(this.value, <?= $payment['id'] ?>)"
                                 type="text"
                                 name="customer"
                                 data-payment-id="<?= $payment['id'] ?>"
-                                class="py-3 px-3 w-full
-                                print:border-none
-                                 border-2 text-xs border-gray-300 focus:outline-none text-gray-900 font-semibold"
+                                class="py-3 px-3 w-full print:border-none border-2 text-xs border-gray-300 focus:outline-none text-gray-900 font-semibold"
                                 id="customer_name_<?= $payment['id'] ?>"
                                 value="<?= $payment['description'] ?>"
                                 placeholder="اسم کامل مشتری را وارد نمایید ..." />
 
-
-                            <!-- Results Dropdown ABOVE -->
                             <div
                                 id="customer_results_<?= $payment['id'] ?>"
                                 class="absolute top-full mb-1 left-0 right-0 bg-white rounded-md shadow z-50 max-h-56 overflow-y-auto text-sm">
                             </div>
                         </td>
 
+                        <!-- Approval -->
                         <td class="text-center">
                             <input
                                 type="checkbox"
@@ -282,14 +320,12 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
                                 name="approved">
                             <br>
                             <span class="text-xs text-gray-500">
-                                <?= !empty($payment['approved_by_name']) ?
-                                    $payment['approved_by_name'] . ' ' . $payment['approved_by_family'] :
-                                    '—' ?>
+                                <?= !empty($payment['approved_by_name']) ? $payment['approved_by_name'] . ' ' . $payment['approved_by_family'] : '—' ?>
                             </span>
-
                         </td>
                     </tr>
                 <?php endforeach; ?>
+                <!-- Total Row -->
                 <tr class="border-t bg-gray-800 text-white">
                     <td class="px-3 py-2 font-semibold text-left" colspan="6">
                         مجموع واریزی
@@ -298,9 +334,7 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
                         <?= number_format($totalPayment); ?>
                     </td>
                 </tr>
-            <?php
-            endif;
-            if (!count($payments)): ?>
+            <?php else: ?>
                 <tr>
                     <td class="py-2 text-red-500 text-center font-semibold" colspan="12">
                         واریزی ای ثبت نشده است.
@@ -346,6 +380,8 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
 
         axios.post("../../app/api/payments/paymentApi.php", formData)
             .then(function(response) {
+                console.log(response.data);
+
                 result_box.innerHTML = response.data;
             })
             .catch(function(error) {
@@ -520,11 +556,12 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
         }, 3000); // مخفی کردن بعد از ۳ ثانیه
     }
 
-    function updateAccountOwner(value, paymentId) {
+    function updatePaymentProperty(value, paymentId, property) {
         const formData = new FormData();
-        formData.append('updateAccountOwner', true);
+        formData.append('updateProperty', true);
         formData.append('id', paymentId);
         formData.append('owner', value);
+        formData.append('property', property || 'account');
 
         axios.post('../../app/api/payments/paymentApi.php', formData)
             .then(response => {
@@ -548,6 +585,25 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
             customerResults.classList.remove('fade-out');
         }, 300);
     }
+
+    $(function() {
+        $(".jalali-date").each(function() {
+            const input = $(this);
+            const id = input.attr("id");
+
+            input.persianDatepicker({
+                showGregorianDate: !1,
+                persianNumbers: !0,
+                formatDate: "YYYY/MM/DD",
+                onSelect: function() {
+                    const jalaliDate = $("#" + id).attr("data-jdate");
+                    const paymentId = $("#" + id).data("payment-id");
+
+                    updatePaymentProperty(jalaliDate, paymentId, 'date');
+                }
+            });
+        });
+    });
 </script>
 
 <?php

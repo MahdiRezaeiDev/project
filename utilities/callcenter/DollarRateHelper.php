@@ -183,34 +183,27 @@ function applyDollarRateNotRounded($price, $priceDate)
 
     $GLOBALS['appliedRate'] = $rate;
 
-    // Match numbers: integers, decimals, or fractions
-    $pattern = '/\d+(?:[\/.]\d+)?/';
+    // Step 1: Match "number + optional symbol + number" patterns
+    // e.g., 8/600 or 8.600 or 8-600 -> treat as one whole number
+    $pattern = '/\d+(?:[^\s\d]\d+)+|\d+/';
 
     $modifiedString = preg_replace_callback($pattern, function ($matches) use ($rate) {
-        $original = $matches[0];
+        $raw = $matches[0];
 
-        // Handle fractions like 3/4
-        if (strpos($original, '/') !== false) {
-            list($num, $den) = explode('/', $original);
-            if ($den == 0) return $original; // prevent division by zero
-            $value = floatval($num) / floatval($den);
-        } else {
-            $value = floatval($original); // handles both decimals and integers
-        }
+        // Remove all non-digit characters inside the match (e.g. / . - _)
+        $number = preg_replace('/\D/', '', $raw);
 
+        if ($number === '') return $raw;
+
+        $value = floatval($number);
         $modified = $value + ($value * $rate / 100);
 
-        // Format: show one decimal if needed
-        if (floor($modified) == $modified) {
-            return number_format($modified, 0);
-        } else {
-            return number_format($modified, 1);
-        }
+        // Format without decimals if it's whole number
+        return floor($modified) == $modified ? number_format($modified, 0) : rtrim(rtrim(number_format($modified, 3, '.', ''), '0'), '.');
     }, $price);
 
     return $modifiedString;
 }
-
 
 function checkDateIfOkay($applyDate, $priceDate)
 {

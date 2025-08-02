@@ -23,17 +23,17 @@ foreach ($sells_report as $sell) {
         $sell['is_completed']
     );
 
-    if ($sent) {
-        updateStatus('factor.sells_report', $sell['id']);
-    }
+    // if ($sent) {
+    updateStatus('factor.sells_report', $sell['id']);
+    // }
 }
 
 // Process shortage report
 foreach ($shortage_report as $shortage) {
     $sent = sendPurchaseReportMessage($shortage['low_quantity']);
-    if ($sent) {
-        updateStatus('factor.shortage_report', $shortage['id']);
-    }
+    // if ($sent) {
+    updateStatus('factor.shortage_report', $shortage['id']);
+    // }
 }
 
 $now = date('H:i:s');
