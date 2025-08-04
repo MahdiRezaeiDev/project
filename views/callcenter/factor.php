@@ -232,7 +232,11 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                 <?php endif; ?>
                                 <td class="hide_while_print">
                                     <div class="flex justify-center items-center">
-                                        <input type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
+                                        <?php if ($factor['sellout']): ?>
+                                            <img src="./assets/img/checked.svg" alt="">
+                                        <?php else: ?>
+                                            <img src="./assets/img/ignored.svg" alt="">
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>

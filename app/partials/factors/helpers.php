@@ -22,7 +22,6 @@ function getFactors($start, $end, $user = null)
             WHEN bill.bill_number IS NOT NULL THEN TRUE 
             ELSE FALSE 
         END AS exists_in_bill,
-
         CASE 
             WHEN EXISTS (
                 SELECT 1 
@@ -31,7 +30,14 @@ function getFactors($start, $end, $user = null)
             ) THEN TRUE 
             ELSE FALSE 
         END AS exists_in_phones,
-
+        CASE 
+            WHEN EXISTS (
+                SELECT 1 
+                FROM $stock.track_bills p 
+                WHERE p.bill_number = shomarefaktor.shomare
+            ) THEN TRUE 
+            ELSE FALSE 
+        END AS sellout,
         CASE 
             WHEN EXISTS (
                 SELECT 1 

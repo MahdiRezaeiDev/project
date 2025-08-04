@@ -234,7 +234,7 @@ if (isset($_POST['updateProperty'])) {
     $property = trim($_POST['property'] ?? 'account');
 
     // Whitelist allowed columns
-    $allowedProperties = ['account', 'owner', 'status', 'amount',]; // Add your real columns here
+    $allowedProperties = ['account', 'owner', 'status', 'amount', 'date']; // Add your real columns here
     if (!in_array($property, $allowedProperties)) {
         echo json_encode(['status' => 'invalid_property']);
         exit;
