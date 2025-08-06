@@ -31,9 +31,9 @@ foreach ($sells_report as $sell) {
 // Process shortage report
 foreach ($shortage_report as $shortage) {
     $sent = sendPurchaseReportMessage($shortage['low_quantity']);
-    // if ($sent) {
+    if ($sent) {
     updateStatus('factor.shortage_report', $shortage['id']);
-    // }
+    }
 }
 
 $now = date('H:i:s');

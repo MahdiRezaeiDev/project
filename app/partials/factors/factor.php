@@ -183,11 +183,7 @@ function displayUI($factors, $countFactorByUser)
                             <?php endif; ?>
                             <td class="hide_while_print">
                                 <div class="flex justify-center items-center">
-                                    <?php if ($factor['sellout']): ?>
-                                        <img src="./assets/img/checked.svg" alt="">
-                                    <?php else: ?>
-                                        <img src="./assets/img/ignored.svg" alt="">
-                                    <?php endif; ?>
+                                    <input type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
                                 </div>
                             </td>
                         </tr>
