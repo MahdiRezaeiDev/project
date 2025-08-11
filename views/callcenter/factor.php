@@ -133,11 +133,13 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                         <?php endif ?>
                         <?php
                         $isAdmin = $_SESSION['username'] === 'niyayesh' || $_SESSION['username'] === 'mahdi' || $_SESSION['username'] === 'babak' ? true : false;
-                        if ($isAdmin) : ?>
-                            <th class="p-3 text-sm font-semibold hide_while_print hidden sm:table-cell">ویرایش</th>
-                        <?php endif; ?>
+                        ?>
                         <th class="p-3 text-sm font-semibold hide_while_print">واریزی</th>
                         <th class="p-3 text-sm font-semibold hide_while_print">خروج</th>
+                        <th class="p-3 text-sm font-semibold">ارسال</th>
+                        <?php if ($isAdmin) : ?>
+                            <th class="p-3 text-sm font-semibold hide_while_print hidden sm:table-cell">ویرایش</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
@@ -199,14 +201,6 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                             <input onclick="changeStatus(this)" <?= ($factor["exists_in_phones"] || $factor["approved"]) ? 'checked' : '' ?> type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
                                         </div>
                                     </td>
-                                <?php endif ?>
-                                <?php
-                                if ($isAdmin) : ?>
-                                    <td class="text-center align-middle hide_while_print hidden sm:table-cell">
-                                        <a onclick="toggleModal(this); edit(this)" data-factor="<?= $factor["id"] ?>" data-user="<?= $factor['user']; ?>" data-billNO="<?= $factor['shomare'] ?>" data-user-info="<?= getUserInfo($factor['user']) ?>" data-customer="<?= $factor['kharidar'] ?>" class="text-xs bg-cyan-500 text-white cursor-pointer px-2 py-1 rounded">
-                                            ویرایش
-                                        </a>
-                                    </td>
                                 <?php endif;
                                 $payment_bg = 'bg-gray-400 hover:bg-gray-300';
                                 if ($factor['is_paid_off']):
@@ -239,12 +233,33 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                         <?php endif; ?>
                                     </div>
                                 </td>
+                                <td class="text-center align-middle">
+                                    <img
+                                        onclick="displayDeliveryModal(this)"
+                                        data-bill="<?= $factor['shomare'] ?>"
+                                        data-contact="<?= $factor['contact_type'] ?>"
+                                        data-destination="<?= $factor['destination'] ?>"
+                                        data-type="<?= $factor['delivery_type'] ?>"
+                                        data-address="<?= $factor['customer_address'] ?>"
+                                        src="./assets/img/delivery.svg" alt="arrow icon" class="w-6 h-6 cursor-pointer mx-auto m-0" title="ارسال اجناس" />
+                                    <span class="text-[9px] text-gray-500 text-center">
+                                        <?= $factor['destination'] ?>
+                                    </span>
+                                </td>
+                                <?php if ($isAdmin) : ?>
+                                    <td class="text-center align-middle hide_while_print hidden sm:table-cell">
+                                        <a onclick="toggleModal(this); edit(this)" data-factor="<?= $factor["id"] ?>" data-user="<?= $factor['user']; ?>" data-billNO="<?= $factor['shomare'] ?>" data-user-info="<?= getUserInfo($factor['user']) ?>" data-customer="<?= $factor['kharidar'] ?>"
+                                            class="">
+                                            <img src="./assets/img/edit.svg" alt="edit icon" class="w-6 h-6 cursor-pointer mx-auto" title="ویرایش فاکتور" />
+                                        </a>
+                                    </td>
+                                <?php endif; ?>
                             </tr>
                         <?php
                         endforeach;
                     else : ?>
                         <tr class="bg-gray-100">
-                            <td class="text-center py-40" colspan="7">
+                            <td class="text-center py-40" colspan="9">
                                 <p class="text-rose-500 font-semibold">هیچ فاکتوری برای امروز ثبت نشده است.</p>
                             </td>
                         </tr>
@@ -419,6 +434,66 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                     </p>
                 </li>
             </ul>
+        </div>
+    </div>
+</div>
+
+<div id="deliveryModal" class="hidden fixed inset-0 bg-gray-900/75 flex justify-center items-center">
+    <div class="bg-white p-4 rounded w-2/3">
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl mb-2">ارسال اجناس</h2>
+            <img class="cursor-pointer" src="./assets/img/close.svg" alt="close icon" onclick="document.getElementById('deliveryModal').classList.add('hidden')">
+        </div>
+        <div class="modal-body">
+            <table class="w-full my-4 ">
+                <thead class="bg-gray-700">
+                    <tr>
+                        <th class="text-xs text-white font-semibold p-3">شماره فاکتور</th>
+                        <th class="text-xs text-white font-semibold p-3">روش ارسال</th>
+                        <th class="text-xs text-white font-semibold p-3">آدرس مقصد</th>
+                        <th class="text-xs text-white font-semibold p-3">پیام رسان مشتری</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-gray-100">
+                        <td class="text-gray-600 text-xs p-3 text-center font-semibold" id="display_billNumber"></td>
+                        <td class="text-gray-600 text-xs p-3 text-center font-semibold" id="display_deliveryType"></td>
+                        <td class="text-gray-600 text-xs p-3 text-center font-semibold" id="display_destination"></td>
+                        <td class="text-gray-600 text-xs p-3 text-center font-semibold" id="display_contactType"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <form action="" onsubmit="submitDelivery(event)" class="mt-4">
+                <input type="hidden" name="billNumber" id="deliveryBillNumber" value="">
+                <div class="mt-4">
+                    <label class="block text-sm font-semibold mb-2" for="deliveryType">روش ارسال:</label>
+                    <select required id="deliveryType" name="deliveryType" class="w-full border-2 border-gray-300 p-2 rounded">
+                        <option value="پیک مشتری">پیک خود مشتری</option>
+                        <option value="پیک یدک شاپ">پیک یدک شاپ</option>
+                        <option value="اتوبوس">اتوبوس</option>
+                        <option value="تیپاکس">تیپاکس</option>
+                        <option value="سواری">سواری</option>
+                        <option value="باربری">باربری</option>
+                    </select>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-semibold mb-2" for="address">آدرس مقصد:</label>
+                    <input required type="text" id="address" name="address" class="w-full border-2 border-gray-300 p-2 rounded" placeholder="آدرس ارسال را وارد کنید...">
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-semibold mb-2" for="contactType"> پیام رسان مشتری:</label>
+                    <select required id="contactType" name="contactType" class="w-full border-2 border-gray-300 p-2 rounded">
+                        <option value="واتساپ" selected>واتساپ</option>
+                        <option value="واتساپ راست">واتساپ راست</option>
+                        <option value="واتساپ چپ">واتساپ چپ</option>
+                        <option value="تلگرام">تلگرام</option>
+                    </select>
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">ثبت ارسال</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -647,6 +722,59 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
             .catch(function(error) {
                 alert("خطا در هنگام ثبت وضعیت، لطفا مجددا تلاش نمایید");
             });
+    }
+
+    function displayDeliveryModal(element) {
+        const billNumber = element.getAttribute('data-bill');
+        const contactType = element.getAttribute('data-contact');
+        const destination = element.getAttribute('data-destination');
+        const deliveryType = element.getAttribute('data-type');
+        document.getElementById('display_billNumber').innerText = billNumber;
+        document.getElementById('display_contactType').innerText = contactType;
+        document.getElementById('display_destination').innerText = destination;
+        document.getElementById('display_deliveryType').innerText = deliveryType;
+        document.getElementById('deliveryBillNumber').value = billNumber;
+        document.getElementById('address').value = element.dataset.address || '';
+        document.getElementById('deliveryModal').classList.remove('hidden');
+    }
+
+    function submitDelivery(event) {
+        event.preventDefault();
+        const deliveryType = document.getElementById('deliveryType').value;
+        const deliveryBillNumber = document.getElementById('deliveryBillNumber').value;
+        const address = document.getElementById('address').value;
+        const contactType = document.getElementById('contactType').value;
+        const params = new URLSearchParams();
+        params.append('submitDelivery', 'submitDelivery');
+        params.append('deliveryType', deliveryType);
+        params.append('address', address);
+        params.append('contactType', contactType);
+        params.append('billNumber', deliveryBillNumber);
+        axios.post("../../app/api/factor/DeliveryApi.php", params)
+            .then(function(response) {
+                document.getElementById('deliveryModal').classList.add('hidden');
+                showToast("ارسال با موفقیت ثبت شد.");
+            })
+            .catch(function(error) {
+                alert("خطا در هنگام ثبت ارسال، لطفا مجددا تلاش نمایید");
+            });
+
+    }
+    // Toast function
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.className = `fixed bottom-5 right-5 px-4 py-2 rounded shadow-lg text-white z-50 transition-opacity duration-500 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+
+        document.body.appendChild(toast);
+
+        // Fade out and remove after 3s
+        setTimeout(() => {
+            toast.classList.add('opacity-0');
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
     }
 </script>
 <?php

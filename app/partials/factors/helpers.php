@@ -10,6 +10,7 @@ if (!isset($dbname)) {
 function getFactors($start, $end, $user = null)
 {
     global $stock;
+
     $query = "SELECT
         shomarefaktor.*,
         bill.id AS bill_id,
@@ -17,6 +18,7 @@ function getFactors($start, $end, $user = null)
         bill.partner,
         bill.total,
         bill.partner AS isPartner,
+        customer.address AS customer_address,
 
         CASE 
             WHEN bill.bill_number IS NOT NULL THEN TRUE 
@@ -33,7 +35,7 @@ function getFactors($start, $end, $user = null)
         CASE 
             WHEN EXISTS (
                 SELECT 1 
-                FROM $stock.track_bills p 
+                FROM {$stock}.track_bills p 
                 WHERE p.bill_number = shomarefaktor.shomare
             ) THEN TRUE 
             ELSE FALSE 
@@ -60,17 +62,32 @@ function getFactors($start, $end, $user = null)
                 WHERE pay.bill_id = bill.id
             ) >= bill.total THEN TRUE
             ELSE FALSE
-        END AS is_paid_off
+        END AS is_paid_off,
+
+        -- Delivery info
+        CASE 
+            WHEN deliveries.bill_number IS NOT NULL THEN TRUE
+            ELSE FALSE
+        END AS exists_in_deliveries,
+        deliveries.contact_type,
+        deliveries.destination,
+        deliveries.type AS delivery_type,
+        deliveries.user_id AS delivery_user_id
+
     FROM
         factor.shomarefaktor
     LEFT JOIN
-        factor.bill ON shomarefaktor.shomare = bill.bill_number
+        factor.bill 
+        ON shomarefaktor.shomare = bill.bill_number
+    LEFT JOIN
+        callcenter.customer AS customer
+        ON bill.customer_id = customer.id
+    LEFT JOIN
+        factor.deliveries 
+        ON shomarefaktor.shomare = deliveries.bill_number
     WHERE
         shomarefaktor.time < :end
-        AND shomarefaktor.time >= :start
-";
-
-
+        AND shomarefaktor.time >= :start";
 
     if ($user !== null) {
         $query .= " AND shomarefaktor.user = :user";
@@ -82,13 +99,12 @@ function getFactors($start, $end, $user = null)
     $statement->bindValue(':start', $start);
     $statement->bindValue(':end', $end);
     if ($user !== null) {
-        $statement->bindValue(':user', $user);
+        $statement->bindValue(':user', $user, PDO::PARAM_INT);
     }
     $statement->execute();
 
     return $statement->fetchAll(PDO::FETCH_ASSOC);
 }
-
 
 function getCountFactorByUser($start, $end = null, $user = null)
 {

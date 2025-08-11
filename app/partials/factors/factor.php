@@ -75,11 +75,13 @@ function displayUI($factors, $countFactorByUser)
                     <?php endif; ?>
                     <?php
                     $isAdmin = $_SESSION['username'] === 'niyayesh' || $_SESSION['username'] === 'mahdi' || $_SESSION['username'] === 'babak' ? true : false;
-                    if ($isAdmin) : ?>
-                        <th class="p-3 text-sm font-semibold hide_while_print" class="edit">ویرایش</th>
-                    <?php endif; ?>
+                    ?>
                     <th class="p-3 text-sm font-semibold hide_while_print">واریزی</th>
                     <th class="p-3 text-sm font-semibold hide_while_print">خروج</th>
+                    <th class="p-3 text-sm font-semibold">ارسال</th>
+                    <?php if ($isAdmin) : ?>
+                        <th class="p-3 text-sm font-semibold hide_while_print" class="edit">ویرایش</th>
+                    <?php endif; ?>
                 </tr>
             </thead>
             <tbody>
@@ -148,17 +150,8 @@ function displayUI($factors, $countFactorByUser)
                             <?php endif; ?>
                             <?php
                             $isAdmin = $_SESSION['username'] === 'niyayesh' || $_SESSION['username'] === 'mahdi' || $_SESSION['username'] === 'babak' ? true : false;
-                            if ($isAdmin) : ?>
-                                <td class="text-center align-middle hide_while_print">
-                                    <a onclick="toggleModal(this); edit(this)"
-                                        data-factor="<?= $factor["id"] ?>"
-                                        data-user="<?= $factor['user']; ?>"
-                                        data-billNO="<?= $factor['shomare'] ?>"
-                                        data-user-info="<?= getUserInfo($factor['user']) ?>" data-customer="<?= $factor['kharidar'] ?>" class="text-xs bg-cyan-500 text-white cursor-pointer px-2 py-1 rounded">
-                                        ویرایش
-                                    </a>
-                                </td>
-                            <?php endif;
+                            ?>
+                            <?php
                             $payment_bg = 'bg-gray-400 hover:bg-gray-300';
                             if ($factor['is_paid_off']):
                                 $payment_bg = 'bg-green-500 hover:bg-green-600';
@@ -183,15 +176,40 @@ function displayUI($factors, $countFactorByUser)
                             <?php endif; ?>
                             <td class="hide_while_print">
                                 <div class="flex justify-center items-center">
-                                    <input type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
+                                    <?php if ($factor['sellout']): ?>
+                                        <img src="./assets/img/checked.svg" alt="">
+                                    <?php else: ?>
+                                        <img src="./assets/img/ignored.svg" alt="">
+                                    <?php endif; ?>
                                 </div>
                             </td>
+                            <td class="text-center align-middle">
+                                <img
+                                    onclick="displayDeliveryModal(this)"
+                                    data-bill="<?= $factor['shomare'] ?>"
+                                    data-contact="<?= $factor['contact_type'] ?>"
+                                    data-destination="<?= $factor['destination'] ?>"
+                                    data-type="<?= $factor['delivery_type'] ?>"
+                                    data-address="<?= $factor['customer_address'] ?>"
+                                    src="./assets/img/delivery.svg" alt="arrow icon" class="w-6 h-6 cursor-pointer mx-auto m-0" title="ارسال اجناس" />
+                                <span class="text-[9px] text-gray-500 text-center">
+                                    <?= $factor['destination'] ?>
+                                </span>
+                            </td>
+                            <?php if ($isAdmin) : ?>
+                                <td class="text-center align-middle hide_while_print hidden sm:table-cell">
+                                    <a onclick="toggleModal(this); edit(this)" data-factor="<?= $factor["id"] ?>" data-user="<?= $factor['user']; ?>" data-billNO="<?= $factor['shomare'] ?>" data-user-info="<?= getUserInfo($factor['user']) ?>" data-customer="<?= $factor['kharidar'] ?>"
+                                        class="">
+                                        <img src="./assets/img/edit.svg" alt="edit icon" class="w-6 h-6 cursor-pointer mx-auto" title="ویرایش فاکتور" />
+                                    </a>
+                                </td>
+                            <?php endif; ?>
                         </tr>
                     <?php
                     endforeach;
                 else : ?>
                     <tr class="bg-gray-100">
-                        <td class="text-center py-40" colspan="7">
+                        <td class="text-center py-40" colspan="9">
                             <p class="text-rose-500 font-semibold">هیچ فاکتوری برای امروز ثبت نشده است.</p>
                         </td>
                     </tr>
