@@ -234,17 +234,55 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                     </div>
                                 </td>
                                 <td class="text-center align-middle">
-                                    <img
-                                        onclick="displayDeliveryModal(this)"
-                                        data-bill="<?= $factor['shomare'] ?>"
-                                        data-contact="<?= $factor['contact_type'] ?>"
-                                        data-destination="<?= $factor['destination'] ?>"
-                                        data-type="<?= $factor['delivery_type'] ?>"
-                                        data-address="<?= $factor['customer_address'] ?>"
-                                        src="./assets/img/delivery.svg" alt="arrow icon" class="w-6 h-6 cursor-pointer mx-auto m-0" title="ارسال اجناس" />
-                                    <span class="text-[9px] text-gray-500 text-center">
-                                        <?= $factor['destination'] ?>
-                                    </span>
+                                    <div class="flex flex-col items-center gap-1"> <!-- flex column with small gap -->
+                                        <?php
+                                        $src = './assets/img/delivery.svg';
+                                        if ($factor['delivery_type'] == 'پیک مشتری') {
+                                            $src = './assets/img/customer.svg';
+                                        } elseif ($factor['delivery_type'] == 'پیک یدک شاپ') {
+                                            $src = './assets/img/yadakshop.svg';
+                                        }
+                                        ?>
+                                        <img
+                                            onclick="displayDeliveryModal(this)"
+                                            data-bill="<?= $factor['shomare'] ?>"
+                                            data-contact="<?= $factor['contact_type'] ?>"
+                                            data-destination="<?= $factor['destination'] ?>"
+                                            data-type="<?= $factor['delivery_type'] ?>"
+                                            data-address="<?= $factor['customer_address'] ?>"
+                                            src="<?= $src; ?>"
+                                            alt="arrow icon"
+                                            class="w-6 h-6 cursor-pointer"
+                                            title="ارسال اجناس" />
+
+                                        <?php
+                                        if ($factor['delivery_type'] !== 'پیک مشتری') {
+                                            if ($factor['delivery_type'] == 'پیک یدک شاپ') {
+                                                $words = explode(' ', $factor['destination']);
+                                                if (count($words) > 3) {
+                                                    echo '<span class="text-[9px] text-sky-700 font-semibold">'
+                                                        . implode(' ', array_slice($words, 0, 3)) . '...'
+                                                        . '</span>';
+                                                } else {
+                                                    echo '<span class="text-[9px] text-sky-700 font-semibold">'
+                                                        . $factor['destination']
+                                                        . '</span>';
+                                                }
+                                            } else {
+                                                $words = explode(' ', $factor['destination']);
+                                                if (count($words) > 3) {
+                                                    echo '<span class="text-[9px] text-green-700 font-semibold">'
+                                                        . implode(' ', array_slice($words, 0, 3)) . '...'
+                                                        . '</span>';
+                                                } else {
+                                                    echo '<span class="text-[9px] text-green-700 font-semibold">'
+                                                        . $factor['destination']
+                                                        . '</span>';
+                                                }
+                                            }
+                                        }
+                                        ?>
+                                    </div>
                                 </td>
                                 <?php if ($isAdmin) : ?>
                                     <td class="text-center align-middle hide_while_print hidden sm:table-cell">
@@ -479,7 +517,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                 </div>
                 <div class="mt-4">
                     <label class="block text-sm font-semibold mb-2" for="address">آدرس مقصد:</label>
-                    <input required type="text" id="address" name="address" class="w-full border-2 border-gray-300 p-2 rounded" placeholder="آدرس ارسال را وارد کنید...">
+                    <input value="تهران" type="text" id="address" name="address" class="w-full border-2 border-gray-300 p-2 rounded" placeholder="آدرس ارسال را وارد کنید...">
                 </div>
                 <div class="mt-4">
                     <label class="block text-sm font-semibold mb-2" for="contactType"> پیام رسان مشتری:</label>
@@ -734,7 +772,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
         document.getElementById('display_destination').innerText = destination;
         document.getElementById('display_deliveryType').innerText = deliveryType;
         document.getElementById('deliveryBillNumber').value = billNumber;
-        document.getElementById('address').value = element.dataset.address || '';
+        document.getElementById('address').value = element.dataset.address || 'تهران';
         document.getElementById('deliveryModal').classList.remove('hidden');
     }
 
@@ -760,20 +798,22 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
             });
 
     }
-    // Toast function
+
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
         toast.textContent = message;
         toast.className = `fixed bottom-5 right-5 px-4 py-2 rounded shadow-lg text-white z-50 transition-opacity duration-500 ${
-        type === 'success' ? 'bg-green-500' : 'bg-red-500'
-    }`;
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
 
         document.body.appendChild(toast);
 
-        // Fade out and remove after 3s
+        // Remove toast and reload after 3s
         setTimeout(() => {
             toast.classList.add('opacity-0');
-            setTimeout(() => toast.remove(), 500);
+            setTimeout(() => {
+                toast.remove();
+                location.reload();
+            }, 500); // wait for fade-out animation
         }, 3000);
     }
 </script>
