@@ -184,17 +184,55 @@ function displayUI($factors, $countFactorByUser)
                                 </div>
                             </td>
                             <td class="text-center align-middle">
-                                <img
-                                    onclick="displayDeliveryModal(this)"
-                                    data-bill="<?= $factor['shomare'] ?>"
-                                    data-contact="<?= $factor['contact_type'] ?>"
-                                    data-destination="<?= $factor['destination'] ?>"
-                                    data-type="<?= $factor['delivery_type'] ?>"
-                                    data-address="<?= $factor['customer_address'] ?>"
-                                    src="./assets/img/delivery.svg" alt="arrow icon" class="w-6 h-6 cursor-pointer mx-auto m-0" title="ارسال اجناس" />
-                                <span class="text-[9px] text-gray-500 text-center">
-                                    <?= $factor['destination'] ?>
-                                </span>
+                                <div class="flex flex-col items-center gap-1"> <!-- flex column with small gap -->
+                                    <?php
+                                    $src = './assets/img/delivery.svg';
+                                    if ($factor['delivery_type'] == 'پیک مشتری') {
+                                        $src = './assets/img/customer.svg';
+                                    } elseif ($factor['delivery_type'] == 'پیک یدک شاپ') {
+                                        $src = './assets/img/yadakshop.svg';
+                                    }
+                                    ?>
+                                    <img
+                                        onclick="displayDeliveryModal(this)"
+                                        data-bill="<?= $factor['shomare'] ?>"
+                                        data-contact="<?= $factor['contact_type'] ?>"
+                                        data-destination="<?= $factor['destination'] ?>"
+                                        data-type="<?= $factor['delivery_type'] ?>"
+                                        data-address="<?= $factor['customer_address'] ?>"
+                                        src="<?= $src; ?>"
+                                        alt="arrow icon"
+                                        class="w-6 h-6 cursor-pointer"
+                                        title="ارسال اجناس" />
+
+                                    <?php
+                                    if ($factor['delivery_type'] !== 'پیک مشتری') {
+                                        if ($factor['delivery_type'] == 'پیک یدک شاپ') {
+                                            $words = explode(' ', $factor['destination']);
+                                            if (count($words) > 3) {
+                                                echo '<span class="text-[9px] text-sky-700 font-semibold">'
+                                                    . implode(' ', array_slice($words, 0, 3)) . '...'
+                                                    . '</span>';
+                                            } else {
+                                                echo '<span class="text-[9px] text-sky-700 font-semibold">'
+                                                    . $factor['destination']
+                                                    . '</span>';
+                                            }
+                                        } else {
+                                            $words = explode(' ', $factor['destination']);
+                                            if (count($words) > 3) {
+                                                echo '<span class="text-[9px] text-green-700 font-semibold">'
+                                                    . implode(' ', array_slice($words, 0, 3)) . '...'
+                                                    . '</span>';
+                                            } else {
+                                                echo '<span class="text-[9px] text-green-700 font-semibold">'
+                                                    . $factor['destination']
+                                                    . '</span>';
+                                            }
+                                        }
+                                    }
+                                    ?>
+                                </div>
                             </td>
                             <?php if ($isAdmin) : ?>
                                 <td class="text-center align-middle hide_while_print hidden sm:table-cell">

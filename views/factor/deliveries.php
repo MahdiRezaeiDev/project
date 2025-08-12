@@ -175,7 +175,10 @@ require_once '../../layouts/callcenter/sidebar.php';
         // Fade out and remove after 3s
         setTimeout(() => {
             toast.classList.add('opacity-0');
-            setTimeout(() => toast.remove(), 500);
+            setTimeout(() => {
+                toast.remove();
+                location.reload();
+            }, 500); // wait for fade-out animation
         }, 3000);
     }
 
