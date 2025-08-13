@@ -234,15 +234,30 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                     </div>
                                 </td>
                                 <td class="text-center align-middle">
-                                    <div class="flex flex-col items-center gap-1"> <!-- flex column with small gap -->
+                                    <div class="flex flex-col items-center gap-1">
                                         <?php
-                                        $src = './assets/img/delivery.svg';
-                                        if ($factor['delivery_type'] == 'پیک مشتری') {
-                                            $src = './assets/img/customer.svg';
-                                        } elseif ($factor['delivery_type'] == 'پیک یدک شاپ') {
-                                            $src = './assets/img/yadakshop.svg';
+                                        // Determine delivery icon
+                                        switch ($factor['delivery_type']) {
+                                            case 'تیپاکس':
+                                            case 'اتوبوس':
+                                            case 'سواری':
+                                            case 'باربری':
+                                                $src = './assets/img/delivery.svg';
+                                                break;
+                                            case 'پیک مشتری':
+                                                $src = './assets/img/customer.svg';
+                                                break;
+                                            case 'پیک یدک شاپ':
+                                                $src = './assets/img/yadakshop.svg';
+                                                break;
+                                            case 'هوایی':
+                                                $src = './assets/img/airplane.svg';
+                                                break;
+                                            default:
+                                                $src = './assets/img/customer.svg';
                                         }
                                         ?>
+
                                         <img
                                             onclick="displayDeliveryModal(this)"
                                             data-bill="<?= $factor['shomare'] ?>"
@@ -256,33 +271,24 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                             title="ارسال اجناس" />
 
                                         <?php
+                                        // Only show destination if not "پیک مشتری"
                                         if ($factor['delivery_type'] !== 'پیک مشتری') {
-                                            if ($factor['delivery_type'] == 'پیک یدک شاپ') {
-                                                $words = explode(' ', $factor['destination']);
-                                                if (count($words) > 3) {
-                                                    echo '<span class="text-[9px] text-sky-700 font-semibold">'
-                                                        . implode(' ', array_slice($words, 0, 3)) . '...'
-                                                        . '</span>';
-                                                } else {
-                                                    echo '<span class="text-[9px] text-sky-700 font-semibold">'
-                                                        . $factor['destination']
-                                                        . '</span>';
-                                                }
-                                            } else {
-                                                $words = explode(' ', $factor['destination']);
-                                                if (count($words) > 3) {
-                                                    echo '<span class="text-[9px] text-green-700 font-semibold">'
-                                                        . implode(' ', array_slice($words, 0, 3)) . '...'
-                                                        . '</span>';
-                                                } else {
-                                                    echo '<span class="text-[9px] text-green-700 font-semibold">'
-                                                        . $factor['destination']
-                                                        . '</span>';
-                                                }
-                                            }
+                                            // Pick text color
+                                            $color = $factor['delivery_type'] === 'پیک یدک شاپ'
+                                                ? 'text-sky-700'
+                                                : 'text-green-700';
+
+                                            // Limit to 3 words
+                                            $words = explode(' ', $factor['destination']);
+                                            $displayText = count($words) > 3
+                                                ? implode(' ', array_slice($words, 0, 3)) . '...'
+                                                : $factor['destination'];
+
+                                            echo "<span class='text-[9px] {$color} font-semibold'>{$displayText}</span>";
                                         }
                                         ?>
                                     </div>
+
                                 </td>
                                 <?php if ($isAdmin) : ?>
                                     <td class="text-center align-middle hide_while_print hidden sm:table-cell">
@@ -513,6 +519,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                         <option value="تیپاکس">تیپاکس</option>
                         <option value="سواری">سواری</option>
                         <option value="باربری">باربری</option>
+                        <option value="هوایی">هوایی</option>
                     </select>
                 </div>
                 <div class="mt-4">
@@ -526,6 +533,10 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                         <option value="واتساپ راست">واتساپ راست</option>
                         <option value="واتساپ چپ">واتساپ چپ</option>
                         <option value="تلگرام">تلگرام</option>
+                        <option value="تلگرام پشتیبانی ">تلگرام پشتیبانی </option>
+                        <option value="تلگرام یدک شاپ ">تلگرام یدک شاپ </option>
+                        <option value="تلگرام واریزی">تلگرام واریزی</option>
+                        <option value="تلگرام کره">تلگرام کره</option>
                     </select>
                 </div>
                 <div class="mt-4">
@@ -763,16 +774,34 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
     }
 
     function displayDeliveryModal(element) {
-        const billNumber = element.getAttribute('data-bill');
-        const contactType = element.getAttribute('data-contact');
-        const destination = element.getAttribute('data-destination');
-        const deliveryType = element.getAttribute('data-type');
+        const billNumber = element.dataset.bill;
+        const contactType = element.dataset.contact;
+        const destination = element.dataset.destination;
+        const deliveryType = element.dataset.type;
+        const address = element.dataset.address || 'تهران';
+
+        // Set display text
         document.getElementById('display_billNumber').innerText = billNumber;
         document.getElementById('display_contactType').innerText = contactType;
         document.getElementById('display_destination').innerText = destination;
         document.getElementById('display_deliveryType').innerText = deliveryType;
+
+        // Set form values
         document.getElementById('deliveryBillNumber').value = billNumber;
-        document.getElementById('address').value = element.dataset.address || 'تهران';
+        document.getElementById('address').value = address;
+
+        // Select dropdown options if they exist
+        const deliverySelect = document.getElementById('deliveryType');
+        if (deliverySelect && deliveryType) {
+            deliverySelect.value = deliveryType;
+        }
+
+        const contactSelect = document.getElementById('contactType');
+        if (contactSelect && contactType) {
+            contactSelect.value = contactType;
+        }
+
+        // Show modal
         document.getElementById('deliveryModal').classList.remove('hidden');
     }
 

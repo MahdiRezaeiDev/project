@@ -22,6 +22,8 @@ require_once '../../layouts/callcenter/sidebar.php';
                 <thead class="bg-gray-700 text-white">
                     <tr>
                         <th class="px-4 py-2 border-b text-right">#</th>
+                        <th class="px-4 py-2 border-b text-right"></th>
+                        <th class="px-4 py-2 border-b text-right">مشتری</th>
                         <th class="px-4 py-2 border-b text-right">شماره فاکتور</th>
                         <th class="px-4 py-2 border-b text-right">نوع تماس</th>
                         <th class="px-4 py-2 border-b text-right">آدرس</th>
@@ -33,6 +35,12 @@ require_once '../../layouts/callcenter/sidebar.php';
                     <?php foreach ($todayDeliveries as $index => $delivery): ?>
                         <tr id="record_<?= ($delivery['bill_number']) ?>" class="hover:bg-gray-100 even:bg-gray-50">
                             <td class="px-4 py-2 border-b text-sm"><?= ++$index; ?></td>
+                            <td class="px-4 py-2 border-b text-sm">
+                                <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $delivery['bill_id'] ?>">
+                                    <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده جزئیات" src="../callcenter/assets/img/explore.svg" />
+                                </a>
+                            </td>
+                            <td class="px-4 py-2 border-b text-sm"><?= htmlspecialchars($delivery['kharidar']) ?></td>
                             <td class="px-4 py-2 border-b text-sm"><?= htmlspecialchars($delivery['bill_number']) ?></td>
                             <td class="px-4 py-2 border-b text-sm"><?= htmlspecialchars($delivery['contact_type']) ?></td>
                             <td class="px-4 py-2 border-b text-sm"><?= htmlspecialchars($delivery['destination']) ?></td>
@@ -98,11 +106,12 @@ require_once '../../layouts/callcenter/sidebar.php';
                         <option value="تیپاکس">تیپاکس</option>
                         <option value="سواری">سواری</option>
                         <option value="باربری">باربری</option>
+                        <option value="هوایی">هوایی</option>
                     </select>
                 </div>
                 <div class="mt-4">
                     <label class="block text-sm font-semibold mb-2" for="address">آدرس مقصد:</label>
-                    <input required type="text" id="address" name="address" class="w-full border-2 border-gray-300 p-2 rounded" placeholder="آدرس ارسال را وارد کنید...">
+                    <input value="تهران" type="text" id="address" name="address" class="w-full border-2 border-gray-300 p-2 rounded" placeholder="آدرس ارسال را وارد کنید...">
                 </div>
                 <div class="mt-4">
                     <label class="block text-sm font-semibold mb-2" for="contactType"> پیام رسان مشتری:</label>
@@ -111,6 +120,10 @@ require_once '../../layouts/callcenter/sidebar.php';
                         <option value="واتساپ راست">واتساپ راست</option>
                         <option value="واتساپ چپ">واتساپ چپ</option>
                         <option value="تلگرام">تلگرام</option>
+                        <option value="تلگرام پشتیبانی ">تلگرام پشتیبانی </option>
+                        <option value="تلگرام یدک شاپ ">تلگرام یدک شاپ </option>
+                        <option value="تلگرام واریزی">تلگرام واریزی</option>
+                        <option value="تلگرام کره">تلگرام کره</option>
                     </select>
                 </div>
                 <div class="mt-4">
@@ -122,16 +135,34 @@ require_once '../../layouts/callcenter/sidebar.php';
 </div>
 <script>
     function displayDeliveryModal(element) {
-        const billNumber = element.getAttribute('data-bill');
-        const contactType = element.getAttribute('data-contact');
-        const destination = element.getAttribute('data-destination');
-        const deliveryType = element.getAttribute('data-type');
+        const billNumber = element.dataset.bill;
+        const contactType = element.dataset.contact;
+        const destination = element.dataset.destination;
+        const deliveryType = element.dataset.type;
+        const address = element.dataset.address || 'تهران';
+
+        // Set display text
         document.getElementById('display_billNumber').innerText = billNumber;
         document.getElementById('display_contactType').innerText = contactType;
         document.getElementById('display_destination').innerText = destination;
         document.getElementById('display_deliveryType').innerText = deliveryType;
+
+        // Set form values
         document.getElementById('deliveryBillNumber').value = billNumber;
-        document.getElementById('address').value = element.dataset.address || '';
+        document.getElementById('address').value = address;
+
+        // Select dropdown options if they exist
+        const deliverySelect = document.getElementById('deliveryType');
+        if (deliverySelect && deliveryType) {
+            deliverySelect.value = deliveryType;
+        }
+
+        const contactSelect = document.getElementById('contactType');
+        if (contactSelect && contactType) {
+            contactSelect.value = contactType;
+        }
+
+        // Show modal
         document.getElementById('deliveryModal').classList.remove('hidden');
     }
 
@@ -256,6 +287,12 @@ require_once '../../layouts/callcenter/sidebar.php';
 
                         html += `<tr>
                             <td class="px-4 py-2 border-b text-sm">${ ++index }</td>
+                            <td class="px-4 py-2 border-b text-sm">
+                                <a class="hide_while_print" href="../factor/externalView.php?factorNumber=${ delivery.bill_id}">
+                                    <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده جزئیات" src="../callcenter/assets/img/explore.svg" />
+                                </a>
+                            </td>
+                            <td class="px-4 py-2 border-b text-sm">${delivery.kharidar}</td>
                             <td class="px-4 py-2 border-b text-sm">${delivery.bill_number}</td>
                             <td class="px-4 py-2 border-b text-sm">${delivery.contact_type}</td>
                             <td class="px-4 py-2 border-b text-sm">${delivery.destination}</td>

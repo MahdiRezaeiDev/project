@@ -184,15 +184,30 @@ function displayUI($factors, $countFactorByUser)
                                 </div>
                             </td>
                             <td class="text-center align-middle">
-                                <div class="flex flex-col items-center gap-1"> <!-- flex column with small gap -->
+                                <div class="flex flex-col items-center gap-1">
                                     <?php
-                                    $src = './assets/img/delivery.svg';
-                                    if ($factor['delivery_type'] == 'پیک مشتری') {
-                                        $src = './assets/img/customer.svg';
-                                    } elseif ($factor['delivery_type'] == 'پیک یدک شاپ') {
-                                        $src = './assets/img/yadakshop.svg';
+                                    // Determine delivery icon
+                                    switch ($factor['delivery_type']) {
+                                        case 'تیپاکس':
+                                        case 'اتوبوس':
+                                        case 'سواری':
+                                        case 'باربری':
+                                            $src = './assets/img/delivery.svg';
+                                            break;
+                                        case 'پیک مشتری':
+                                            $src = './assets/img/customer.svg';
+                                            break;
+                                        case 'پیک یدک شاپ':
+                                            $src = './assets/img/yadakshop.svg';
+                                            break;
+                                        case 'هوایی':
+                                            $src = './assets/img/airplane.svg';
+                                            break;
+                                        default:
+                                            $src = './assets/img/customer.svg';
                                     }
                                     ?>
+
                                     <img
                                         onclick="displayDeliveryModal(this)"
                                         data-bill="<?= $factor['shomare'] ?>"
@@ -206,33 +221,24 @@ function displayUI($factors, $countFactorByUser)
                                         title="ارسال اجناس" />
 
                                     <?php
+                                    // Only show destination if not "پیک مشتری"
                                     if ($factor['delivery_type'] !== 'پیک مشتری') {
-                                        if ($factor['delivery_type'] == 'پیک یدک شاپ') {
-                                            $words = explode(' ', $factor['destination']);
-                                            if (count($words) > 3) {
-                                                echo '<span class="text-[9px] text-sky-700 font-semibold">'
-                                                    . implode(' ', array_slice($words, 0, 3)) . '...'
-                                                    . '</span>';
-                                            } else {
-                                                echo '<span class="text-[9px] text-sky-700 font-semibold">'
-                                                    . $factor['destination']
-                                                    . '</span>';
-                                            }
-                                        } else {
-                                            $words = explode(' ', $factor['destination']);
-                                            if (count($words) > 3) {
-                                                echo '<span class="text-[9px] text-green-700 font-semibold">'
-                                                    . implode(' ', array_slice($words, 0, 3)) . '...'
-                                                    . '</span>';
-                                            } else {
-                                                echo '<span class="text-[9px] text-green-700 font-semibold">'
-                                                    . $factor['destination']
-                                                    . '</span>';
-                                            }
-                                        }
+                                        // Pick text color
+                                        $color = $factor['delivery_type'] === 'پیک یدک شاپ'
+                                            ? 'text-sky-700'
+                                            : 'text-green-700';
+
+                                        // Limit to 3 words
+                                        $words = explode(' ', $factor['destination']);
+                                        $displayText = count($words) > 3
+                                            ? implode(' ', array_slice($words, 0, 3)) . '...'
+                                            : $factor['destination'];
+
+                                        echo "<span class='text-[9px] {$color} font-semibold'>{$displayText}</span>";
                                     }
                                     ?>
                                 </div>
+
                             </td>
                             <?php if ($isAdmin) : ?>
                                 <td class="text-center align-middle hide_while_print hidden sm:table-cell">
