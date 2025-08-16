@@ -17,7 +17,7 @@ require_once '../../layouts/callcenter/sidebar.php';
                 <img src="./assets/icons/calender.svg" class="absolute top-2 left-2" alt="">
             </div>
         </div>
-        <div class="grid grid-cols-3 gap-2 p-4">
+        <div class="grid grid-cols-3 gap-2 items-start p-4">
             <table class="min-w-full bg-white">
                 <thead class="bg-gray-700 text-white">
                     <tr>
