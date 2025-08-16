@@ -52,15 +52,41 @@ if (isset($_POST['deleteDelivery'])) {
 
 if (isset($_POST['getPreviousDeliveries'])) {
     $date = isset($_POST['date']) ? $_POST['date'] : date('Y-m-d');
+
     $stmt = PDO_CONNECTION->prepare("SELECT deliveries.*, bill.id as bill_id, shomarefaktor.kharidar FROM factor.deliveries
     INNER JOIN factor.bill ON deliveries.bill_number = bill.bill_number
     INNER JOIN factor.shomarefaktor ON bill.bill_number = shomarefaktor.shomare
-    WHERE DATE(deliveries.created_at) = :date ORDER BY deliveries.created_at DESC");
+    WHERE DATE(deliveries.created_at) = :date AND type = 'پیک یدک شاپ'
+    ORDER BY deliveries.created_at DESC");
     $stmt->bindParam(':date', $date);
     $stmt->execute();
-    $deliveries = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    if ($deliveries) {
-        echo json_encode(['status' => 'success', 'data' => $deliveries]);
+    $YadakDeliveries = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmt = PDO_CONNECTION->prepare("SELECT deliveries.*, bill.id as bill_id, shomarefaktor.kharidar FROM factor.deliveries
+    INNER JOIN factor.bill ON deliveries.bill_number = bill.bill_number
+    INNER JOIN factor.shomarefaktor ON bill.bill_number = shomarefaktor.shomare
+    WHERE DATE(deliveries.created_at) = :date AND type = 'پیک خود مشتری بعد از اطلاع'
+    ORDER BY deliveries.created_at DESC");
+    $stmt->bindParam(':date', $date);
+    $stmt->execute();
+    $customerDeliveries = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmt = PDO_CONNECTION->prepare("SELECT deliveries.*, bill.id as bill_id, shomarefaktor.kharidar FROM factor.deliveries
+    INNER JOIN factor.bill ON deliveries.bill_number = bill.bill_number
+    INNER JOIN factor.shomarefaktor ON bill.bill_number = shomarefaktor.shomare
+    WHERE DATE(deliveries.created_at) = :date AND type != 'پیک خود مشتری بعد از اطلاع' AND type !=  'پیک یدک شاپ'
+    ORDER BY deliveries.created_at DESC");
+    $stmt->bindParam(':date', $date);
+    $stmt->execute();
+    $allDeliveries = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if ($YadakDeliveries) {
+        echo json_encode([
+            'status' => 'success',
+            'yadakDeliveries' => $YadakDeliveries,
+            'customerDeliveries' => $customerDeliveries,
+            'allDeliveries' => $allDeliveries
+        ]);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'No deliveries found for this date.']);
     }

@@ -514,6 +514,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                     <label class="block text-sm font-semibold mb-2" for="deliveryType">روش ارسال:</label>
                     <select required id="deliveryType" name="deliveryType" class="w-full border-2 border-gray-300 p-2 rounded">
                         <option value="پیک مشتری">پیک خود مشتری</option>
+                        <option value="پیک خود مشتری بعد از اطلاع">پیک خود مشتری بعد از اطلاع </option>
                         <option value="پیک یدک شاپ">پیک یدک شاپ</option>
                         <option value="اتوبوس">اتوبوس</option>
                         <option value="تیپاکس">تیپاکس</option>

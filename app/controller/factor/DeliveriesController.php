@@ -4,6 +4,10 @@ if (!isset($dbname)) {
 }
 
 $todayDeliveries = getDeliveries();
+$customerDeliveries = getCustomerDeliveries();
+$deliveries = getAllDeliveries();
+
+
 
 function getDeliveries()
 {
@@ -11,7 +15,30 @@ function getDeliveries()
     INNER JOIN factor.bill ON deliveries.bill_number = bill.bill_number
         INNER JOIN factor.shomarefaktor ON bill.bill_number = shomarefaktor.shomare
 
-    WHERE DATE(deliveries.created_at) = CURDATE() ORDER BY deliveries.created_at DESC");
+    WHERE DATE(deliveries.created_at) = CURDATE() AND type = 'پیک یدک شاپ' ORDER BY deliveries.created_at DESC");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+function getCustomerDeliveries()
+{
+    $stmt = PDO_CONNECTION->prepare("SELECT deliveries.*, bill.id as bill_id, shomarefaktor.kharidar FROM factor.deliveries
+    INNER JOIN factor.bill ON deliveries.bill_number = bill.bill_number
+        INNER JOIN factor.shomarefaktor ON bill.bill_number = shomarefaktor.shomare
+
+    WHERE DATE(deliveries.created_at) = CURDATE() AND type = 'پیک خود مشتری بعد از اطلاع' ORDER BY deliveries.created_at DESC");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getAllDeliveries()
+{
+    $stmt = PDO_CONNECTION->prepare("SELECT deliveries.*, bill.id as bill_id, shomarefaktor.kharidar FROM factor.deliveries
+    INNER JOIN factor.bill ON deliveries.bill_number = bill.bill_number
+        INNER JOIN factor.shomarefaktor ON bill.bill_number = shomarefaktor.shomare
+
+    WHERE DATE(deliveries.created_at) = CURDATE() AND type != 'پیک خود مشتری بعد از اطلاع' AND type != 'پیک یدک شاپ' ORDER BY deliveries.created_at DESC");
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
