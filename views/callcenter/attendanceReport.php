@@ -8,7 +8,7 @@ require_once '../../layouts/callcenter/sidebar.php';
 $users = getUsers();
 $today = date('Y-m-d');
 ?>
-<div id="modal" class="hidden fixed inset-0 bg-black opacity-70 justify-center items-center">
+<div id="modal" class="hidden fixed inset-0 bg-gray-800 opacity- justify-center items-center">
     <section class="bg-white rounded p-5" style="width: 500px;">
         <div class="flex justify-between items-start">
             <div>
@@ -28,6 +28,41 @@ $today = date('Y-m-d');
             <div class="flex justify-between items-center">
                 <button type="submit" class="bg-blue-500 text-white py-2 px-3 rounded-sm mt-2">
                     ویرایش ساعات کاری
+                </button>
+                <p id="message" class="text-xs text-green-500 font-semibold py-1"></p>
+            </div>
+        </form>
+    </section>
+</div>
+<div id="AttendanceModal" class="hidden fixed inset-0 bg-gray-800 opacity- justify-center items-center">
+    <section class="bg-white rounded p-5" style="width: 500px;">
+        <div class="flex justify-between items-start">
+            <div>
+                <h2 class="text-xl font-semibold">مدیریت حضور و غیاب
+                    <span class="bg-green-500 text-white rounded-sm px-3 text-md" id="user_info"></span>
+                </h2>
+                <p class="text-gray-700 text-sm">برای تغییر ساعات کاری کاربر مورد نظر، اطلاعات مربوطه را وارد کنید.</p>
+            </div>
+            <i class="material-icons text-rose-600 font-semibold cursor-pointer" onclick="closeAttendanceModal()">close</i>
+        </div>
+        <hr class="my-3">
+        <form action="#" onsubmit="saveAttendance(event)" method="post">
+            <input class="border border-gray-300 w-full p-2 rounded mt-2" type="text" name="target_user" id="target_user" hidden>
+            <select class="border border-gray-300 w-full p-2 rounded mt-2" name="action" id="action">
+                <option value="start">شروع به کار</option>
+                <option value="leave">ختم کار</option>
+                <option value="off">مرخصی</option>
+            </select>
+            <input class="border border-gray-300 w-full p-2 rounded mt-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="attendance_user" id="attendance_user">
+            <input
+                id="time"
+                type="time"
+                required
+                class="border border-gray-300 w-full p-2 rounded mt-2"
+                placeholder="ساعت شروع کار">
+            <div class="flex justify-between items-center">
+                <button type="submit" class="bg-blue-500 text-white py-2 px-3 rounded-sm mt-2">
+                    ثبت
                 </button>
                 <p id="message" class="text-xs text-green-500 font-semibold py-1"></p>
             </div>
@@ -106,7 +141,11 @@ $today = date('Y-m-d');
                                 for ($counter = 0; $counter < 6; $counter++):
                                     require './components/attendance/timeTable.php';
                                 endfor; ?>
-                                <td class="px-6 py-3  font-semibold text-gray-800 text-center">
+                                <td
+                                    data-user="<?= $user['name'] . ' ' . $user['family'] ?>"
+                                    data-selectedUser="<?= $user['selectedUser'] ?>"
+                                    onclick="openAttendanceModal(this)"
+                                    class="px-6 py-3  font-semibold text-gray-800 text-center">
                                     <img src="./assets/img/edit.svg" alt="edit icon">
                                 </td>
                             </tr>
@@ -130,7 +169,7 @@ $today = date('Y-m-d');
     const REPORT_END_POINT = '../../app/api/callcenter/AttendanceReportApi.php';
 
     function editWorkHour(element) {
-        openModal();
+        openModal(MODAL);
         START.value = element.dataset.start;
         END.value = element.dataset.end;
         USER.innerText = element.dataset.user;
@@ -138,7 +177,6 @@ $today = date('Y-m-d');
         START_ID.value = element.dataset.start_id;
         END_ID.value = element.dataset.end_id;
     }
-
 
     function updateWorkHour(event) {
         event.preventDefault();
@@ -173,18 +211,55 @@ $today = date('Y-m-d');
     }
 
     function toggleModal() {
-
         modal.classList.toggle('hidden');
         modal.classList.toggle('flex');
     }
 
     function closeModal() {
-
         modal.classList.remove('flex');
         modal.classList.add('hidden');
     }
 
-    function openModal() {
+    function closeAttendanceModal() {
+        const frame = document.getElementById('AttendanceModal');
+        frame.classList.remove('flex');
+        frame.classList.add('hidden');
+    }
+
+    function saveAttendance(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const params = new URLSearchParams();
+        params.append('saveAttendance', 'saveAttendance');
+        params.append('user_id', form.target_user.value);
+        params.append('operation', form.action.value);
+        params.append('date', form.attendance_user.dataset.gdate);
+        params.append('time', form.time.value);
+
+        axios.post('../../app/api/attendance/AttendanceActionApi.php', params)
+            .then(response => {
+                console.log(response.data);
+                return;
+                if (response.status === 200) {
+                    message.innerText = response.data.message;
+                    setTimeout(() => {
+                        closeModal();
+                        window.location.reload();
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                if (error.response && error.response.data.message) {
+                    message.innerText = error.response.data.message;
+                } else {
+                    message.innerText = "خطایی رخ داده است.";
+                }
+            });
+    }
+
+
+    function openModal(modal) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
     }
@@ -250,6 +325,13 @@ $today = date('Y-m-d');
         });
     }
 
+    function openAttendanceModal(element) {
+        const frame = document.getElementById('AttendanceModal');
+        document.getElementById('user_info').innerText = element.dataset.user;
+        document.getElementById('target_user').value = element.dataset.selecteduser;
+        openModal(frame);
+
+    }
 
     $(function() {
         const datepickerConfig = {
@@ -286,6 +368,7 @@ $today = date('Y-m-d');
         };
 
         $("#start_time, #end_time").persianDatepicker(datepickerConfig);
+        $("#attendance_user").persianDatepicker(datepickerConfig);
 
         $("#selected_date").persianDatepicker({
             months: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"],

@@ -36,7 +36,6 @@ if (isset($_POST['action'])) {
     }
 }
 
-
 if (isset($_POST['createRegistrationToken'])) {
     $user_id = $_POST['user_id'];
     $token = createRegistrationToken($user_id);
@@ -65,7 +64,6 @@ function validateAccessToken($userID, $token)
 
     return hash_equals($user['access_token'], $token);
 }
-
 
 function deleteAccessToken($userID)
 {
