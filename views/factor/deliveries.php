@@ -18,99 +18,108 @@ require_once '../../layouts/callcenter/sidebar.php';
             </div>
         </div>
         <div class="grid grid-cols-3 gap-2 p-4">
-            <table class="min-w-full bg-white">
-                <thead class="bg-gray-700 text-white">
-                    <tr>
-                        <th class="px-2 py-2 border-b text-right text-xs">#</th>
-                        <th class="px-2 py-2 border-b text-right text-xs"></th>
-                        <th class="px-2 py-2 border-b text-right text-xs">مشتری</th>
-                        <th class="px-2 py-2 border-b text-right text-xs">شماره فاکتور</th>
-                        <th class="px-2 py-2 border-b text-right text-xs">نوع تماس</th>
-                        <th class="px-2 py-2 border-b text-right text-xs">آدرس</th>
-                        <th class="px-2 py-2 border-b text-right text-xs">نوع ارسال</th>
-                    </tr>
-                </thead>
-                <tbody id="yadak">
-                    <?php foreach ($todayDeliveries as $index => $delivery): ?>
-                        <tr id="record_<?= ($delivery['bill_number']) ?>" class="hover:bg-gray-100 even:bg-gray-50">
-                            <td class="px-2 py-2 border-b text-xs"><?= ++$index; ?></td>
-                            <td class=" border-b text-xs">
-                                <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $delivery['bill_id'] ?>">
-                                    <img class="w-5 cursor-pointer d-block" title="مشاهده جزئیات" src="../callcenter/assets/img/explore.svg" />
-                                </a>
-                            </td>
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?></td>
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['bill_number']) ?></td>
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['contact_type']) ?></td>
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?></td>
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['type']) ?></td>
+            <div>
+                <h1 class="text-xl font-semibold mb-2"> پیک یدک شاپ</h1>
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-700 text-white">
+                        <tr>
+                            <th class="px-2 py-2 border-b text-right text-xs">#</th>
+                            <th class="px-2 py-2 border-b text-right text-xs"></th>
+                            <th class="px-2 py-2 border-b text-right text-xs">مشتری</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">شماره فاکتور</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">آدرس</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">آماده</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-            <table class="min-w-full bg-white">
-                <thead class="bg-green-700 text-white">
-                    <tr>
-                        <th class="px-2 py-2 border-b text-right text-xs">#</th>
-                        <th class="px-2 py-2 border-b text-right text-xs"></th>
-                        <th class="px-2 py-2 border-b text-right text-xs">مشتری</th>
-                        <th class="px-2 py-2 border-b text-right text-xs">شماره فاکتور</th>
-                        <th class="px-2 py-2 border-b text-right text-xs">نوع تماس</th>
-                        <th class="px-2 py-2 border-b text-right text-xs">آدرس</th>
-                        <th class="px-2 py-2 border-b text-right text-xs">نوع ارسال</th>
-                    </tr>
-                </thead>
-                <tbody id="customer">
-                    <?php foreach ($customerDeliveries as $index => $delivery): ?>
-                        <tr id="record_<?= ($delivery['bill_number']) ?>" class="hover:bg-gray-100 even:bg-gray-50">
-                            <td class="px-2 py-2 border-b text-xs"><?= ++$index; ?></td>
-                            <td class="border-b text-xs">
-                                <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $delivery['bill_id'] ?>">
-                                    <img class="w-5 h-5 object-contain cursor-pointer block"
-                                        title="مشاهده جزئیات"
-                                        src="../callcenter/assets/img/explore.svg" />
-                                </a>
-                            </td>
+                    </thead>
+                    <tbody id="yadak">
+                        <?php foreach ($todayDeliveries as $index => $delivery): ?>
+                            <tr id="record_<?= ($delivery['bill_number']) ?>" class="hover:bg-gray-100 even:bg-gray-50">
+                                <td class="px-2 py-2 border-b text-xs"><?= ++$index; ?></td>
+                                <td class=" border-b text-xs">
+                                    <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $delivery['bill_id'] ?>">
+                                        <img class="w-5 cursor-pointer d-block" title="مشاهده جزئیات" src="../callcenter/assets/img/explore.svg" />
+                                    </a>
+                                </td>
+                                <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?></td>
+                                <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['bill_number']) ?></td>
+                                <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?></td>
+                                <td class="px-2 py-2 border-b text-xs">
+                                    <input type="checkbox" onclick="toggleStatus(this, <?= $delivery['id'] ?>)" name="is_ready" <?= $delivery['is_ready'] ? 'checked' : ''; ?>>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <h1 class="text-xl font-semibold mb-2"> پیک مشتری بعد تایید</h1>
+                <table class="min-w-full bg-white">
+                    <thead class="bg-green-700 text-white">
+                        <tr>
+                            <th class="px-2 py-2 border-b text-right text-xs">#</th>
+                            <th class="px-2 py-2 border-b text-right text-xs"></th>
+                            <th class="px-2 py-2 border-b text-right text-xs">مشتری</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">شماره فاکتور</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">آدرس</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">آماده</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customer">
+                        <?php foreach ($customerDeliveries as $index => $delivery): ?>
+                            <tr id="record_<?= ($delivery['bill_number']) ?>" class="hover:bg-gray-100 even:bg-gray-50">
+                                <td class="px-2 py-2 border-b text-xs"><?= ++$index; ?></td>
+                                <td class="border-b text-xs">
+                                    <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $delivery['bill_id'] ?>">
+                                        <img class="w-5 h-5 object-contain cursor-pointer block"
+                                            title="مشاهده جزئیات"
+                                            src="../callcenter/assets/img/explore.svg" />
+                                    </a>
+                                </td>
 
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?></td>
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['bill_number']) ?></td>
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['contact_type']) ?></td>
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?></td>
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['type']) ?></td>
+                                <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?></td>
+                                <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['bill_number']) ?></td>
+                                <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?></td>
+                                <td class="px-2 py-2 border-b text-xs">
+                                    <input type="checkbox" onclick="toggleStatus(this, <?= $delivery['id'] ?>)" name="is_ready" <?= $delivery['is_ready'] ? 'checked' : ''; ?>>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <h1 class="text-xl font-semibold mb-2">سایر مرسولات</h1>
+                <table class="min-w-full bg-white">
+                    <thead class="bg-sky-700 text-white">
+                        <tr>
+                            <th class="px-2 py-2 border-b text-right text-xs">#</th>
+                            <th class="px-2 py-2 border-b text-right text-xs"></th>
+                            <th class="px-2 py-2 border-b text-right text-xs">مشتری</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">شماره فاکتور</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">نوع تماس</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">آدرس</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">نوع ارسال</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-            <table class="min-w-full bg-white">
-                <thead class="bg-sky-700 text-white">
-                    <tr>
-                        <th class="px-2 py-2 border-b text-right text-xs">#</th>
-                        <th class="px-2 py-2 border-b text-right text-xs"></th>
-                        <th class="px-2 py-2 border-b text-right text-xs">مشتری</th>
-                        <th class="px-2 py-2 border-b text-right text-xs">شماره فاکتور</th>
-                        <th class="px-2 py-2 border-b text-right text-xs">نوع تماس</th>
-                        <th class="px-2 py-2 border-b text-right text-xs">آدرس</th>
-                        <th class="px-2 py-2 border-b text-right text-xs">نوع ارسال</th>
-                    </tr>
-                </thead>
-                <tbody id="deliveries">
-                    <?php foreach ($deliveries as $index => $delivery): ?>
-                        <tr id="record_<?= ($delivery['bill_number']) ?>" class="hover:bg-gray-100 even:bg-gray-50">
-                            <td class="px-2 py-2 border-b text-xs"><?= ++$index; ?></td>
-                            <td class="border-b text-xs">
-                                <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $delivery['bill_id'] ?>">
-                                    <img class="w-5 cursor-pointer d-block" title="مشاهده جزئیات" src="../callcenter/assets/img/explore.svg" />
-                                </a>
-                            </td>
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?></td>
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['bill_number']) ?></td>
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['contact_type']) ?></td>
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?></td>
-                            <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['type']) ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="deliveries">
+                        <?php foreach ($deliveries as $index => $delivery): ?>
+                            <tr id="record_<?= ($delivery['bill_number']) ?>" class="hover:bg-gray-100 even:bg-gray-50">
+                                <td class="px-2 py-2 border-b text-xs"><?= ++$index; ?></td>
+                                <td class="border-b text-xs">
+                                    <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $delivery['bill_id'] ?>">
+                                        <img class="w-5 cursor-pointer d-block" title="مشاهده جزئیات" src="../callcenter/assets/img/explore.svg" />
+                                    </a>
+                                </td>
+                                <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?></td>
+                                <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['bill_number']) ?></td>
+                                <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['contact_type']) ?></td>
+                                <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?></td>
+                                <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['type']) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -129,7 +138,6 @@ require_once '../../layouts/callcenter/sidebar.php';
             toast.classList.add('opacity-0');
             setTimeout(() => {
                 toast.remove();
-                location.reload();
             }, 500); // wait for fade-out animation
         }, 3000);
     }
@@ -182,19 +190,23 @@ require_once '../../layouts/callcenter/sidebar.php';
                     let html = '';
                     let index = 0;
                     deliveries.forEach(delivery => {
-                        html += `<tr>
-                            <td class="px-2 py-2 border-b text-xs">${ ++index }</td>
-                            <td class="border-b text-xs">
-                                <a class="hide_while_print" href="../factor/externalView.php?factorNumber=${ delivery.bill_id}">
-                                    <img class="w-5 cursor-pointer d-block" title="مشاهده جزئیات" src="../callcenter/assets/img/explore.svg" />
-                                </a>
-                            </td>
-                            <td class="px-2 py-2 border-b text-xs">${delivery.kharidar}</td>
-                            <td class="px-2 py-2 border-b text-xs">${delivery.bill_number}</td>
-                            <td class="px-2 py-2 border-b text-xs">${delivery.contact_type}</td>
-                            <td class="px-2 py-2 border-b text-xs">${delivery.destination}</td>
-                            <td class="px-2 py-2 border-b text-xs">${delivery.type}</td>
-                        </tr>`;
+                        html += `
+                                <tr>
+                                    <td class="px-2 py-2 border-b text-xs">${ ++index }</td>
+                                    <td class="border-b text-xs">
+                                        <a class="hide_while_print" href="../factor/externalView.php?factorNumber=${ delivery.bill_id }">
+                                            <img class="w-5 cursor-pointer d-block" title="مشاهده جزئیات" src="../callcenter/assets/img/explore.svg" />
+                                        </a>
+                                    </td>
+                                    <td class="px-2 py-2 border-b text-xs">${ delivery.kharidar }</td>
+                                    <td class="px-2 py-2 border-b text-xs">${ delivery.bill_number }</td>
+                                    <td class="px-2 py-2 border-b text-xs">${ delivery.destination }</td>
+                                    <td class="px-2 py-2 border-b text-xs">
+                                        <input type="checkbox" onclick="toggleStatus(this, ${ delivery.id })" 
+                                            name="is_ready" ${ delivery.is_ready == 1 ? 'checked' : '' }>
+                                    </td>
+                                </tr>`;
+
                     });
                     document.getElementById('yadak').innerHTML = html;
                 } else {
@@ -217,9 +229,11 @@ require_once '../../layouts/callcenter/sidebar.php';
                             </td>
                             <td class="px-2 py-2 border-b text-xs">${delivery.kharidar}</td>
                             <td class="px-2 py-2 border-b text-xs">${delivery.bill_number}</td>
-                            <td class="px-2 py-2 border-b text-xs">${delivery.contact_type}</td>
                             <td class="px-2 py-2 border-b text-xs">${delivery.destination}</td>
-                            <td class="px-2 py-2 border-b text-xs">${delivery.type}</td>
+                            <td class="px-2 py-2 border-b text-xs">
+                                        <input type="checkbox" onclick="toggleStatus(this, ${ delivery.id })" 
+                                            name="is_ready" ${ delivery.is_ready == 1 ? 'checked' : '' }>
+                                    </td>
                         </tr>`;
                     });
                     document.getElementById('customer').innerHTML = html;
@@ -260,6 +274,24 @@ require_once '../../layouts/callcenter/sidebar.php';
             .catch(function() {
                 showToast("خطا در بارگذاری ارسال‌ها، لطفا مجددا تلاش نمایید", 'error');
             });
+    }
+
+    function toggleStatus(element, id) {
+        const is_checked = element.checked ? 1 : 0;
+
+        const params = new URLSearchParams();
+        params.append('toggleStatus', 'toggleStatus');
+        params.append('status', is_checked);
+        params.append('delivery', id);
+
+        axios.post("../../app/api/factor/DeliveryApi.php", params).then((response) => {
+
+            showToast('بروز رسانی موفقانه صورت گرفت');
+
+        }).catch(error => {
+
+        })
+
     }
 </script>
 <?php require_once './components/footer.php'; ?>

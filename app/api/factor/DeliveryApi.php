@@ -80,14 +80,21 @@ if (isset($_POST['getPreviousDeliveries'])) {
     $stmt->execute();
     $allDeliveries = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if ($YadakDeliveries) {
-        echo json_encode([
-            'status' => 'success',
-            'yadakDeliveries' => $YadakDeliveries,
-            'customerDeliveries' => $customerDeliveries,
-            'allDeliveries' => $allDeliveries
-        ]);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'No deliveries found for this date.']);
-    }
+
+    echo json_encode([
+        'status' => 'success',
+        'yadakDeliveries' => $YadakDeliveries,
+        'customerDeliveries' => $customerDeliveries,
+        'allDeliveries' => $allDeliveries
+    ]);
+}
+
+if (isset($_POST['toggleStatus'])) {
+    $is_ready = $_POST['status'];
+    $id = $_POST['delivery'];
+
+    $stmt = PDO_CONNECTION->prepare("UPDATE factor.deliveries SET is_ready = :is_ready WHERE id = :id");
+    $stmt->bindParam(':is_ready', $is_ready);
+    $stmt->bindParam(':id', $id);
+    return $stmt->execute();
 }

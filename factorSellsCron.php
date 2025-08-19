@@ -32,7 +32,7 @@ foreach ($sells_report as $sell) {
 foreach ($shortage_report as $shortage) {
     $sent = sendPurchaseReportMessage($shortage['low_quantity']);
     if ($sent) {
-    updateStatus('factor.shortage_report', $shortage['id']);
+        updateStatus('factor.shortage_report', $shortage['id']);
     }
 }
 

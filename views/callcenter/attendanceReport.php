@@ -239,12 +239,10 @@ $today = date('Y-m-d');
 
         axios.post('../../app/api/attendance/AttendanceActionApi.php', params)
             .then(response => {
-                console.log(response.data);
-                return;
                 if (response.status === 200) {
                     message.innerText = response.data.message;
                     setTimeout(() => {
-                        closeModal();
+                        closeAttendanceModal();
                         window.location.reload();
                     }, 2000);
                 }
