@@ -23,9 +23,11 @@ foreach ($sells_report as $sell) {
         $sell['is_completed']
     );
 
-    // if ($sent) {
-    updateStatus('factor.sells_report', $sell['id']);
-    // }
+    if ($sent) {
+        updateStatus('factor.sells_report', $sell['id']);
+    }
+
+    updateTries('factor.sells_report', $sell['id']);
 }
 
 // Process shortage report
@@ -95,7 +97,7 @@ function postAndWait($url, $postData)
 // Fetch pending sells reports
 function getAllReports()
 {
-    $stmt = PDO_CONNECTION->prepare("SELECT * FROM factor.sells_report WHERE status = 0");
+    $stmt = PDO_CONNECTION->prepare("SELECT * FROM factor.sells_report WHERE status = 0 AND tries < 2");
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -112,6 +114,13 @@ function getShortageReport()
 function updateStatus($table, $id)
 {
     $stmt = PDO_CONNECTION->prepare("UPDATE $table SET status = 1 WHERE id = :id");
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+}
+
+function updateTries($table, $id)
+{
+    $stmt = PDO_CONNECTION->prepare("UPDATE $table SET tries = tries + 1 WHERE id = :id");
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
 }

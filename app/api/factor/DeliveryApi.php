@@ -52,34 +52,36 @@ if (isset($_POST['deleteDelivery'])) {
 
 if (isset($_POST['getPreviousDeliveries'])) {
     $date = isset($_POST['date']) ? $_POST['date'] : date('Y-m-d');
+    $user = isset($_POST['user']) ? intval($_POST['user']) : null;
 
-    $stmt = PDO_CONNECTION->prepare("SELECT deliveries.*, bill.id as bill_id, shomarefaktor.kharidar FROM factor.deliveries
-    INNER JOIN factor.bill ON deliveries.bill_number = bill.bill_number
-    INNER JOIN factor.shomarefaktor ON bill.bill_number = shomarefaktor.shomare
-    WHERE DATE(deliveries.created_at) = :date AND type = 'پیک یدک شاپ'
-    ORDER BY deliveries.created_at DESC");
-    $stmt->bindParam(':date', $date);
-    $stmt->execute();
-    $YadakDeliveries = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    function getDeliveries($date, $user, $typeCondition)
+    {
+        $sql = "SELECT deliveries.*, bill.id as bill_id, shomarefaktor.kharidar 
+                FROM factor.deliveries
+                INNER JOIN factor.bill ON deliveries.bill_number = bill.bill_number
+                INNER JOIN factor.shomarefaktor ON bill.bill_number = shomarefaktor.shomare
+                WHERE DATE(deliveries.created_at) = :date 
+                  AND $typeCondition";
 
-    $stmt = PDO_CONNECTION->prepare("SELECT deliveries.*, bill.id as bill_id, shomarefaktor.kharidar FROM factor.deliveries
-    INNER JOIN factor.bill ON deliveries.bill_number = bill.bill_number
-    INNER JOIN factor.shomarefaktor ON bill.bill_number = shomarefaktor.shomare
-    WHERE DATE(deliveries.created_at) = :date AND type = 'پیک خود مشتری بعد از اطلاع'
-    ORDER BY deliveries.created_at DESC");
-    $stmt->bindParam(':date', $date);
-    $stmt->execute();
-    $customerDeliveries = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($user) {
+            $sql .= " AND deliveries.user_id = :user";
+        }
 
-    $stmt = PDO_CONNECTION->prepare("SELECT deliveries.*, bill.id as bill_id, shomarefaktor.kharidar FROM factor.deliveries
-    INNER JOIN factor.bill ON deliveries.bill_number = bill.bill_number
-    INNER JOIN factor.shomarefaktor ON bill.bill_number = shomarefaktor.shomare
-    WHERE DATE(deliveries.created_at) = :date AND type != 'پیک خود مشتری بعد از اطلاع' AND type !=  'پیک یدک شاپ'
-    ORDER BY deliveries.created_at DESC");
-    $stmt->bindParam(':date', $date);
-    $stmt->execute();
-    $allDeliveries = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $sql .= " ORDER BY deliveries.created_at DESC";
 
+        $stmt = PDO_CONNECTION->prepare($sql);
+        $stmt->bindParam(':date', $date);
+        if ($user) {
+            $stmt->bindParam(':user', $user, PDO::PARAM_INT);
+        }
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Now just call the function with conditions:
+    $YadakDeliveries = getDeliveries($date, $user, "type = 'پیک یدک شاپ'");
+    $customerDeliveries = getDeliveries($date, $user, "type = 'پیک خود مشتری بعد از اطلاع'");
+    $allDeliveries = getDeliveries($date, $user, "type != 'پیک خود مشتری بعد از اطلاع' AND type != 'پیک یدک شاپ'");
 
     echo json_encode([
         'status' => 'success',
@@ -88,6 +90,7 @@ if (isset($_POST['getPreviousDeliveries'])) {
         'allDeliveries' => $allDeliveries
     ]);
 }
+
 
 if (isset($_POST['toggleStatus'])) {
     $is_ready = $_POST['status'];
