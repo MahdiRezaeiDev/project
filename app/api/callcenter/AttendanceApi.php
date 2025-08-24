@@ -20,14 +20,14 @@ if (isset($_POST['action'])) {
         case 'UpdateAttendance':
             UpdateAttendance();
             break;
+        case 'DELETEAttendance':
+            DeleteAttendance();
+            break;
         case 'SetOffDay':
             SetOffDay();
             break;
         case 'toggleActivation':
             echo toggleActivation();
-            break;
-        default:
-            echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
             break;
     }
 }
@@ -56,7 +56,6 @@ function toggleActivation()
 
     exit;
 }
-
 
 function SetOffDay()
 {
@@ -154,6 +153,33 @@ function UpdateAttendance()
     }
 }
 
+function DeleteAttendance()
+{
+    if (!isset($_POST['start_id'], $_POST['end_id'])) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Missing parameters"
+        ]);
+        exit;
+    }
+
+    $start_id = (int) $_POST['start_id'];
+    $end_id   = (int) $_POST['end_id'];
+
+    global $pdo;
+
+    $stmt = $pdo->prepare("DELETE FROM attendance_logs WHERE id IN (:start_id, :end_id)");
+    $success = $stmt->execute([
+        ":start_id" => $start_id,
+        ":end_id"   => $end_id
+    ]);
+
+    echo json_encode([
+        "success" => $success,
+        "message" => $success ? "ساعات کاری موفقانه حذف شد." : "عملیات حذف ناموفق بود."
+    ]);
+}
+
 function updateStartHour($id, $start)
 {
     $sql = "UPDATE attendance_logs SET timestamp = :start WHERE id = :id";
@@ -183,4 +209,77 @@ function getUserAttendanceReport($action, $user_id)
     $stmt->execute();
     $attendance_report = $stmt->fetchAll(PDO::FETCH_ASSOC);
     return $attendance_report;
+}
+
+if (isset($_POST['saveLeave'])) {
+    $user_id     = $_POST['leave_user'];
+    $leave_date  = $_POST['leave_date'];
+    $reason      = $_POST['reason'];
+    $daily       = $_POST['daily'] ?? '0';
+    $startingTime = $_POST['startingTime'] ?? null;
+    $endingTime   = $_POST['endingTime'] ?? null;
+
+    try {
+        $pdo = PDO_CONNECTION;
+
+        // نوع مرخصی
+        $type = $daily == "1" ? "daily" : "hourly";
+        $start_time = null;
+        $end_time   = null;
+
+        if ($daily == "1") {
+            // گرفتن ساعت کاری کاربر
+            $sql = "SELECT start_hour, end_hour FROM attendance_settings WHERE user_id = :user_id LIMIT 1";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':user_id' => $user_id]);
+            $schedule = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($schedule) {
+                $start_time = $schedule['start_hour'];
+                $end_time   = $schedule['end_hour'];
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'ساعت کاری کاربر یافت نشد.']);
+                exit;
+            }
+        } else {
+            // مرخصی ساعتی → باید زمان شروع و پایان داده شود
+            if (!$startingTime || !$endingTime) {
+                echo json_encode(['status' => 'error', 'message' => 'لطفاً ساعت شروع و پایان مرخصی را وارد کنید.']);
+                exit;
+            }
+
+            // اعتبارسنجی زمان
+            if (strtotime($endingTime) <= strtotime($startingTime)) {
+                echo json_encode(['status' => 'error', 'message' => 'ساعت پایان باید بزرگ‌تر از ساعت شروع باشد.']);
+                exit;
+            }
+
+            $start_time = $startingTime;
+            $end_time   = $endingTime;
+        }
+
+        // ثبت مرخصی
+        $sql = "INSERT INTO leaves 
+                    (user_id, type, date, start_time, end_time, reason, approved_by, created_at) 
+                VALUES 
+                    (:user_id, :type, :date, :start_time, :end_time, :reason, :approved_by ,NOW())";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':user_id'    => $user_id,
+            ':type'       => $type,
+            ':date'       => $leave_date,
+            ':start_time' => $start_time,
+            ':end_time'   => $end_time,
+            ':reason'     => $reason,
+            ':approved_by' => $_SESSION['id']
+        ]);
+
+        if ($stmt->rowCount() === 1) {
+            echo json_encode(['status' => 'success', 'message' => 'مرخصی با موفقیت ثبت شد.']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'ثبت مرخصی انجام نشد.']);
+        }
+    } catch (PDOException $e) {
+        echo json_encode(['status' => 'error', 'message' => 'خطای پایگاه داده: ' . $e->getMessage()]);
+    }
 }

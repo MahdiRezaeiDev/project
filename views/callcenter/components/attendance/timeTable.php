@@ -41,9 +41,9 @@
                                 $delay = floor((strtotime($item['timestamp']) - strtotime($startTime)) / 60);
 
                                 if ($delay > 0) {
-                                    echo '<p class="text-xs text-white py-1 bg-gray-400">' . $delay . ' دقیقه تاخیر </p>';
-                                } else {
-                                    echo '<p class="text-xs text-white py-1 bg-gray-400">' . abs($delay) . ' دقیقه اضافه کار </p>';
+                                    echo '<p class="text-[10px] text-white py-1 bg-gray-400">' . $delay . ' ` تاخیر </p>';
+                                } elseif ($delay < 0) {
+                                    echo '<p class="text-[10px] text-white py-1 bg-gray-400">' . abs($delay) . ' ` اضافه کار </p>';
                                 }
                             }
                             ?>
@@ -55,9 +55,9 @@
 
                                 $calculate = floor((strtotime($endTime) - strtotime($END_HOUR[$index]['timestamp'])) / 60);
                                 if (strtotime($END_HOUR[$index]['timestamp']) > strtotime($endTime)) {
-                                    echo '<p class="text-xs text-white py-1 bg-gray-400">اضافه کار ' . abs($calculate) . ' دقیقه</p>';
-                                } else {
-                                    echo '<p class="text-xs text-white py-1 bg-gray-400">' . $calculate . ' دقیقه تاجیل</p>';
+                                    echo '<p class="text-[10px] text-white py-1 bg-gray-400">اضافه کار `' . abs($calculate) . '</p>';
+                                } elseif ($calculate < 0) {
+                                    echo '<p class="text-[10px] text-white py-1 bg-gray-400">' . $calculate . ' ` تاجیل</p>';
                                 }
                             } else {
                                 echo '<p class="text-xs text-white py-2"></p>';
@@ -92,15 +92,6 @@
                                 <p class="text-rose-500">
                                     غایب
                                 </p>
-                                <p
-                                    class="text-xs text-sky-500 cursor-pointer"
-                                    data-user="<?= $user['name'] . ' ' . $user['family'] ?>"
-                                    data-selectedUser="<?= $user['selectedUser'] ?>"
-                                    data-date="<?= $reportDate ?>"
-                                    onclick="setOffDay()">
-                                    رد کردن مرخصی
-                                </p>
-
                             </td>
                         </tr>
             <?php

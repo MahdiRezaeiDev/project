@@ -29,11 +29,17 @@ $today = date('Y-m-d');
                 <button type="submit" class="bg-blue-500 text-white py-2 px-3 rounded-sm mt-2">
                     ویرایش ساعات کاری
                 </button>
+                <button type="button" onclick="deleteAttendanceLog()" class="bg-red-500 text-white py-2 px-3 rounded-sm mt-2">
+                    حذف ساعات کاری
+                </button>
+            </div>
+            <div class="flex justify-between items-center p-2">
                 <p id="message" class="text-xs text-green-500 font-semibold py-1"></p>
             </div>
         </form>
     </section>
 </div>
+
 <div id="AttendanceModal" class="hidden fixed inset-0 bg-gray-800 opacity- justify-center items-center">
     <section class="bg-white rounded p-5" style="width: 500px;">
         <div class="flex justify-between items-start">
@@ -69,6 +75,127 @@ $today = date('Y-m-d');
         </form>
     </section>
 </div>
+
+<div id="openLeaveModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+    <section class="bg-white rounded p-5 w-[500px]">
+        <div class="flex justify-between items-start">
+            <div>
+                <h2 class="text-xl font-semibold">
+                    ثبت مرخصی
+                    <span class="bg-green-500 text-white rounded-sm px-3 text-md" id="userInfo"></span>
+                </h2>
+                <p class="text-gray-700 text-sm">برای ثبت مرخصی کاربر مورد نظر، اطلاعات مربوطه را وارد کنید.</p>
+            </div>
+            <i class="material-icons text-rose-600 font-semibold cursor-pointer" onclick="closeLeaveModal()">close</i>
+        </div>
+        <hr class="my-3">
+
+        <form action="#" onsubmit="saveLeave(event)" method="post">
+            <input type="text" name="leave_user" id="leave_user" hidden>
+            <!-- Daily Leave Checkbox -->
+            <div class="flex flex-col gap-2 mb-3">
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" name="daily" id="daily" class="w-4 h-4" onchange="toggleDailyLeave(this)">
+                    <label for="daily" class="text-sm text-gray-700">مرخصی روزانه</label>
+                </div>
+                <input class="border border-gray-300 p-2 rounded mt-2 w-full" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="leave_date" id="leave_date">
+                <label for="reason">
+                    <input type="text" name="reason" id="reason" class="border border-gray-300 w-full p-2 rounded mt-2" placeholder="دلیل مرخصی">
+                </label>
+            </div>
+
+            <!-- Hourly Leave Section -->
+            <div id="hourlyLeave">
+                <label for="startingTime" class="block mb-2">
+                    از ساعت
+                    <input
+                        id="startingTime"
+                        name="startingTime"
+                        type="time"
+                        class="border border-gray-300 w-full p-2 rounded mt-2"
+                        placeholder="ساعت شروع کار">
+                </label>
+                <label for="endingTime" class="block mb-2">
+                    تا ساعت
+                    <input
+                        id="endingTime"
+                        name="endingTime"
+                        type="time"
+                        class="border border-gray-300 w-full p-2 rounded mt-2"
+                        placeholder="ساعت پایان کار">
+                </label>
+            </div>
+
+            <div class="flex justify-between items-center">
+                <button type="submit" class="bg-blue-500 text-white py-2 px-3 rounded-sm mt-2">
+                    ثبت مرخصی
+                </button>
+                <p id="msgBox" class="text-xs text-green-500 font-semibold py-1"></p>
+            </div>
+        </form>
+    </section>
+</div>
+
+<script>
+    function toggleDailyLeave(checkbox) {
+        const hourlyLeave = document.getElementById('hourlyLeave');
+        const startingTime = document.getElementById('startingTime');
+        const endingTime = document.getElementById('endingTime');
+
+        if (checkbox.checked) {
+            hourlyLeave.classList.add('hidden');
+            startingTime.removeAttribute('required');
+            endingTime.removeAttribute('required');
+        } else {
+            hourlyLeave.classList.remove('hidden');
+            startingTime.setAttribute('required', true);
+            endingTime.setAttribute('required', true);
+        }
+    }
+
+    function saveLeave(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+        // For checkbox: send "1" if checked, "0" if not
+        formData.set('daily', form.daily.checked ? '1' : '0');
+        formData.append('saveLeave', '1'); // mark the action
+        formData.append('leave_date', form.leave_date.dataset.gdate);
+
+        axios.post('../../app/api/callcenter/AttendanceApi.php', formData)
+            .then(response => {
+                console.log(response.data);
+
+                if (response.status === 200) {
+                    const msgBox = document.getElementById('msgBox');
+                    msgBox.innerText = `${response.data.message}`;
+
+                    // add class for styling (success/error)
+                    msgBox.className = response.data.status === 'success' ?
+                        'text-green-600 font-bold' :
+                        'text-red-600 font-bold';
+
+                    setTimeout(() => {
+                        closeLeaveModal();
+                        // window.location.reload();
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                const msgBox = document.getElementById('message');
+
+                if (error.response && error.response.data.message) {
+                    msgBox.innerText = `[error] ${error.response.data.message}`;
+                } else {
+                    msgBox.innerText = "[error] خطایی رخ داده است.";
+                }
+                msgBox.className = 'text-red-600 font-bold';
+            });
+    }
+</script>
+
 <div class="bg-white rounded-lg shadow-md">
     <div class="flex items-center justify-between p-5">
         <div>
@@ -103,8 +230,8 @@ $today = date('Y-m-d');
                 <table id="reportTable" class="w-full text-sm text-left rtl:text-right text-gray-800 h-full">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-200">
                         <tr>
-                            <th scope="col" class="font-semibold text-sm text-right text-gray-800 px-6 py-3">
-                                شماره
+                            <th scope="col" class="font-semibold text-sm text-right text-gray-800 p-2">
+                                #
                             </th>
                             <th scope="col" class="font-semibold text-sm text-right text-gray-800 px-6 py-3">
                                 کاربر
@@ -122,8 +249,8 @@ $today = date('Y-m-d');
                                     <?= $iterationDate ?>
                                 </th>
                             <?php endfor; ?>
-                            <th scope="col" class="font-semibold text-center text-sm text-gray-800 px-6 py-3">
-                                <img src="./assets/img/settings.svg" alt="settings icon">
+                            <th scope="col" class="font-semibold text-center text-sm text-gray-800 p-3">
+                                <img src="./assets/img/settings.svg" class="mx-auto" alt="settings icon">
                             </th>
                         </tr>
                     </thead>
@@ -131,22 +258,34 @@ $today = date('Y-m-d');
                         <?php
                         foreach ($users as $index => $user) : ?>
                             <tr class="border-b/10 hover:bg-gray-50 even:bg-gray-100">
-                                <td class="px-6 py-3  font-semibold text-gray-800 text-right">
+                                <td class="p-2 font-semibold text-gray-800 text-right">
                                     <?= $index + 1; ?>
                                 </td>
-                                <td class="px-6 py-3  font-semibold text-gray-800 text-right">
+                                <td class="p-3 font-semibold text-gray-800 text-right">
                                     <?= $user['name'] . ' ' . $user['family'] ?>
                                 </td>
                                 <?php
                                 for ($counter = 0; $counter < 6; $counter++):
                                     require './components/attendance/timeTable.php';
                                 endfor; ?>
-                                <td
-                                    data-user="<?= $user['name'] . ' ' . $user['family'] ?>"
-                                    data-selectedUser="<?= $user['selectedUser'] ?>"
-                                    onclick="openAttendanceModal(this)"
-                                    class="px-6 py-3  font-semibold text-gray-800 text-center">
-                                    <img src="./assets/img/edit.svg" alt="edit icon">
+                                <td class="p-3 flex justify-center gap-2 text-xs font-semibold text-gray-700">
+                                    <!-- ویرایش -->
+                                    <button
+                                        class="px-3 py-1 bg-blue-100 text-blue-600 rounded-lg shadow-sm hover:bg-blue-200 transition"
+                                        data-user="<?= $user['name'] . ' ' . $user['family'] ?>"
+                                        data-selectedUser="<?= $user['selectedUser'] ?>"
+                                        onclick="openAttendanceModal(this)">
+                                        ویرایش
+                                    </button>
+
+                                    <!-- مرخصی -->
+                                    <button
+                                        class="px-3 py-1 bg-yellow-100 text-yellow-600 rounded-lg shadow-sm hover:bg-yellow-200 transition"
+                                        data-user="<?= $user['name'] . ' ' . $user['family'] ?>"
+                                        data-selectedUser="<?= $user['selectedUser'] ?>"
+                                        onclick="openLeaveModal(this)">
+                                        مرخصی
+                                    </button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -210,6 +349,37 @@ $today = date('Y-m-d');
             });
     }
 
+    function deleteAttendanceLog() {
+        const user_id = USER_ID.value;
+        const start = START.value;
+        const end = END.value;
+        const start_id = START_ID.value;
+        const end_id = END_ID.value;
+
+        const params = new URLSearchParams({
+            action: 'DELETEAttendance',
+            user_id,
+            start,
+            end,
+            start_id,
+            end_id
+        });
+
+        axios.post(END_POINT, params)
+            .then(data => {
+                if (data.status == 200) {
+                    message.innerText = data.data.message;
+                    setTimeout(() => {
+                        closeModal();
+                        window.location.reload();
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                message.innerText = error.response.data.message;
+            });
+    }
+
     function toggleModal() {
         modal.classList.toggle('hidden');
         modal.classList.toggle('flex');
@@ -218,6 +388,12 @@ $today = date('Y-m-d');
     function closeModal() {
         modal.classList.remove('flex');
         modal.classList.add('hidden');
+    }
+
+    function closeLeaveModal() {
+        const frame = document.getElementById('openLeaveModal');
+        frame.classList.remove('flex');
+        frame.classList.add('hidden');
     }
 
     function closeAttendanceModal() {
@@ -255,7 +431,6 @@ $today = date('Y-m-d');
                 }
             });
     }
-
 
     function openModal(modal) {
         modal.classList.remove('hidden');
@@ -367,7 +542,7 @@ $today = date('Y-m-d');
 
         $("#start_time, #end_time").persianDatepicker(datepickerConfig);
         $("#attendance_user").persianDatepicker(datepickerConfig);
-
+        $("#leave_date").persianDatepicker(datepickerConfig);
         $("#selected_date").persianDatepicker({
             months: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"],
             dowTitle: ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه"],
@@ -446,6 +621,13 @@ $today = date('Y-m-d');
             alert(`مرخصی کاربر ${user} ثبت نشد.`);
 
 
+    }
+
+    function openLeaveModal(element) {
+        const frame = document.getElementById('openLeaveModal');
+        document.getElementById('userInfo').innerText = element.dataset.user;
+        document.getElementById('leave_user').value = element.dataset.selecteduser;
+        openModal(frame);
     }
 </script>
 
