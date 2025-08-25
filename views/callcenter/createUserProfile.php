@@ -10,7 +10,7 @@ require_once '../../layouts/callcenter/sidebar.php';
     <div class="flex items-center justify-between p-5 bg-gray-800">
         <h2 class="text-xl font-semibold text-white flex items-center gap-2">
             <i class="material-icons font-semibold text-cyan-600">person_add</i>
-            ایجاد حساب کاربری
+            ایجاد حساب کاربری 
         </h2>
     </div>
     <div class="p-5">

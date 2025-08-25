@@ -142,8 +142,12 @@ $fileName = basename($_SERVER['PHP_SELF']);
             </li>
         <?php endif; ?>
     </ul>
-    <div class="hidden sm:flex items-center">
-        <img src="../../public/icons/tv.svg" class="cursor-pointer ml-2" alt="close menu icon" onclick="toggleTV()">
+    <div class="relative hidden sm:flex items-center">
+        <!-- TV Button -->
+        <img src="../../public/icons/tv.svg"
+            class="cursor-pointer ml-2"
+            alt="close menu icon"
+            onclick="toggleTV()">
 
         <?php
         $profile = '../../public/userimg/default.png';
@@ -151,6 +155,47 @@ $fileName = basename($_SERVER['PHP_SELF']);
             $profile = "../../public/userimg/" . $_SESSION['id'] . ".jpg";
         }
         ?>
-        <img class="w-9 h-9 rounded-full border-2 border-gray-900" src="<?= $profile ?>" title="<?= $_SESSION['username'] ?>" alt="user image" />
+
+        <!-- Profile picture -->
+        <div class="relative">
+            <img id="profileBtn"
+                class="w-9 h-9 rounded-full border-2 border-gray-900 cursor-pointer"
+                src="<?= $profile ?>"
+                title="<?= $_SESSION['username'] ?>"
+                alt="user image"
+                onclick="toggleProfileDropdown()" />
+
+            <!-- Dropdown (aligned to the right of profile picture) -->
+            <div id="profileDropdown"
+                class="absolute top-full left-full ml-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg hidden">
+                <ul class="py-2 text-sm text-gray-700">
+                    <li>
+                        <a href="../profile/index.php" class="block px-4 py-2 hover:bg-gray-100">👤 پروفایل کاربری</a>
+                    </li>
+                    <li>
+                        <a href="/settings.php" class="block px-4 py-2 hover:bg-gray-100">⚙️ تنظیمات</a>
+                    </li>
+                    <li>
+                        <a href="../auth/logout.php" class="block px-4 py-2 text-red-600 hover:bg-gray-100">🚪 خروج</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <script>
+            function toggleProfileDropdown() {
+                const dropdown = document.getElementById("profileDropdown");
+                dropdown.classList.toggle("hidden");
+
+                // Close if clicked outside
+                document.addEventListener("click", function(event) {
+                    const button = document.getElementById("profileBtn");
+                    if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+                        dropdown.classList.add("hidden");
+                    }
+                }, {
+                    once: true
+                });
+            }
+        </script>
     </div>
 </nav>

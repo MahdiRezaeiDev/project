@@ -224,3 +224,17 @@ function getUserAttendanceReport($action, $user_id)
     $attendance_report = $stmt->fetchAll(PDO::FETCH_ASSOC);
     return $attendance_report;
 }
+
+if (isset($_POST['deleteLeave'])) {
+
+
+    $leave_id = $_POST['id'];
+    $sql = "DELETE FROM yadakshop.leaves WHERE id = :leave_id";
+    $stmt = PDO_CONNECTION->prepare($sql);
+    $stmt->bindParam(':leave_id', $leave_id, PDO::PARAM_INT);
+    if ($stmt->execute()) {
+        echo json_encode(['status' => 'success', 'message' => 'مرخصی با موفقیت حذف شد']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'خطا در حذف مرخصی']);
+    }
+}

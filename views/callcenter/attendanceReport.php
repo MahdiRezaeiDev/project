@@ -5,6 +5,15 @@ require_once './components/header.php';
 require_once '../../app/controller/callcenter/AttendanceReportController.php';
 require_once '../../layouts/callcenter/nav.php';
 require_once '../../layouts/callcenter/sidebar.php';
+function getUserLeaveReport($user_id, $date)
+{
+    $sql = "SELECT * FROM yadakshop.leaves WHERE user_id=:user_id AND date=:date ORDER BY start_time ASC";
+    $stmt = PDO_CONNECTION->prepare($sql);
+    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->bindParam(':date', $date, PDO::PARAM_STR);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
 $users = getUsers();
 $today = date('Y-m-d');
 ?>
@@ -55,9 +64,8 @@ $today = date('Y-m-d');
         <form action="#" onsubmit="saveAttendance(event)" method="post">
             <input class="border border-gray-300 w-full p-2 rounded mt-2" type="text" name="target_user" id="target_user" hidden>
             <select class="border border-gray-300 w-full p-2 rounded mt-2" name="action" id="action">
-                <option value="start">شروع به کار</option>
-                <option value="leave">ختم کار</option>
-                <option value="off">مرخصی</option>
+                <option value="START">شروع به کار</option>
+                <option value="LEAVE">ختم کار</option>
             </select>
             <input class="border border-gray-300 w-full p-2 rounded mt-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="attendance_user" id="attendance_user">
             <input
@@ -192,6 +200,28 @@ $today = date('Y-m-d');
                     msgBox.innerText = "[error] خطایی رخ داده است.";
                 }
                 msgBox.className = 'text-red-600 font-bold';
+            });
+    }
+
+    function deleteLeave(id) {
+        if (!confirm('آیا از حذف این مرخصی اطمینان دارید؟')) {
+            return;
+        }
+
+        const params = new URLSearchParams({
+            deleteLeave: 'deleteLeave',
+            id: id
+        });
+
+        axios.post('../../app/api/attendance/AttendanceApi.php', params)
+            .then(data => {
+                if (data.status == 200) {
+                    alert(data.data.message);
+                    window.location.reload();
+                }
+            })
+            .catch(error => {
+                alert(error.response.data.message);
             });
     }
 </script>

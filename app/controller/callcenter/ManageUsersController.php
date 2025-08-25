@@ -165,6 +165,12 @@ if (isset($_POST['createUser'])) {
             $stmt->bindParam(':authority', $userAuthoritiesJson);
             $stmt->execute();
 
+            $sql = "INSERT INTO attendance_settings (user_id, start_hour, end_hour, end_week, max_late_minutes, is_active )
+                    VALUES (:user_id, '09:00', '18:00', '14:00', '0', 1)";
+            $stmt = PDO_CONNECTION->prepare($sql);
+            $stmt->bindParam(':user_id', $last_id);
+            $stmt->execute();
+
             if ($_FILES['profile']['size'] > 0) {
                 if (uploadFile($last_id, $_FILES['profile'])) {
                     $success = true;
@@ -202,7 +208,6 @@ function uploadFile($last_id, $file)
         throw $th;
     }
 }
-
 
 if (isset($_POST['id']) && !empty($_POST['username'])) {
     $name = trim($_POST['name']);
@@ -269,7 +274,6 @@ if (isset($_POST['id']) && !empty($_POST['username'])) {
         throw $th;
     }
 }
-
 
 // This functions are related to the update user account page
 if (isset($_GET['user'])) {
