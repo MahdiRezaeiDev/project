@@ -6,103 +6,95 @@ error_reporting(E_ALL);
 require_once './config/constants.php';
 require_once './database/db_connect.php';
 
-define('REPORT_ENDPOINT_URL', 'http://yourdomain.com/endpoint.php');
-
 $now = date('H:i:s');
-echo "\n\n*************** Factor sells Report job started ($now) ************************\n\n";
+echo "\n\n*************** Factor sells Report job started ( $now ) ************************\n\n";
 
-// Fetch pending reports
-$sells_report    = getAllReports();
+$sells_report = getAllReports();
 $shortage_report = getShortageReport();
 
-// --------------------
-// Process sells reports
-// --------------------
+// Process sales report
 foreach ($sells_report as $sell) {
+    $sent = sendSellsReportMessage(
+        $sell['header'],
+        $sell['factor_type'],
+        $sell['selected_goods'],
+        $sell['low_quantity'],
+        $sell['destination'],
+        $sell['is_completed']
+    );
 
-    $postData = [
-        "sendMessage"   => "sellsReportTest",
-        "header"        => $sell['header'],
-        "topic_id"      => $sell['factor_type'] == 0 ? 3516 : 3514,
-        "selectedGoods" => $sell['selected_goods'],
-        "lowQuantity"   => $sell['low_quantity'],
-    ];
-
-    $response = postToEndpoint($sell['destination'], $postData);
-
-    if ($response['success']) {
+    if ($sent) {
         updateStatus('factor.sells_report', $sell['id']);
-    } else {
-        updateError('factor.sells_report', $sell['id'], $response['error'] ?? 'Unknown error');
     }
 
     updateTries('factor.sells_report', $sell['id']);
 }
 
-// -----------------------
-// Process shortage reports
-// -----------------------
+// Process shortage report
 foreach ($shortage_report as $shortage) {
-
-    $postData = [
-        "sendMessage" => "PurchaseReport",
-        "lowQuantity" => $shortage['low_quantity'],
-    ];
-
-    $response = postToEndpoint(REPORT_ENDPOINT_URL, $postData);
-
-    if ($response['success']) {
+    $sent = sendPurchaseReportMessage($shortage['low_quantity']);
+    if ($sent) {
         updateStatus('factor.shortage_report', $shortage['id']);
-    } else {
-        updateError('factor.shortage_report', $shortage['id'], $response['error'] ?? 'Unknown error');
     }
-
-    updateTries('factor.shortage_report', $shortage['id']);
 }
 
 $now = date('H:i:s');
-echo "\n\n*************** Factor sells Report job finished ($now) ************************\n\n";
+echo "\n\n*************** Factor sells Report job finished ( $now ) ************************\n\n";
 
-// ============================
-// Helper functions
-// ============================
+// Send purchase (shortage) report message
+function sendPurchaseReportMessage($lowQuantity)
+{
+    $postData = [
+        "sendMessage" => "PurchaseReport",
+        "lowQuantity" => $lowQuantity,
+    ];
 
-function postToEndpoint($url, $postData)
+    $url = "http://sells.yadak.center/";
+    return postAndWait($url, $postData);
+}
+
+// Send sells report message
+function sendSellsReportMessage($header, $factorType, $selectedGoods, $lowQuantity, $destination, $isComplete)
+{
+    $typeID = !$isComplete ? ($factorType == 0 ? 3516 : 3514) : 17815;
+
+    $postData = [
+        "sendMessage" => "sellsReportTest",
+        "header" => $header,
+        "topic_id" => $typeID,
+        "selectedGoods" => $selectedGoods,
+        "lowQuantity" => $lowQuantity,
+    ];
+
+    return postAndWait($destination, $postData);
+}
+
+// Perform HTTP POST and wait for response
+function postAndWait($url, $postData)
 {
     $ch = curl_init($url);
+
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Capture response
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);          // Max execution time
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);    // Connection timeout
 
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
     if (curl_errno($ch)) {
+        error_log("cURL Error: " . curl_error($ch));
         curl_close($ch);
-        return ['success' => false, 'error' => 'cURL error: ' . curl_error($ch)];
+        return false;
     }
 
     curl_close($ch);
 
-    if ($httpCode !== 200) {
-        return ['success' => false, 'error' => "HTTP error: $httpCode"];
-    }
-
-    $json = json_decode($response, true);
-
-    if (!$json || !isset($json['success'])) {
-        return ['success' => false, 'error' => "Invalid response: $response"];
-    }
-
-    return $json;
+    return $httpCode === 200;
 }
 
-// ---------------------------
-// Database helpers
-// ---------------------------
-
+// Fetch pending sells reports
 function getAllReports()
 {
     $stmt = PDO_CONNECTION->prepare("SELECT * FROM factor.sells_report WHERE status = 0 AND tries < 2");
@@ -110,13 +102,15 @@ function getAllReports()
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Fetch pending shortage reports
 function getShortageReport()
 {
-    $stmt = PDO_CONNECTION->prepare("SELECT * FROM factor.shortage_report WHERE status = 0 AND tries < 2");
+    $stmt = PDO_CONNECTION->prepare("SELECT * FROM factor.shortage_report WHERE status = 0");
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Mark report as processed
 function updateStatus($table, $id)
 {
     $stmt = PDO_CONNECTION->prepare("UPDATE $table SET status = 1 WHERE id = :id");
@@ -128,13 +122,5 @@ function updateTries($table, $id)
 {
     $stmt = PDO_CONNECTION->prepare("UPDATE $table SET tries = tries + 1 WHERE id = :id");
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-    $stmt->execute();
-}
-
-function updateError($table, $id, $error)
-{
-    $stmt = PDO_CONNECTION->prepare("UPDATE $table SET error_message = :error WHERE id = :id");
-    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-    $stmt->bindParam(':error', $error, PDO::PARAM_STR);
     $stmt->execute();
 }

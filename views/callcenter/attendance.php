@@ -7,7 +7,7 @@ require_once '../../layouts/callcenter/nav.php';
 require_once '../../layouts/callcenter/sidebar.php';
 $users = getUsers();
 ?>
-<div id="modal" class="hidden fixed inset-0 bg-black opacity-70 justify-center items-center">
+<div id="modal" class="hidden fixed inset-0 bg-black opacity- justify-center items-center">
     <section class="bg-white rounded p-5" style="width: 500px;">
         <div class="flex justify-between items-start">
             <div>
@@ -167,9 +167,6 @@ $users = getUsers();
         axios.post(ENDPOINTADDR, params)
 
             .then(data => {
-                console.log(data);
-                return;
-
                 if (data.status == 200) {
                     message.innerText = data.data.message;
                     setTimeout(() => {
