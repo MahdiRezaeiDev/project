@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 require_once './config/constants.php';
 require_once './database/db_connect.php';
 
-define('REPORT_ENDPOINT_URL', 'http://yourdomain.com/endpoint.php');
+define('REPORT_ENDPOINT_URL', 'http://sells.yadak.center');
 
 $now = date('H:i:s');
 echo "\n\n*************** Factor sells Report job started ($now) ************************\n\n";
