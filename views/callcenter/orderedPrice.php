@@ -145,10 +145,13 @@ if ($isValidCustomer) :
                                 }
                             ?>
                                 <p class="hidden descriptionText">
-                                    <td>
-                                        <?= isset($existing[$code])
-                                            ? (current(current($existing[$code])['relation']['goods'])['description'] ?? '')
-                                            : '' ?>
+                                    <td><?php
+                                        if (count($existing) > 0):
+                                            if (isset($existing[$code]) && count($existing[$code]) > 0):
+                                                echo current(current($existing[$code])['relation']['goods'])['description'];
+                                            endif;
+                                        endif;
+                                        ?>
                                     </td>
                                 </p>
                                 <tr class="border">
