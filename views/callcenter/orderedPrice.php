@@ -109,7 +109,10 @@ if ($isValidCustomer) :
                                         <i id="copy_all_with_price" title="کاپی کردن مقادیر دارای قیمت" onclick="copyItemsWith(this)" class="text-sm material-icons hover:cursor-pointer text-green-500">content_copy</i>
                                         <img class="inline cursor-pointer" id="copy_all" title="کاپی کردن مقادیر" onclick="copyPrice(this)" src="./assets/img/all.svg" alt="copy all items">
                                     </span>
-                                    <i id="copy_all" title="کپی توضیحات فارسی" onclick="copyPriceDetails(this)" class="mr-7 text-sm material-icons hover:cursor-pointer text-sky-500">content_copy</i>
+                                    <span class="flex gap-1">
+                                        <i id="copy_all" title="کپی توضیحات فارسی" onclick="copyPriceDetails(this)" class="mr-7 text-sm material-icons hover:cursor-pointer text-sky-500">content_copy</i>
+                                        <img class="cursor-pointer" onclick="copyItemsDescription()" src="./assets/img/copyDescription.svg" alt="">
+                                    </span>
                                 </th>
                             </tr>
                         </thead>
@@ -139,6 +142,9 @@ if ($isValidCustomer) :
                                         }
                                     }
                                 } ?>
+                                <tr class="hidden descriptionText">
+                                    <td><?= current(current($existing[$code])['relation']['goods'])['description'] ?></td>
+                                </tr>
                                 <tr class="border">
                                     <?php
                                     if (in_array($code, $not_exist)) {
@@ -370,6 +376,57 @@ if ($isValidCustomer) :
                     element.innerHTML = `content_copy`;
                 }, 1500);
             }
+
+            function copyItemsDescription(element) {
+                const names = document.querySelectorAll('[data-persianName]');
+                const descriptions = document.querySelectorAll('[data-description]');
+                const extraTexts = document.querySelectorAll('tr.descriptionText'); // ✅ extra rows
+                const final = [];
+
+                // Helper function to format digits as money
+                function formatMoney(value) {
+                    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ';
+                }
+
+                for (let index = 0; index < descriptions.length; index++) {
+                    let persianName = names[index].getAttribute('data-persianName') || '';
+                    if (persianName === '') continue;
+
+                    let description = replaceBrandsWithPersian(descriptions[index].getAttribute('data-description'));
+                    if (description === 'موجود نیست' || description === 'نیاز به بررسی') {
+                        description = '-';
+                    } else {
+                        description = description.replace(/\d+/g, (match) => formatMoney(match));
+                    }
+
+                    // Base line
+                    let block = `${persianName} : ${description}`;
+
+                    // ✅ Add extra text if available
+                    if (extraTexts[index]) {
+                        let extraText = extraTexts[index].innerText.trim();
+                        if (extraText !== '') {
+                            block += `\n${extraText}`;
+                        }
+                    }
+
+                    // ✅ Push block
+                    final.push(block);
+
+                    // ✅ If there is another code after this one, add an empty line as separator
+                    if (index < descriptions.length - 1) {
+                        final.push('');
+                    }
+                }
+
+                copyToClipboard(final.join('\n') + `\n\nقیمت ها در واحد هزار تومان می باشد.`);
+
+                element.innerHTML = `done`;
+                setTimeout(() => {
+                    element.innerHTML = `content_copy`;
+                }, 1500);
+            }
+
 
 
             function openDollarModal(basePrice, tenPercent, mobis, mobisTenPercent, korea, koreaTenPercent, ) {

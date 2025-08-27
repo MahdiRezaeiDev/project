@@ -447,3 +447,73 @@ function changeGoodName($id, $name)
     $stmt->bindParam(":id", $id);
     return $stmt->execute();
 }
+
+if (isset($_POST['changeDescription'])) {
+    $id = $_POST['id'];
+    $description = $_POST['value'];
+
+    $relations = [...allRelations($id), $id]; // should return array of related IDs (can be empty)
+
+    echo json_encode(changeGoodDescription($id, $relations, $description));
+}
+
+/**
+ * Update description for an item and all its relations
+ */
+function changeGoodDescription($id, $relations, $description)
+{
+    try {
+        // Always build the list of IDs to update
+        $ids = !empty($relations) && is_array($relations) ? $relations : [$id];
+
+        // Ensure no duplicates
+        $ids = array_unique($ids);
+
+        // Build placeholders (?, ?, ?)
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        $stmt = PDO_CONNECTION->prepare("
+            UPDATE nisha 
+            SET description = ? 
+            WHERE id IN ($placeholders)
+        ");
+
+        // First param = description, then IDs
+        $params = array_merge([$description], $ids);
+        $result = $stmt->execute($params);
+
+        return [
+            'success' => $result,
+            'updated_ids' => $ids
+        ];
+    } catch (PDOException $e) {
+        return [
+            'success' => false,
+            'error' => $e->getMessage()
+        ];
+    }
+}
+
+
+function allRelations($id)
+{
+    $sql = "SELECT pattern_id FROM shop.similars WHERE nisha_id = :id";
+    $stmt = PDO_CONNECTION->prepare($sql);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($result) {
+        $pattern_id = $result['pattern_id'];
+        $sql = "SELECT nisha_id FROM shop.similars WHERE pattern_id = :pattern_id AND nisha_id != :id";
+        $stmt = PDO_CONNECTION->prepare($sql);
+        $stmt->bindParam(':pattern_id', $pattern_id, PDO::PARAM_INT);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $related_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        return $related_ids ?: [];
+    }
+
+    return [];
+}

@@ -80,6 +80,10 @@
              رابطه ای پیدا نشد
          </p>
      <?php endif; ?>
+     <div class="mt-5">
+         <label for="description">توضیحات</label>
+         <textarea onblur="alterDescription(this.value, '<?= current($goods)['id'] ?>')" class="w-full border-2" name="description" id="description"><?= current($goods)['description'] ?></textarea>
+     </div>
  </div>
  <script>
      // Show the input box and hide the span on click
@@ -106,6 +110,25 @@
 
          axios.post('../../app/api/callcenter/OrderedPriceApi.php', param)
              .then((response) => {
+                 form_success.style.bottom = "10px";
+                 setTimeout(() => {
+                     form_success.style.bottom = "-300px";
+                 }, 2000);
+             }).catch((e) => {
+                 console.log(e);
+             });
+     }
+
+     function alterDescription(value, id) {
+         const param = new URLSearchParams();
+         param.append('changeDescription', 'changeDescription');
+         param.append('id', id);
+         param.append('value', value);
+
+         axios.post('../../app/api/callcenter/OrderedPriceApi.php', param)
+             .then((response) => {
+                 console.log(response.data);
+
                  form_success.style.bottom = "10px";
                  setTimeout(() => {
                      form_success.style.bottom = "-300px";
