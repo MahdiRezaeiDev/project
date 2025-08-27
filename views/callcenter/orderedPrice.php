@@ -388,7 +388,7 @@ if ($isValidCustomer) :
             function copyItemsDescription(element) {
                 const names = document.querySelectorAll('[data-persianName]');
                 const descriptions = document.querySelectorAll('[data-description]');
-                const extraTexts = document.querySelectorAll('tr.descriptionText'); // ✅ extra rows
+                const extraTexts = document.querySelectorAll('p.descriptionText'); // ✅ extra rows
                 const final = [];
 
                 // Helper function to format digits as money
@@ -428,11 +428,6 @@ if ($isValidCustomer) :
                 }
 
                 copyToClipboard(final.join('\n') + `\n\nقیمت ها در واحد هزار تومان می باشد.`);
-
-                element.innerHTML = `done`;
-                setTimeout(() => {
-                    element.innerHTML = `content_copy`;
-                }, 1500);
             }
 
 
