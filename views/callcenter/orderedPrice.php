@@ -18,6 +18,7 @@ $excludedSellers = [
     'کاربر دستوری معیوب',
     'کاربر دستوری مفقود'
 ];
+
 if ($isValidCustomer) :
     if ($finalResult) :
         $explodedCodes = $finalResult['explodedCodes'];
@@ -141,10 +142,15 @@ if ($isValidCustomer) :
                                             }
                                         }
                                     }
-                                } ?>
-                                <tr class="hidden descriptionText">
-                                    <td><?= current(current($existing[$code])['relation']['goods'])['description'] ?></td>
-                                </tr>
+                                }
+                            ?>
+                                <p class="hidden descriptionText">
+                                    <td>
+                                        <?= isset($existing[$code])
+                                            ? (current(current($existing[$code])['relation']['goods'])['description'] ?? '')
+                                            : '' ?>
+                                    </td>
+                                </p>
                                 <tr class="border">
                                     <?php
                                     if (in_array($code, $not_exist)) {
