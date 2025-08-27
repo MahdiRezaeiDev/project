@@ -151,7 +151,7 @@ if ($isValidCustomer) :
                                             echo current(current($existing[$code])['relation']['goods'])['description'];
                                         endif;
                                     endif;
-                                    ?>s
+                                    ?>
                                 </p>
                                 <tr class="border">
                                     <?php
