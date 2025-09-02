@@ -148,7 +148,7 @@ if ($isValidCustomer) :
                                     <?php
                                     if (count($existing) > 0):
                                         if (isset($existing[$code]) && count($existing[$code]) > 0):
-                                            echo current(current($existing[$code])['relation']['goods'])['description'];
+                                            echo '(' . current(current($existing[$code])['relation']['goods'])['description'] . ')';
                                         endif;
                                     endif;
                                     ?>
