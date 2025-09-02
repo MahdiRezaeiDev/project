@@ -112,7 +112,7 @@ if ($isValidCustomer) :
                                     </span>
                                     <span class="flex gap-1">
                                         <i id="copy_all" title="کپی توضیحات فارسی" onclick="copyPriceDetails(this)" class="mr-7 text-sm material-icons hover:cursor-pointer text-sky-500">content_copy</i>
-                                        <img class="cursor-pointer" onclick="copyItemsDescription()" src="./assets/img/copyDescription.svg" alt="">
+                                        <img class="cursor-pointer" onclick="copyItemsDescription(this)" src="./assets/img/copyDescription.svg" alt="">
                                     </span>
                                 </th>
                             </tr>
@@ -428,6 +428,11 @@ if ($isValidCustomer) :
                 }
 
                 copyToClipboard(final.join('\n') + `\n\nقیمت ها در واحد هزار تومان می باشد.`);
+
+                element.src = './assets/img/done.svg';
+                setTimeout(() => {
+                    element.src = './assets/img/copyDescription.svg';
+                }, 1500);
             }
 
 
