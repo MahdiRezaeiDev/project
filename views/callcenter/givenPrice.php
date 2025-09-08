@@ -16,7 +16,7 @@ require_once '../../layouts/callcenter/sidebar.php';
                 <label for="code" class="block text-lg font-semibold text-gray-900">
                     کدهای مدنظر
                 </label>
-                <textarea onchange="filterCode(this)" rows="9" id="code" name="code" required class="border-2 border-gray-300 focus:border-gray-500 p-3 outline-none  text-sm mt-1 shadow-sm block w-full uppercase" style="direction: ltr !important;" placeholder="لطفا کد های مود نظر خود را در خط های مجزا قرار دهید"></textarea>
+                <textarea onkeyup="convertToEnglish(this)" onchange="filterCode(this)" rows="9" id="code" name="code" required class="border-2 border-gray-300 focus:border-gray-500 p-3 outline-none  text-sm mt-1 shadow-sm block w-full uppercase" style="direction: ltr !important;" placeholder="لطفا کد های مود نظر خود را در خط های مجزا قرار دهید"></textarea>
             </div>
         </div>
         <div class="py-4 flex items-center gap-2 cursor-pointer">

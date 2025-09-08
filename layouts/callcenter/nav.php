@@ -95,13 +95,24 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
                 </ul>
             </div>
         </li>
-        <li class="mx-1 hidden sm:block <?= $fileName == 'askedPrices.php' ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold ">
+        <li class="dropdown mx-1 hidden sm:block <?= $fileName == 'askedPrices.php' ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold ">
             <a class="p-2 flex items-center gap-2" href="<?= $append ?>askedPrices.php">
                 <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/price.svg" alt="telegram icon">
                 قیمت گرفته شده
+                <img src="../inventory/assets/icons/down_arrow.svg" alt="down arrow">
             </a>
+            <div class="dropdown_container ">
+                <ul class="dropdown_menu bg-gray-800 border border-gray-800">
+                    <li class="hover:bg-gray-900 text-white text-sm font-bold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>messagesReply.php">
+                            <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/handshake.svg" alt="add icon">
+                            قیمت گیری هوشمند
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </li>
-        <li class="dropdown mx-1 cursor-pointer <?= in_array($fileName, ['factor.php']) ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold flex items-center gap-3 pl-2">
+        <li class="dropdown mx-1 cursor-pointer  <?= in_array($fileName, ['factor.php']) ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold flex items-center gap-3 pl-2">
             <a class="p-2 flex items-center gap-2 cursor-pointer" href="<?= $append ?>factor.php">
                 <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/bill.svg" alt="telegram icon">
                 فاکتور

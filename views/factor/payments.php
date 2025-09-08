@@ -168,6 +168,12 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
         <form id="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4 p-4 bg-white rounded-lg shadow mb-4">
 
             <div>
+                <label class="text-sm">تاریخ ثبت</label>
+                <input type="text" id="register_date" name="register_date_display"
+                    class="w-full border rounded px-2 py-1" autocomplete="off" />
+                <input type="hidden" name="register_date" id="register_date_real" />
+            </div>
+            <div>
                 <label class="text-sm">تاریخ فاکتور</label>
                 <input type="text" id="factor_date" name="factor_date_display"
                     class="w-full border rounded px-2 py-1" autocomplete="off" />
@@ -349,6 +355,14 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
 
     // اتصال به تقویم شمسی
     $(function() {
+        $("#register_date").persianDatepicker({
+            formatDate: "YYYY/MM/DD",
+            onSelect: function() {
+                const gdate = $("#register_date").attr("data-gdate");
+                $("#register_date_real").val(gdate);
+            }
+        });
+
         $("#factor_date").persianDatepicker({
             formatDate: "YYYY/MM/DD",
             onSelect: function() {
@@ -380,8 +394,6 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
 
         axios.post("../../app/api/payments/paymentApi.php", formData)
             .then(function(response) {
-                console.log(response.data);
-
                 result_box.innerHTML = response.data;
             })
             .catch(function(error) {
@@ -400,9 +412,7 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
             .then(response => {
                 if (response.data.success) {
                     showSuccessMessage("تغیرات با موفقیت ذخیره شد");
-                    setTimeout(() => {
-                        location.reload();
-                    }, 2000)
+                    element.nextElementSibling.nextElementSibling.innerHTML = "<?= $_SESSION['user']['name'] ?>" + " " + "<?= $_SESSION['user']['family'] ?>";
                 } else {
                     alert('Failed to update approval');
                     element.checked = !element.checked; // Revert checkbox
@@ -422,6 +432,7 @@ $financeTeam = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashem
         // Also clear hidden inputs if needed
         document.getElementById("factor_date_real").value = "";
         document.getElementById("payment_date_real").value = "";
+        document.getElementById("register_date_real").value = "";
 
         // Optionally, trigger form submission again to reset the results
         // form.submit();

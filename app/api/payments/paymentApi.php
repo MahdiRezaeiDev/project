@@ -18,6 +18,11 @@ if (isset($_POST['filterRequest'])) {
         $params[':factor_date'] = $_POST['factor_date'];
     }
 
+    if (!empty($_POST['register_date'])) {
+        $conditions[] = 'DATE(payments.created_at) = :register_date';
+        $params[':register_date'] = $_POST['register_date'];
+    }
+
     if (!empty($_POST['payment_date'])) {
         $conditions[] = 'DATE(payments.created_at) = :payment_date';
         $params[':payment_date'] = $_POST['payment_date'];
