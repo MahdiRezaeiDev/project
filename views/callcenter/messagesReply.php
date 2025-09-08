@@ -7,78 +7,85 @@ require_once '../../layouts/callcenter/sidebar.php';
 ?>
 <section class="bg-gray-200 min-h-screen flex items-center justify-center p-6">
 
-    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-lg flex flex-col h-[90vh]">
-        <!-- Header -->
-        <div class="p-4 border-b border-gray-200 text-center font-bold text-lg text-gray-700">
-            📨 پیام‌های ریپلای شده
-        </div>
+  <!-- Replies Section (LTR only) -->
+  <div dir="ltr" class="w-full max-w-2xl bg-white rounded-xl shadow-md flex flex-col h-[80vh] mx-auto">
 
-        <!-- Chat area -->
-        <div id="messages" class="flex-1 overflow-y-auto p-4 space-y-4">
-            <p class="text-gray-500 text-center animate-pulse">در حال بارگذاری...</p>
-        </div>
+    <!-- Header -->
+    <div class="p-4 border-b border-gray-300 text-center font-bold text-lg text-gray-800">
+      📨 قیمت گیری هوشمند
     </div>
 
-    <script>
-        async function loadReplies() {
-            const params = new URLSearchParams();
-            params.append("getMessagesReply", "getMessagesReply");
+    <!-- Chat area -->
+    <div id="messages" class="flex-1 overflow-y-auto p-4 space-y-4">
+      <p class="text-gray-500 text-center animate-pulse">در حال بارگیری ...</p>
+    </div>
 
-            try {
-                const response = await axios.post("https://partners.yadak.center/", params);
-                const data = response.data;
+  </div>
 
-                const container = document.getElementById("messages");
-                container.innerHTML = "";
+  <script>
+    async function loadReplies() {
+      const params = new URLSearchParams();
+      params.append("getMessagesReply", "getMessagesReply");
 
-                if (!data || data.length === 0) {
-                    container.innerHTML = `<p class="text-gray-500 text-center">هیچ پیامی یافت نشد.</p>`;
-                    return;
-                }
+      try {
+        const response = await axios.post("https://partners.yadak.center/", params);
+        const data = response.data;
 
-                data.forEach(item => {
-                    // decide side: if user has username = "me" → right side
-                    const isSelf = !item.username || item.username.toLowerCase() === "me"; // adjust for your logic
+        const container = document.getElementById("messages");
+        container.innerHTML = "";
 
-                    const wrapper = document.createElement("div");
-                    wrapper.className = `flex ${isSelf ? "justify-end" : "justify-start"}`;
+        if (!data || data.length === 0) {
+          container.innerHTML = `<p class="text-gray-500 text-center">No replies found today.</p>`;
+          return;
+        }
 
-                    wrapper.innerHTML = `
-            <div class="max-w-[75%]">
-              <div class="${isSelf
-              ? "bg-blue-500 text-white rounded-2xl rounded-br-sm"
-              : "bg-gray-100 text-gray-800 rounded-2xl rounded-bl-sm"} shadow-md p-3">
+        data.forEach(item => {
+          const date = new Date((item.date || 0) * 1000);
+          const hours = date.getHours().toString().padStart(2, "0");
+          const minutes = date.getMinutes().toString().padStart(2, "0");
+          const timeStr = `${hours}:${minutes}`;
+
+          const wrapper = document.createElement("div");
+          wrapper.className = "flex justify-end text-left";
+
+          wrapper.innerHTML = `
+            <div class="text-xs max-w-[80%]">
+
+              <!-- Reply container -->
+              <div class="bg-gray-50 text-gray-900 rounded-2xl shadow-sm p-3">
 
                 <!-- Quoted original -->
-                <div class="${isSelf
-              ? "bg-blue-600/40 border-r-4 border-white"
-              : "bg-gray-200 border-r-4 border-gray-400"} pr-2 pl-1 py-1 mb-2 rounded">
-                  <p class="text-sm ${isSelf ? "text-white/90" : "text-gray-700"} line-clamp-3">
-                    ${item.original_msg}
-                  </p>
+                <div class="bg-gray-100 border-l-4 border-gray-400 pl-2 py-1 mb-2 rounded">
+                  <p class="text-sm line-clamp-3 break-words">${item.original_msg}</p>
                 </div>
 
-                <!-- Reply text -->
-                <p class="whitespace-pre-line leading-relaxed">${item.reply_msg}</p>
+                <!-- Reply message -->
+                <p class="whitespace-pre-line leading-relaxed break-words">${item.reply_msg}</p>
+
               </div>
 
-              <!-- User info -->
-              <div class="text-xs text-gray-500 mt-1 ${isSelf ? "text-right pr-2" : "text-left pl-2"}">
-                ${item.first_name || ""} ${item.last_name || ""} ${item.username ? "(@" + item.username + ")" : ""}
+              <!-- User info and time -->
+              <div class="text-xs text-gray-500 mt-1 flex justify-between">
+                <span class="px-5">${timeStr}</span>
+                <span>${item.first_name || ""} ${item.last_name || ""}</span>
               </div>
+
             </div>
           `;
 
-                    container.appendChild(wrapper);
-                });
-            } catch (error) {
-                document.getElementById("messages").innerHTML =
-                    `<p class="text-red-500 text-center">خطا در دریافت اطلاعات ❌</p>`;
-            }
-        }
+          container.appendChild(wrapper);
+        });
 
-        loadReplies();
-    </script>
+        container.scrollTop = container.scrollHeight;
+
+      } catch (error) {
+        document.getElementById("messages").innerHTML =
+          `<p class="text-red-500 text-center">Error fetching messages ❌</p>`;
+      }
+    }
+
+    loadReplies();
+  </script>
 </section>
 <?php
 require_once './components/footer.php';
