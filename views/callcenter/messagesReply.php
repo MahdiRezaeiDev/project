@@ -39,44 +39,56 @@ require_once '../../layouts/callcenter/sidebar.php';
           return;
         }
 
-        data.forEach(item => {
-          const date = new Date((item.date || 0) * 1000);
-          const hours = date.getHours().toString().padStart(2, "0");
-          const minutes = date.getMinutes().toString().padStart(2, "0");
-          const timeStr = `${hours}:${minutes}`;
+        data.forEach(thread => {
+          // For each of my messages
+          const myDate = new Date((thread.date || 0) * 1000);
+          const myTime = myDate.toLocaleTimeString("fa-IR", {
+            hour: "2-digit",
+            minute: "2-digit"
+          });
 
-          const wrapper = document.createElement("div");
-          wrapper.className = "flex justify-end text-left";
+          // Show each reply under it
+          thread.replies.forEach(r => {
+            const rDate = new Date((r.date || 0) * 1000);
+            const rTime = rDate.toLocaleTimeString("fa-IR", {
+              hour: "2-digit",
+              minute: "2-digit"
+            });
 
-          wrapper.innerHTML = `
-            <div class="text-xs max-w-[80%]">
+            const wrapper = document.createElement("div");
+            wrapper.className = "flex justify-end text-left";
 
-              <!-- Reply container -->
-              <div class="bg-gray-50 text-gray-900 rounded-2xl shadow-sm p-3">
+            wrapper.innerHTML = `
+              <div class="text-xs max-w-[80%]">
 
-                <!-- Quoted original -->
-                <div class="bg-gray-100 border-l-4 border-gray-400 pl-2 py-1 mb-2 rounded">
-                  <p class="text-sm line-clamp-3 break-words">${item.original_msg}</p>
+                <!-- Reply container -->
+                <div class="bg-gray-50 text-gray-900 rounded-2xl shadow-sm p-3">
+
+                  <!-- Quoted my message -->
+                  <div class="bg-gray-100 border-l-4 border-gray-400 pl-2 py-1 mb-2 rounded">
+                    <p class="text-sm line-clamp-3 break-words">${thread.my_msg}</p>
+                  </div>
+
+                  <!-- Reply message -->
+                  <p class="whitespace-pre-line leading-relaxed break-words">${r.reply_msg}</p>
+
                 </div>
 
-                <!-- Reply message -->
-                <p class="whitespace-pre-line leading-relaxed break-words">${item.reply_msg}</p>
+                <!-- User info and time -->
+                <div class="text-xs text-gray-500 mt-1 flex justify-between">
+                  <span class="px-5">${rTime}</span>
+                  <span>${thread.first_name || ""} ${thread.last_name || ""}</span>
+                </div>
 
               </div>
+            `;
 
-              <!-- User info and time -->
-              <div class="text-xs text-gray-500 mt-1 flex justify-between">
-                <span class="px-5">${timeStr}</span>
-                <span>${item.first_name || ""} ${item.last_name || ""}</span>
-              </div>
-
-            </div>
-          `;
-
-          container.appendChild(wrapper);
+            container.appendChild(wrapper);
+          });
         });
 
-        container.scrollTop = container.scrollHeight;
+        // Keep scroll at top (oldest first visible)
+        container.scrollTop = 0;
 
       } catch (error) {
         document.getElementById("messages").innerHTML =
