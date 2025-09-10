@@ -105,24 +105,37 @@ function postToEndpoint($url, $postData)
 
 function getAllReports()
 {
-    $stmt = PDO_CONNECTION->prepare("SELECT * FROM factor.sells_report WHERE status = 0 AND tries < 2");
+    $sql = "
+        SELECT * 
+        FROM factor.sells_report 
+        WHERE status = 0 
+          AND (tries < 2 OR error_message IS NOT NULL)
+    ";
+    $stmt = PDO_CONNECTION->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getShortageReport()
 {
-    $stmt = PDO_CONNECTION->prepare("SELECT * FROM factor.shortage_report WHERE status = 0 AND tries < 2");
+    $sql = "
+        SELECT * 
+        FROM factor.shortage_report 
+        WHERE status = 0 
+          AND (tries < 2 OR error_message IS NOT NULL)
+    ";
+    $stmt = PDO_CONNECTION->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function updateStatus($table, $id)
 {
-    $stmt = PDO_CONNECTION->prepare("UPDATE $table SET status = 1 WHERE id = :id");
+    $stmt = PDO_CONNECTION->prepare("UPDATE $table SET status = 1, error_message = NULL WHERE id = :id");
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
 }
+
 
 function updateTries($table, $id)
 {
