@@ -59,26 +59,39 @@ require_once '../../layouts/callcenter/sidebar.php';
             wrapper.className = "flex justify-end text-left";
 
             wrapper.innerHTML = `
-              <div class="text-xs max-w-[80%]">
+              <div class="flex items-start text-xs max-w-[80%] space-x-2">
+                <div class="flex-1">
 
-                <!-- Reply container -->
-                <div class="bg-gray-50 text-gray-900 rounded-2xl shadow-sm p-3">
+                  <!-- Reply container -->
+                  <div class="bg-gray-50 text-gray-900 rounded-2xl shadow-sm p-3">
 
-                  <!-- Quoted my message -->
-                  <div class="bg-gray-100 border-l-4 border-gray-400 pl-2 py-1 mb-2 rounded">
-                    <p class="text-sm line-clamp-3 break-words">${thread.my_msg}</p>
+                    <!-- Quoted my message -->
+                    <div class="bg-gray-100 border-l-4 border-gray-400 pl-2 py-1 mb-2 rounded">
+                      <p class="text-sm line-clamp-3 break-words">${thread.my_msg}</p>
+                    </div>
+
+                    <!-- Reply message -->
+                    <p class="whitespace-pre-line leading-relaxed break-words">${r.reply_msg}</p>
+
                   </div>
 
-                  <!-- Reply message -->
-                  <p class="whitespace-pre-line leading-relaxed break-words">${r.reply_msg}</p>
+                  <!-- User info and time -->
+                  <div class="text-xs text-gray-500 mt-1 flex justify-between">
+                    <span class="px-5">${rTime}</span>
+                    <span>${thread.first_name || ""} ${thread.last_name || ""}</span>
+                  </div>
 
                 </div>
-
-                <!-- User info and time -->
-                <div class="text-xs text-gray-500 mt-1 flex justify-between">
-                  <span class="px-5">${rTime}</span>
-                  <span>${thread.first_name || ""} ${thread.last_name || ""}</span>
-                </div>
+                
+                <!-- Profile picture -->
+                                ${thread.photo_url 
+                  ? `<img src="${thread.photo_url}" 
+                          class="w-8 h-8 rounded-full object-cover" 
+                          alt="${thread.first_name || ''}">`
+                  : `<svg class="w-8 h-8 rounded-full bg-gray-300 p-1 text-gray-500" 
+                         fill="currentColor" viewBox="0 0 24 24">
+                       <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                     </svg>`}
 
               </div>
             `;
@@ -91,6 +104,7 @@ require_once '../../layouts/callcenter/sidebar.php';
         container.scrollTop = 0;
 
       } catch (error) {
+        console.error(error);
         document.getElementById("messages").innerHTML =
           `<p class="text-red-500 text-center">Error fetching messages ❌</p>`;
       }
@@ -99,5 +113,7 @@ require_once '../../layouts/callcenter/sidebar.php';
     loadReplies();
   </script>
 </section>
+
 <?php
 require_once './components/footer.php';
+?>
