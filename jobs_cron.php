@@ -11,21 +11,20 @@ echo "\n\n*************** Bill cron jobs started ( $now ) **********************
 
 $queuedJobs = getJobs();
 foreach ($queuedJobs as $job) {
-    $customer     = json_decode($job['customer_info'], true);
-    $factor       = json_decode($job['factor_info'], true);
-    $factorItems  = json_decode($job['factor_items'], true);
+    $customer = json_decode($job['customer_info'], true);
+    $factor = json_decode($job['factor_info'], true);
+    $factorItems = json_decode($job['factor_items'], true);
     $factorNumber = $job['factor_number'];
-    $user_id      = $job['user_id'];
+    $user_id = $job['user_id'];
 
-    // Send data to external service
-    $response = sendData($customer, $factor, $factorItems, $factorNumber, $user_id);
+    // Send data to the external service and wait for response
+    $success = sendData($customer, $factor, $factorItems, $factorNumber, $user_id);
 
-    if ($response['success']) {
-        markAsCompleted($job['id']);
+    // Mark the job as completed regardless of success
+    markAsCompleted($job['id']);
+
+    if ($success) {
         markSMSAsSent($job['id']);
-        clearError($job['id']);
-    } else {
-        setError($job['id'], $response['error']);
     }
 }
 
@@ -50,32 +49,15 @@ function markSMSAsSent($jobId)
     return $stmt->execute();
 }
 
-function clearError($jobId)
-{
-    $sql = "UPDATE factor.bill_jobs SET error_message = NULL WHERE id = :jobId";
-    $stmt = PDO_CONNECTION->prepare($sql);
-    $stmt->bindParam(':jobId', $jobId, PDO::PARAM_INT);
-    return $stmt->execute();
-}
-
-function setError($jobId, $error)
-{
-    $sql = "UPDATE factor.bill_jobs SET error_message = :error WHERE id = :jobId";
-    $stmt = PDO_CONNECTION->prepare($sql);
-    $stmt->bindParam(':jobId', $jobId, PDO::PARAM_INT);
-    $stmt->bindParam(':error', $error, PDO::PARAM_STR);
-    return $stmt->execute();
-}
-
 function sendData($customer, $factor, $factorItems, $factorNumber, $user_id)
 {
     $postData = [
         "GenerateCompleteFactor" => "GenerateCompleteFactor",
-        "customer"      => json_encode($customer),
-        "factor"        => json_encode($factor),
-        "factorItems"   => json_encode($factorItems),
-        "user_id"       => $user_id,
-        "factorNumber"  => $factorNumber
+        "customer" => json_encode($customer),
+        "factor" => json_encode($factor),
+        "factorItems" => json_encode($factorItems),
+        "user_id" => $user_id,
+        "factorNumber" => $factorNumber
     ];
 
     $url = "http://sells.yadak.shop/";
@@ -88,43 +70,27 @@ function postAndWait($url, $postData)
 
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Wait for response
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Set timeout (seconds)
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3); // Connection timeout
 
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
     if (curl_errno($ch)) {
-        $err = "cURL Error: " . curl_error($ch);
+        error_log("cURL Error: " . curl_error($ch));
         curl_close($ch);
-        return ['success' => false, 'error' => $err];
+        return false;
     }
 
     curl_close($ch);
 
-    if ($httpCode !== 200) {
-        return ['success' => false, 'error' => "HTTP error: $httpCode"];
-    }
-
-    // Optional: parse JSON response if API returns structured result
-    $json = json_decode($response, true);
-    if (!$json || !isset($json['success'])) {
-        return ['success' => false, 'error' => "Invalid response: $response"];
-    }
-
-    return $json;
+    return $httpCode === 200;
 }
 
 function getJobs()
 {
-    $sql = "
-        SELECT * 
-        FROM factor.bill_jobs 
-        WHERE status = 0 
-          AND (is_sms_sent = 0 OR error_message IS NOT NULL)
-        ORDER BY created_at ASC
-    ";
+    $sql = "SELECT * FROM factor.bill_jobs WHERE status = 0 OR is_sms_sent = 0 ORDER BY created_at ASC";
     $stmt = PDO_CONNECTION->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);

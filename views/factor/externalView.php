@@ -58,7 +58,7 @@ $billItemsDescription = $preSellFactor ? (json_decode($preSellFactorItemsDescrip
             <!-- Left Info -->
             <div class="flex-1">
                 <ul class="space-y-1 text-sm text-gray-800">
-                    <li><strong>نام:</strong> <span><?= htmlspecialchars($customerInfo['name']) ?></span></li>
+                    <li><strong>نام:</strong> <span><?= htmlspecialchars($customerInfo['name']) . ' ' . htmlspecialchars($customerInfo['family']) ?></span></li>
                     <li><strong>شماره تماس:</strong> <span><?= htmlspecialchars($customerInfo['phone']) ?></span></li>
                 </ul>
             </div>
