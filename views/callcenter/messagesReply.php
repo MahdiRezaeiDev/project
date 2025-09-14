@@ -22,6 +22,24 @@ require_once '../../layouts/callcenter/sidebar.php';
 
   </div>
 
+  <!-- Column coloring -->
+  <style>
+    #messages>div:nth-child(3n+1) {
+      background-color: #ebf8ff;
+      /* light blue */
+    }
+
+    #messages>div:nth-child(3n+2) {
+      background-color: #fefcbf;
+      /* light yellow */
+    }
+
+    #messages>div:nth-child(3n+3) {
+      background-color: #f0fff4;
+      /* light green */
+    }
+  </style>
+
   <script>
     async function loadReplies() {
       const params = new URLSearchParams();
@@ -47,7 +65,7 @@ require_once '../../layouts/callcenter/sidebar.php';
 
           // Wrapper for each thread
           const threadWrapper = document.createElement("div");
-          threadWrapper.className = "bg-gray-50 rounded-2xl shadow-sm p-4 flex flex-col";
+          threadWrapper.className = "rounded-2xl shadow-sm p-4 flex flex-col";
           threadWrapper.setAttribute("dir", "ltr");
 
           // My message (sent once)
