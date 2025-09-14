@@ -5,19 +5,19 @@ require_once './components/header.php';
 require_once '../../layouts/callcenter/nav.php';
 require_once '../../layouts/callcenter/sidebar.php';
 ?>
-<section class="bg-gray-200 min-h-screen flex items-center justify-center p-6">
+<section class="bg-gray-200 min-h-screen w-full p-6">
 
-  <!-- Replies Section (LTR only) -->
-  <div dir="ltr" class="w-full max-w-2xl bg-white rounded-xl shadow-md flex flex-col h-[80vh] mx-auto">
+  <!-- Container -->
+  <div class="w-full h-full bg-white rounded-xl shadow-md flex flex-col">
 
     <!-- Header -->
     <div class="p-4 border-b border-gray-300 text-center font-bold text-lg text-gray-800">
       📨 قیمت گیری هوشمند
     </div>
 
-    <!-- Chat area -->
-    <div id="messages" class="flex-1 overflow-y-auto p-4 space-y-4">
-      <p class="text-gray-500 text-center animate-pulse">در حال بارگیری ...</p>
+    <!-- Messages Grid -->
+    <div id="messages" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 overflow-y-auto flex-1">
+      <p class="col-span-3 text-gray-500 text-center animate-pulse">در حال بارگیری ...</p>
     </div>
 
   </div>
@@ -30,83 +30,77 @@ require_once '../../layouts/callcenter/sidebar.php';
       try {
         const response = await axios.post("https://partners.yadak.center/", params);
         const data = response.data;
-
         const container = document.getElementById("messages");
         container.innerHTML = "";
 
         if (!data || data.length === 0) {
-          container.innerHTML = `<p class="text-gray-500 text-center">No replies found today.</p>`;
+          container.innerHTML = `<p class="col-span-3 text-gray-500 text-center">No replies found today.</p>`;
           return;
         }
 
         data.forEach(thread => {
-          // For each of my messages
           const myDate = new Date((thread.date || 0) * 1000);
           const myTime = myDate.toLocaleTimeString("fa-IR", {
             hour: "2-digit",
             minute: "2-digit"
           });
 
-          // Show each reply under it
+          // Wrapper for each thread
+          const threadWrapper = document.createElement("div");
+          threadWrapper.className = "bg-gray-50 rounded-2xl shadow-sm p-4 flex flex-col";
+          threadWrapper.setAttribute("dir", "ltr");
+
+          // My message (sent once)
+          threadWrapper.innerHTML = `
+            <div class="mb-3" dir="ltr">
+              <div class="bg-blue-100 border-l-4 border-blue-500 pl-2 py-1 rounded">
+                <p class="text-sm font-semibold text-left">${thread.my_msg}</p>
+              </div>
+              <p class="text-xs text-gray-500 mt-1 text-left">Sent at ${myTime}</p>
+            </div>
+          `;
+
+          // Replies from users
           thread.replies.forEach(r => {
             const rDate = new Date((r.date || 0) * 1000);
             const rTime = rDate.toLocaleTimeString("fa-IR", {
               hour: "2-digit",
               minute: "2-digit"
             });
+            const user = thread.users.find(u => u.user_id === r.user_id);
 
-            const wrapper = document.createElement("div");
-            wrapper.className = "flex justify-end text-left";
+            const reply = document.createElement("div");
+            reply.className = "flex items-start gap-3 mb-3";
+            reply.setAttribute("dir", "ltr");
 
-            wrapper.innerHTML = `
-              <div class="flex items-start text-xs max-w-[80%] space-x-2">
-                <div class="flex-1">
+            const avatar = user && user.photo_url ?
+              `<img src="${user.photo_url}" class="w-10 h-10 rounded-full object-cover" />` :
+              `<svg class="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                   <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/>
+                 </svg>`;
 
-                  <!-- Reply container -->
-                  <div class="bg-gray-50 text-gray-900 rounded-2xl shadow-sm p-3">
-
-                    <!-- Quoted my message -->
-                    <div class="bg-gray-100 border-l-4 border-gray-400 pl-2 py-1 mb-2 rounded">
-                      <p class="text-sm line-clamp-3 break-words">${thread.my_msg}</p>
-                    </div>
-
-                    <!-- Reply message -->
-                    <p class="whitespace-pre-line leading-relaxed break-words">${r.reply_msg}</p>
-
-                  </div>
-
-                  <!-- User info and time -->
-                  <div class="text-xs text-gray-500 mt-1 flex justify-between">
-                    <span class="px-5">${rTime}</span>
-                    <span>${thread.first_name || ""} ${thread.last_name || ""}</span>
-                  </div>
-
+            reply.innerHTML = `
+              <div class="shrink-0">${avatar}</div>
+              <div class="flex-1 bg-white border rounded-xl p-3 shadow-sm text-left">
+                <p class="whitespace-pre-line">${r.reply_msg}</p>
+                <div class="text-xs text-gray-500 mt-1 flex justify-between">
+                  <span>${user ? (user.first_name || "") + " " + (user.last_name || "") : ""}</span>
+                  <span>${rTime}</span>
                 </div>
-                
-                <!-- Profile picture -->
-                                ${thread.photo_url 
-                  ? `<img src="${thread.photo_url}" 
-                          class="w-8 h-8 rounded-full object-cover" 
-                          alt="${thread.first_name || ''}">`
-                  : `<svg class="w-8 h-8 rounded-full bg-gray-300 p-1 text-gray-500" 
-                         fill="currentColor" viewBox="0 0 24 24">
-                       <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                     </svg>`}
-
               </div>
             `;
 
-            container.appendChild(wrapper);
+            threadWrapper.appendChild(reply);
           });
+
+          container.appendChild(threadWrapper);
         });
 
-        // Keep scroll at top (oldest first visible)
+        // Scroll to top
         container.scrollTop = 0;
-
       } catch (error) {
-        console.error(error);
         document.getElementById("messages").innerHTML =
-          `<p class="text-red-500 text-center">Error fetching messages ❌</p>`;
+          `<p class="col-span-3 text-red-500 text-center">Error fetching messages ❌</p>`;
       }
     }
 
