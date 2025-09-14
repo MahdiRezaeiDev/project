@@ -1,8 +1,8 @@
 <?php
-require_once './config/constants.php';
-require_once './database/db_connect.php';
-require_once './utilities/callcenter/DollarRateHelper.php';
-require_once './app/controller/telegram/AutoMessageController.php';
+require_once '../config/constants.php';
+require_once '../database/db_connect.php';
+require_once '../utilities/callcenter/DollarRateHelper.php';
+require_once '../app/controller/telegram/AutoMessageController.php';
 $status = getStatus();
 function boot()
 {

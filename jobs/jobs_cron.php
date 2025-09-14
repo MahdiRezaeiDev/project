@@ -3,8 +3,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once './config/constants.php';
-require_once './database/db_connect.php';
+require_once '../config/constants.php';
+require_once '../database/db_connect.php';
 
 $now = date('H:i:s');
 echo "\n\n*************** Bill cron jobs started ( $now ) ************************\n\n";
