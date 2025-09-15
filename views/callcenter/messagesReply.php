@@ -38,12 +38,21 @@ require_once '../../layouts/callcenter/sidebar.php';
   </style>
 
   <script>
-    // Detect negative replies
     function isNegative(text) {
-      const negatives = ['نه', 'خیر', 'نمیشه', 'مشکل', 'fail', 'no', 'noo', 'متاسفانه'];
-      text = (text || "").toLowerCase();
-      return negatives.some(word => text.includes(word));
+      const negatives = ['نه', 'نمیشه', 'مشکل', 'fail', 'no', 'noo', 'متاسفانه', 'نمیخوام', 'نمیخواد', 'ندارم', 'نداریم'];
+      const exactNegatives = ['*', '**', '-', '0']; // exact-only
+
+      text = (text || "").trim().toLowerCase();
+
+      // Check substring matches
+      if (negatives.some(word => text.includes(word))) return true;
+
+      // Check exact matches
+      if (exactNegatives.includes(text)) return true;
+
+      return false;
     }
+
 
     async function loadReplies() {
       const params = new URLSearchParams();
@@ -96,16 +105,20 @@ require_once '../../layouts/callcenter/sidebar.php';
 
             let messageText = r.reply_msg || '';
 
-            // Skip negative replies → only collect avatar
+            // Skip negative replies → only collect avatar + tooltip
             if (isNegative(messageText)) {
               if (user && user.photo_url) {
-                negativeProfiles.push(user.photo_url);
+                negativeProfiles.push({
+                  url: user.photo_url,
+                  msg: messageText
+                });
               }
               return; // don't render text
             }
 
             // Replace stickers/images with labels
             if (messageText === '[image]') messageText = '[تصویر]';
+            if (messageText === '[Document]') messageText = '[تصویر]';
             if (messageText === '[sticker]') messageText = '[استیکر]';
 
             const reply = document.createElement("div");
@@ -132,18 +145,37 @@ require_once '../../layouts/callcenter/sidebar.php';
             threadWrapper.appendChild(reply);
           });
 
-          // Show only avatars of negative replies at the bottom
+          // Show only avatars of negative replies at the bottom (with tooltip)
           if (negativeProfiles.length > 0) {
             const negContainer = document.createElement("div");
             negContainer.className = "flex gap-2 mt-3 flex-wrap";
-            negativeProfiles.forEach(url => {
+
+            negativeProfiles.forEach(item => {
+              const wrapper = document.createElement("div");
+              wrapper.className = "relative group";
+
               const img = document.createElement("img");
-              img.src = url;
-              img.className = "w-10 h-10 rounded-full object-cover border-2 border-red-400";
-              negContainer.appendChild(img);
+              img.src = item.url;
+              img.className = "w-10 h-10 rounded-full object-cover border-2 border-red-400 cursor-pointer";
+
+              // Tooltip element
+              const tooltip = document.createElement("div");
+              tooltip.textContent = item.msg;
+              tooltip.className = `
+      absolute bottom-full left-1/2 -translate-x-1/2 mb-2
+      hidden group-hover:block
+      bg-gray-800 text-white text-xs px-2 py-1 rounded-lg shadow-lg
+      whitespace-nowrap z-50
+    `;
+
+              wrapper.appendChild(img);
+              wrapper.appendChild(tooltip);
+              negContainer.appendChild(wrapper);
             });
+
             threadWrapper.appendChild(negContainer);
           }
+
 
           container.appendChild(threadWrapper);
         });
