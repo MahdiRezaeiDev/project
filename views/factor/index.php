@@ -271,9 +271,9 @@ require_once '../../layouts/callcenter/sidebar.php';
                     </div>
                     <div class="w-14 flex flex-col justify-center items-center">
                         <img class="w-10 h-10 rounded-full" src="../../public/userimg/${factor.user_id}.jpg"/>
-                        ${factor.exists_in_deliveries > 0 ? `<span title="این فاکتور ${factor.exists_in_deliveries} بار تحویل شده است" class="absolute bottom-0 left-0 text-white text-xs rounded-full px-1">
-                        <img class="w-6 h-6 mt-1" src="${deliveryIcon}" title="${factor.delivery_type}" />
-                        </span>` : ''}
+                        <span title="این فاکتور ${factor.exists_in_deliveries} بار تحویل شده است" class="absolute bottom-0 left-0 text-white text-xs rounded-full px-1">
+                            <img class="w-6 h-6 mt-1" src="${deliveryIcon}" title="${factor.delivery_type}" />
+                        </span>
                     </div> 
                 </div>
             `;
