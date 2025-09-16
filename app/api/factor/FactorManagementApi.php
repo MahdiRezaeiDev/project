@@ -32,13 +32,33 @@ if (isset($_POST['getUserCompleteBills'])) {
 function getUsersCompleteBills($user, $date)
 {
     try {
-        $baseSql = "SELECT customer.name, customer.family, bill.id, bill.bill_number, bill.quantity, bill.bill_date,
-                            bill.total, bill.user_id, bill.partner ,bill_details.billDetails
-                    FROM factor.bill
-                    INNER JOIN callcenter.customer ON customer_id = customer.id
-                    INNER JOIN factor.bill_details ON bill.id = bill_details.bill_id
-                    WHERE DATE(bill.created_at) = :date
-                    AND status = 1";
+        $baseSql = "
+            SELECT 
+                customer.name, 
+                customer.family, 
+                bill.id, 
+                bill.bill_number, 
+                bill.quantity, 
+                bill.bill_date,
+                bill.total, 
+                bill.user_id, 
+                bill.partner,
+                bill_details.billDetails,
+                deliveries.type AS delivery_type,
+                CASE 
+                    WHEN deliveries.bill_number IS NOT NULL THEN TRUE
+                    ELSE FALSE
+                END AS exists_in_deliveries
+            FROM factor.bill
+            INNER JOIN callcenter.customer 
+                ON bill.customer_id = customer.id
+            INNER JOIN factor.bill_details 
+                ON bill.id = bill_details.bill_id
+            LEFT JOIN factor.deliveries 
+                ON bill.bill_number = deliveries.bill_number
+            WHERE DATE(bill.created_at) = :date
+              AND bill.status = 1
+        ";
 
         if ($user !== 'all') {
             $baseSql .= " AND bill.user_id = :user";
@@ -58,9 +78,8 @@ function getUsersCompleteBills($user, $date)
 
         return $data;
     } catch (PDOException $e) {
-        // Log the error and handle it appropriately
         error_log('Database error: ' . $e->getMessage());
-        return []; // or throw an exception
+        return [];
     }
 }
 

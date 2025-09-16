@@ -187,94 +187,112 @@ require_once '../../layouts/callcenter/sidebar.php';
     }
 
     // Attache the above retrieved data to its specific container
+    function getDeliveryIcon(type) {
+        switch (type) {
+            case 'تیپاکس':
+            case 'اتوبوس':
+            case 'سواری':
+            case 'باربری':
+                return './assets/img/delivery.svg';
+            case 'پیک مشتری':
+                return './assets/img/customer_copy.svg';
+            case 'پیک یدک شاپ':
+                return './assets/img/yadakshop.svg';
+            case 'هوایی':
+                return './assets/img/airplane.svg';
+            default:
+                return './assets/img/customer_copy.svg';
+        }
+    }
+
     function appendCompleteFactorResults(factors) {
         const completed_bill = document.getElementById('completed_bill');
         completed_bill.innerHTML = '';
         const user = '<?= $_SESSION['username']; ?>';
+
         if (factors.length > 0) {
             for (const factor of factors) {
+                const deliveryIcon = getDeliveryIcon(factor.delivery_type);
+
                 completed_bill.innerHTML += `
-                                        <div class="card-container flex justify-between cursor-pointer h-24 relative border p-3 rounded shadow-sm flex-wrap mb-2 ${factor.partner ? 'bg-green-200': ''} ">
-                                            <div class="flex-grow flex flex-col justify-between px-3">
-                                                <div class="flex justify-between">
-                                                    <p class="text-sm font-bold">
-                                                        شماره فاکتور:
-                                                        ${factor.bill_number}
-                                                    </p>
-                                                    <p class="text-sm font-semibold">
-                                                     اقلام:
-                                                        ${factor.quantity}
-                                                    </p>
-                                                    <p class="text-sm font-semibold">
-                                                        تاریخ فاکتور:
-                                                        ${factor.bill_date}
-                                                    </p>
-                                                </div>
-                                                <div class="flex justify-between">
-                                                    <p class="text-sm font-bold">
-                                                        مشتری: 
-                                                        ${factor.name ?? ''} ${factor.family ?? ''}
-                                                    </p>
-                                                     <p class="text-sm font-semibold">
-                                                        ردیف:
-                                                        ${JSON.parse(factor.billDetails).length}
-                                                    </p>
-                                                    <p class="text-sm font-semibold">
-                                                        قیمت کل:
-                                                        ${formatAsMoney(factor.total)}
-                                                    </p>
-                                                </div>
-                                                <div class="edit-container absolute left-0 right-0 bottom-0 top-0 bg-gray-100 flex justify-center items-center">
-                                                    <ul class="flex items-center gap-2">
-                                                        <a target="_blank" href="./complete.php?factor_number=${factor.id}" >
-                                                            <img src="./assets/img/editFactor.svg" class="hover:scale-125" />
-                                                        </a>
-                                                        <li onClick="createIncompleteBill('${factor.id}', ${factor.partner})" title="ایجاد پیش فاکتور از این فاکتور">
-                                                            <img src="./assets/img/useFactorTemplate.svg" class="hover:scale-125" />
-                                                        </li>
-                                                        <li onClick="copyFactorInfo(this,'${factor.name}', '${factor.family}','${factor.bill_number}', '${formatAsMoney(factor.total)}')" title="کپی کردن مشخصات فاکتور">
-                                                            <img src="./assets/img/copy.svg" class="hover:scale-125" />
-                                                        </li>
-                                                        <li title="تنظیم فاکتور پیش خروج">
-                                                            <a target="_blank" href="./preSellFactorDetails.php?factor_number=${factor.id}">
-                                                                <img src="./assets/img/sell.svg" class="hover:scale-125" />
-                                                            </a>
-                                                        </li>
-                                                        <li title="ثبت واریزی">
-                                                            <a target="_blank" href="./addPayment.php?factor=${factor.bill_number}">
-                                                                <img class="w-5 h-5" src="./assets/img/factor.svg" class="hover:scale-125" />
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="w-14 flex justify-center items-center">
-                                                <img class="w-10 h-10 rounded-full" src="../../public/userimg/${factor.user_id}.jpg"/>
-                                            </div> 
-                                        </div>
-                                    `;
+                <div class="card-container flex justify-between cursor-pointer h-24 relative border p-3 rounded shadow-sm flex-wrap mb-2 ${factor.partner ? 'bg-green-200': ''} ">
+                    <div class="flex-grow flex flex-col justify-between px-3">
+                        <div class="flex justify-between">
+                            <p class="text-sm font-bold">
+                                شماره فاکتور:
+                                ${factor.bill_number}
+                            </p>
+                            <p class="text-sm font-semibold">
+                                اقلام:
+                                ${factor.quantity}
+                            </p>
+                            <p class="text-sm font-semibold">
+                                تاریخ فاکتور:
+                                ${factor.bill_date}
+                            </p>
+                        </div>
+                        <div class="flex justify-between">
+                            <p class="text-sm font-bold">
+                                مشتری: 
+                                ${factor.name ?? ''} ${factor.family ?? ''}
+                            </p>
+                             <p class="text-sm font-semibold">
+                                ردیف:
+                                ${JSON.parse(factor.billDetails).length}
+                            </p>
+                            <p class="text-sm font-semibold">
+                                قیمت کل:
+                                ${formatAsMoney(factor.total)}
+                            </p>
+                        </div>
+                        <div class="edit-container absolute left-0 right-0 bottom-0 top-0 bg-gray-100 flex justify-center items-center">
+                            <ul class="flex items-center gap-2">
+                                <a target="_blank" href="./complete.php?factor_number=${factor.id}" >
+                                    <img src="./assets/img/editFactor.svg" class="hover:scale-125" />
+                                </a>
+                                <li onClick="createIncompleteBill('${factor.id}', ${factor.partner})" title="ایجاد پیش فاکتور از این فاکتور">
+                                    <img src="./assets/img/useFactorTemplate.svg" class="hover:scale-125" />
+                                </li>
+                                <li onClick="copyFactorInfo(this,'${factor.name}', '${factor.family}','${factor.bill_number}', '${formatAsMoney(factor.total)}')" title="کپی کردن مشخصات فاکتور">
+                                    <img src="./assets/img/copy.svg" class="hover:scale-125" />
+                                </li>
+                                <li title="تنظیم فاکتور پیش خروج">
+                                    <a target="_blank" href="./preSellFactorDetails.php?factor_number=${factor.id}">
+                                        <img src="./assets/img/sell.svg" class="hover:scale-125" />
+                                    </a>
+                                </li>
+                                <li title="ثبت واریزی">
+                                    <a target="_blank" href="./addPayment.php?factor=${factor.bill_number}">
+                                        <img class="w-5 h-5" src="./assets/img/factor.svg" class="hover:scale-125" />
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="w-14 flex flex-col justify-center items-center">
+                        <img class="w-10 h-10 rounded-full" src="../../public/userimg/${factor.user_id}.jpg"/>
+                        ${factor.exists_in_deliveries > 0 ? `<span title="این فاکتور ${factor.exists_in_deliveries} بار تحویل شده است" class="absolute bottom-0 left-0 text-white text-xs rounded-full px-1">
+                        <img class="w-6 h-6 mt-1" src="${deliveryIcon}" title="${factor.delivery_type}" />
+                        </span>` : ''}
+                    </div> 
+                </div>
+            `;
             }
-
-
         } else {
             completed_bill.innerHTML = `<div class="flex flex-col justify-center items-center h-24 border border-rose-400 p-3 rounded shadow-sm shadow-rose-300 bg-rose-300">
-                                            <svg width="40px" height="40px" viewBox="0 -0.5 17 17" version="1.1"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                xmlns:xlink="http://www.w3.org/1999/xlink" class="si-glyph si-glyph-folder-error mb-2">
-                                                <title>938</title>
-                                                <defs>
-                                                </defs>
-                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                    <g transform="translate(1.000000, 2.000000)" fill="#fff">
-                                                        <path d="M7.35,3 L5.788,0.042 L2.021,0.042 L2.021,1.063 L0.023,1.063 L0.023,10.976 L1.043,10.976 L1.045,11.976 L15.947,11.976 L15.968,3 L7.35,3 L7.35,3 Z M10.918,9.109 L10.09,9.938 L8.512,8.361 L6.934,9.938 L6.104,9.109 L7.682,7.531 L6.104,5.953 L6.934,5.125 L8.512,6.701 L10.088,5.125 L10.918,5.953 L9.34,7.531 L10.918,9.109 L10.918,9.109 Z" class="si-glyph-fill"></path>
-                                                        <path d="M13.964,1.982 L13.964,1.042 L8.024,1.042 L8.354,1.982 L13.964,1.982 Z" class="si-glyph-fill"></path>
-                                                    </g>
-                                                </g>
-                                            </svg>      
-                                            <p class="text-md text-white">فاکتوری برای تاریخ مشخص شده درج نشده است.</p>
-                                        </div>`;
+            <svg width="40px" height="40px" viewBox="0 -0.5 17 17" xmlns="http://www.w3.org/2000/svg" class="si-glyph si-glyph-folder-error mb-2">
+                <g stroke="none" fill="none" fill-rule="evenodd">
+                    <g transform="translate(1.000000, 2.000000)" fill="#fff">
+                        <path d="M7.35,3 L5.788,0.042 L2.021,0.042 L2.021,1.063 L0.023,1.063 L0.023,10.976 L1.043,10.976 L1.045,11.976 L15.947,11.976 L15.968,3 L7.35,3 L7.35,3 Z M10.918,9.109 L10.09,9.938 L8.512,8.361 L6.934,9.938 L6.104,9.109 L7.682,7.531 L6.104,5.953 L6.934,5.125 L8.512,6.701 L10.088,5.125 L10.918,5.953 L9.34,7.531 L10.918,9.109 L10.918,9.109 Z"/>
+                        <path d="M13.964,1.982 L13.964,1.042 L8.024,1.042 L8.354,1.982 L13.964,1.982 Z"/>
+                    </g>
+                </g>
+            </svg>      
+            <p class="text-md text-white">فاکتوری برای تاریخ مشخص شده درج نشده است.</p>
+        </div>`;
         }
     }
+
 
     // Get the specific user Incomplete bills for specific date
     function getUserIncompleteBills() {
