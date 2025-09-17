@@ -111,6 +111,71 @@ require_once '../../layouts/callcenter/sidebar.php';
     پیش فاکتور شما با موفقیت ایجاد شد.
     <a id="factor_link" class="text-blue-800 text-sm px-2 underline" href="">ویرایش فاکتور</a>
 </div>
+<div id="deliveryModal" class="hidden fixed inset-0 bg-gray-900/75 flex justify-center items-center">
+    <div class="bg-white p-4 rounded w-2/3">
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl mb-2">ارسال اجناس</h2>
+            <img class="cursor-pointer" src="./assets/img/close.svg" alt="close icon" onclick="document.getElementById('deliveryModal').classList.add('hidden')">
+        </div>
+        <div class="modal-body">
+            <table class="w-full my-4 ">
+                <thead class="bg-gray-700">
+                    <tr>
+                        <th class="text-xs text-white font-semibold p-3">شماره فاکتور</th>
+                        <th class="text-xs text-white font-semibold p-3">روش ارسال</th>
+                        <th class="text-xs text-white font-semibold p-3">آدرس مقصد</th>
+                        <th class="text-xs text-white font-semibold p-3">پیام رسان مشتری</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-gray-100">
+                        <td class="text-gray-600 text-xs p-3 text-center font-semibold" id="display_billNumber"></td>
+                        <td class="text-gray-600 text-xs p-3 text-center font-semibold" id="display_deliveryType"></td>
+                        <td class="text-gray-600 text-xs p-3 text-center font-semibold" id="display_destination"></td>
+                        <td class="text-gray-600 text-xs p-3 text-center font-semibold" id="display_contactType"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <form action="" onsubmit="submitDelivery(event)" class="mt-4">
+                <input type="hidden" name="billNumber" id="deliveryBillNumber" value="">
+                <div class="mt-4">
+                    <label class="block text-sm font-semibold mb-2" for="deliveryType">روش ارسال:</label>
+                    <select required id="deliveryType" name="deliveryType" class="w-full border-2 border-gray-300 p-2 rounded">
+                        <option value="پیک مشتری">پیک خود مشتری</option>
+                        <option value="پیک خود مشتری بعد از اطلاع">پیک خود مشتری بعد از اطلاع </option>
+                        <option value="پیک یدک شاپ">پیک یدک شاپ</option>
+                        <option value="اتوبوس">اتوبوس</option>
+                        <option value="تیپاکس">تیپاکس</option>
+                        <option value="سواری">سواری</option>
+                        <option value="باربری">باربری</option>
+                        <option value="هوایی">هوایی</option>
+                    </select>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-semibold mb-2" for="address">آدرس مقصد:</label>
+                    <input value="تهران" type="text" id="address" name="address" class="w-full border-2 border-gray-300 p-2 rounded" placeholder="آدرس ارسال را وارد کنید...">
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-semibold mb-2" for="contactType"> پیام رسان مشتری:</label>
+                    <select required id="contactType" name="contactType" class="w-full border-2 border-gray-300 p-2 rounded">
+                        <option value="واتساپ" selected>واتساپ</option>
+                        <option value="واتساپ راست">واتساپ راست</option>
+                        <option value="واتساپ چپ">واتساپ چپ</option>
+                        <option value="تلگرام">تلگرام</option>
+                        <option value="تلگرام پشتیبانی ">تلگرام پشتیبانی </option>
+                        <option value="تلگرام یدک شاپ ">تلگرام یدک شاپ </option>
+                        <option value="تلگرام واریزی">تلگرام واریزی</option>
+                        <option value="تلگرام کره">تلگرام کره</option>
+                    </select>
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">ثبت ارسال</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <script>
     const factorManagementApi = '../../app/api/factor/FactorManagementApi.php';
 
@@ -272,7 +337,16 @@ require_once '../../layouts/callcenter/sidebar.php';
                     <div class="w-14 flex flex-col justify-center items-center">
                         <img class="w-10 h-10 rounded-full" src="../../public/userimg/${factor.user_id}.jpg"/>
                         <span title="این فاکتور ${factor.exists_in_deliveries} بار تحویل شده است" class="absolute bottom-0 left-0 text-white text-xs rounded-full px-1">
-                            <img class="w-6 h-6 mt-1" src="${deliveryIcon}" title="${factor.delivery_type}" />
+                            <img 
+                             onclick="displayDeliveryModal(this)"
+                            data-bill="${factor.bill_number}"
+                            data-contact="${factor.contact_type}"
+                            data-destination="${factor.destination}"
+                            data-type="${factor.delivery_type}"
+                            data-address="${factor.customer_address}"
+                            alt="arrow icon"
+                            title="ارسال اجناس"
+                            class="w-6 h-6 mt-1" src="${deliveryIcon}" title="${factor.delivery_type}" />
                         </span>
                     </div> 
                 </div>
@@ -404,6 +478,79 @@ require_once '../../layouts/callcenter/sidebar.php';
         active_date = now;
         getUserSavedBills();
         getUserIncompleteBills();
+    }
+
+    function displayDeliveryModal(element) {
+        const billNumber = element.dataset.bill;
+        const contactType = element.dataset.contact;
+        const destination = element.dataset.destination;
+        const deliveryType = element.dataset.type;
+        const address = element.dataset.address || 'تهران';
+
+        // Set display text
+        document.getElementById('display_billNumber').innerText = billNumber;
+        document.getElementById('display_contactType').innerText = contactType;
+        document.getElementById('display_destination').innerText = destination;
+        document.getElementById('display_deliveryType').innerText = deliveryType;
+
+        // Set form values
+        document.getElementById('deliveryBillNumber').value = billNumber;
+        document.getElementById('address').value = address;
+
+        // Select dropdown options if they exist
+        const deliverySelect = document.getElementById('deliveryType');
+        if (deliverySelect && deliveryType) {
+            deliverySelect.value = deliveryType;
+        }
+
+        const contactSelect = document.getElementById('contactType');
+        if (contactSelect && contactType) {
+            contactSelect.value = contactType;
+        }
+
+        // Show modal
+        document.getElementById('deliveryModal').classList.remove('hidden');
+    }
+
+    function submitDelivery(event) {
+        event.preventDefault();
+        const deliveryType = document.getElementById('deliveryType').value;
+        const deliveryBillNumber = document.getElementById('deliveryBillNumber').value;
+        const address = document.getElementById('address').value;
+        const contactType = document.getElementById('contactType').value;
+        const params = new URLSearchParams();
+        params.append('submitDelivery', 'submitDelivery');
+        params.append('deliveryType', deliveryType);
+        params.append('address', address);
+        params.append('contactType', contactType);
+        params.append('billNumber', deliveryBillNumber);
+        axios.post("../../app/api/factor/DeliveryApi.php", params)
+            .then(function(response) {
+                document.getElementById('deliveryModal').classList.add('hidden');
+                showToast("ارسال با موفقیت ثبت شد.");
+            })
+            .catch(function(error) {
+                alert("خطا در هنگام ثبت ارسال، لطفا مجددا تلاش نمایید");
+            });
+
+    }
+
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.className = `fixed bottom-5 right-5 px-4 py-2 rounded shadow-lg text-white z-50 transition-opacity duration-500 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+
+        document.body.appendChild(toast);
+
+        // Remove toast and reload after 3s
+        setTimeout(() => {
+            toast.classList.add('opacity-0');
+            setTimeout(() => {
+                toast.remove();
+                location.reload();
+            }, 500); // wait for fade-out animation
+        }, 3000);
     }
 
     // create new Incomplete date for modification or assigning new bill

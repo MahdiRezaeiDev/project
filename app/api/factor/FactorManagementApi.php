@@ -36,15 +36,19 @@ function getUsersCompleteBills($user, $date)
             SELECT 
                 customer.name, 
                 customer.family, 
+                customer.address AS customer_address,
                 bill.id, 
                 bill.bill_number, 
                 bill.quantity, 
                 bill.bill_date,
                 bill.total, 
-                bill.user_id, 
+                bill.user_id,
                 bill.partner,
                 bill_details.billDetails,
                 deliveries.type AS delivery_type,
+                deliveries.contact_type,
+                deliveries.destination,
+                deliveries.user_id AS delivery_user_id,
                 CASE 
                     WHEN deliveries.bill_number IS NOT NULL THEN TRUE
                     ELSE FALSE
