@@ -63,7 +63,9 @@ require_once '../../layouts/callcenter/sidebar.php';
                                     <!-- شماره فاکتور + Tooltip -->
                                     <td class="px-2 py-2 border-b text-xs relative">
                                         <?= htmlspecialchars($delivery['bill_number']) ?>
+                                    </td>
 
+                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?>
                                         <?php if (!empty($delivery['items_preview'])): ?>
                                             <div class="absolute left-0 top-full mt-1 w-64 bg-gray-800 text-white text-xs 
                                         rounded p-2 hidden group-hover:block z-50 whitespace-pre-line shadow-lg">
@@ -77,8 +79,6 @@ require_once '../../layouts/callcenter/sidebar.php';
                                             </div>
                                         <?php endif; ?>
                                     </td>
-
-                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?></td>
 
                                     <td class="px-2 py-2 border-b text-xs">
                                         <input type="checkbox" onclick="toggleStatus(this, <?= $delivery['id'] ?>)"
@@ -138,6 +138,9 @@ require_once '../../layouts/callcenter/sidebar.php';
                                     <!-- شماره فاکتور + Tooltip -->
                                     <td class="px-2 py-2 border-b text-xs relative">
                                         <?= htmlspecialchars($delivery['bill_number']) ?>
+                                    </td>
+
+                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?>
                                         <?php if (!empty($delivery['items_preview'])): ?>
                                             <div class="absolute left-0 top-full mt-1 w-64 bg-gray-800 text-white text-xs rounded 
                                         p-2 hidden group-hover:block z-50 whitespace-pre-line shadow-lg">
@@ -151,8 +154,6 @@ require_once '../../layouts/callcenter/sidebar.php';
                                             </div>
                                         <?php endif; ?>
                                     </td>
-
-                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?></td>
 
                                     <td class="px-2 py-2 border-b text-xs">
                                         <input type="checkbox"
@@ -320,7 +321,7 @@ require_once '../../layouts/callcenter/sidebar.php';
                         let tooltip = '';
                         if (delivery.items_preview && delivery.items_preview.length > 0) {
                             delivery.items_preview.forEach(item => {
-                                tooltip += `${item.partName} - ${item.quantity} × ${item.price}\n`;
+                                tooltip += `${item.partName} - ${item.quantity} \n`;
                             });
                             if (delivery.items_preview.length > 3) tooltip += '...';
                         } else {
@@ -373,7 +374,7 @@ require_once '../../layouts/callcenter/sidebar.php';
                         let tooltip = '';
                         if (delivery.items_preview && delivery.items_preview.length > 0) {
                             delivery.items_preview.forEach(item => {
-                                tooltip += `${item.partName} - ${item.quantity} × ${item.price}\n`;
+                                tooltip += `${item.partName} - ${item.quantity}\n`;
                             });
                             if (delivery.items_preview.length > 3) tooltip += '...';
                         } else {
