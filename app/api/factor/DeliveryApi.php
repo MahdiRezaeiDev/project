@@ -75,10 +75,28 @@ if (isset($_POST['getPreviousDeliveries'])) {
             $stmt->bindParam(':user', $user, PDO::PARAM_INT);
         }
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $deliveries = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Fetch items from bill_details table and attach preview
+        foreach ($deliveries as &$delivery) {
+            $stmtItems = PDO_CONNECTION->prepare("SELECT billDetails FROM factor.bill_details WHERE bill_id = :bill_id");
+            $stmtItems->bindParam(':bill_id', $delivery['bill_id'], PDO::PARAM_INT);
+            $stmtItems->execute();
+            $result = $stmtItems->fetch(PDO::FETCH_ASSOC);
+
+            $items = [];
+            if ($result && !empty($result['billDetails'])) {
+                $allItems = json_decode($result['billDetails'], true);
+                if ($allItems) {
+                    $items = array_slice($allItems, 0, 3); // take up to 3 items
+                }
+            }
+            $delivery['items_preview'] = $items;
+        }
+
+        return $deliveries;
     }
 
-    // Now just call the function with conditions:
     $YadakDeliveries = getDeliveries($date, $user, "type = 'پیک یدک شاپ'");
     $customerDeliveries = getDeliveries($date, $user, "type = 'پیک خود مشتری بعد از اطلاع'");
     $allDeliveries = getDeliveries($date, $user, "type != 'پیک خود مشتری بعد از اطلاع' AND type != 'پیک یدک شاپ'");
@@ -91,10 +109,14 @@ if (isset($_POST['getPreviousDeliveries'])) {
     ]);
 }
 
-
 if (isset($_POST['toggleStatus'])) {
     $is_ready = $_POST['status'];
     $id = $_POST['delivery'];
+    $approved_by = $_POST['approved_by'];
+
+    if ($is_ready) {
+        $is_ready = $approved_by;
+    }
 
     $stmt = PDO_CONNECTION->prepare("UPDATE factor.deliveries SET is_ready = :is_ready WHERE id = :id");
     $stmt->bindParam(':is_ready', $is_ready);
