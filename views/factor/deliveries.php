@@ -204,9 +204,7 @@ require_once '../../layouts/callcenter/sidebar.php';
                                             <img class="w-5 cursor-pointer d-block" title="مشاهده جزئیات" src="../callcenter/assets/img/explore.svg" />
                                         </a>
                                     </td>
-                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?></td>
-                                    <!-- 🟢 Tooltip with up to 3 items -->
-                                    <td class="relative">
+                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?>
                                         <div class="absolute left-0 top-full mt-1 min-w-[16rem] max-w-[24rem] bg-gray-800 text-white text-xs rounded p-2 hidden group-hover:block z-50 whitespace-normal shadow-lg">
                                             <?php
                                             if (!empty($delivery['items_preview'])) {
@@ -220,7 +218,6 @@ require_once '../../layouts/callcenter/sidebar.php';
                                             ?>
                                         </div>
                                     </td>
-
                                     <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['bill_number']) ?></td>
                                     <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['contact_type']) ?></td>
                                     <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?></td>
