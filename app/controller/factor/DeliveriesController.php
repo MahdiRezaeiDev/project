@@ -8,6 +8,9 @@ $customerDeliveries = getCustomerDeliveries();
 $deliveries = getAllDeliveries();
 $users = getAllUsers();
 
+$yadakRemaining = getYadakShopNotReadyDeliveries();
+$customerRemaining = getCustomerNotReadyDeliveries();
+
 function getDeliveries()
 {
     $stmt = PDO_CONNECTION->prepare("
@@ -50,7 +53,6 @@ function getDeliveries()
     return $rows;
 }
 
-
 function getCustomerDeliveries()
 {
     $stmt = PDO_CONNECTION->prepare("
@@ -80,7 +82,6 @@ function getCustomerDeliveries()
 
     return $deliveries;
 }
-
 
 function getAllDeliveries()
 {
@@ -115,6 +116,96 @@ function getAllDeliveries()
     }
 
     return $deliveries;
+}
+
+function getYadakShopNotReadyDeliveries()
+{
+    $stmt = PDO_CONNECTION->prepare("
+    SELECT d.*, 
+           b.id as bill_id, 
+           s.kharidar,
+           bd.billDetails
+    FROM factor.deliveries d
+    INNER JOIN factor.bill b 
+        ON d.bill_number = b.bill_number
+    INNER JOIN factor.shomarefaktor s 
+        ON b.bill_number = s.shomare
+    LEFT JOIN factor.bill_details bd 
+        ON bd.bill_id = b.id
+    WHERE (
+              (d.is_ready = 0 AND DATE(d.created_at) < CURDATE())
+           OR (DATE(d.updated_at) = CURDATE() AND DATE(d.created_at) < CURDATE())
+          )
+      AND d.type = 'پیک یدک شاپ'
+    ORDER BY d.created_at DESC ");
+
+    $stmt->execute();
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($rows as &$row) {
+        $row['items_preview'] = [];
+        if (!empty($row['billDetails'])) {
+            $details = json_decode($row['billDetails'], true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($details)) {
+                // Take up to 3 items only
+                $preview = array_slice($details, 0, 3);
+                foreach ($preview as $item) {
+                    $row['items_preview'][] = [
+                        'partName' => $item['partName'] ?? '',
+                        'quantity' => $item['quantity'] ?? '',
+                        'price'    => $item['price_per'] ?? ''
+                    ];
+                }
+            }
+        }
+    }
+
+    return $rows;
+}
+
+function getCustomerNotReadyDeliveries()
+{
+    $stmt = PDO_CONNECTION->prepare("
+    SELECT d.*, 
+           b.id as bill_id, 
+           s.kharidar,
+           bd.billDetails
+    FROM factor.deliveries d
+    INNER JOIN factor.bill b 
+        ON d.bill_number = b.bill_number
+    INNER JOIN factor.shomarefaktor s 
+        ON b.bill_number = s.shomare
+    LEFT JOIN factor.bill_details bd 
+        ON bd.bill_id = b.id
+    WHERE (
+              (d.is_ready = 0 AND DATE(d.created_at) < CURDATE())
+           OR (DATE(d.updated_at) = CURDATE() AND DATE(d.created_at) < CURDATE())
+          )
+      AND d.type = 'پیک خود مشتری بعد از اطلاع'
+    ORDER BY d.created_at DESC ");
+
+    $stmt->execute();
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($rows as &$row) {
+        $row['items_preview'] = [];
+        if (!empty($row['billDetails'])) {
+            $details = json_decode($row['billDetails'], true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($details)) {
+                // Take up to 3 items only
+                $preview = array_slice($details, 0, 3);
+                foreach ($preview as $item) {
+                    $row['items_preview'][] = [
+                        'partName' => $item['partName'] ?? '',
+                        'quantity' => $item['quantity'] ?? '',
+                        'price'    => $item['price_per'] ?? ''
+                    ];
+                }
+            }
+        }
+    }
+
+    return $rows;
 }
 
 function getAllUsers()

@@ -118,7 +118,11 @@ if (isset($_POST['toggleStatus'])) {
         $is_ready = $approved_by;
     }
 
-    $stmt = PDO_CONNECTION->prepare("UPDATE factor.deliveries SET is_ready = :is_ready WHERE id = :id");
+    $stmt = PDO_CONNECTION->prepare("
+    UPDATE factor.deliveries
+    SET is_ready = :is_ready,
+        updated_at = NOW()
+    WHERE id = :id");
     $stmt->bindParam(':is_ready', $is_ready);
     $stmt->bindParam(':id', $id);
     return $stmt->execute();

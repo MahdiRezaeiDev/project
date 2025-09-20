@@ -5,6 +5,8 @@ require_once './components/header.php';
 require_once '../../app/controller/factor/DeliveriesController.php';
 require_once '../../layouts/callcenter/nav.php';
 require_once '../../layouts/callcenter/sidebar.php';
+
+print_r(json_encode(getYadakShopNotReadyDeliveries()))
 ?>
 <div class="flex flex-col w-full h-full">
     <div class="flex flex-col w-full h-full">
@@ -232,6 +234,164 @@ require_once '../../layouts/callcenter/sidebar.php';
                     </tbody>
                 </table>
 
+            </div>
+            <div class="py-8">
+                <h1 class="text-xl font-semibold mb-2">روز های قبل پیک یدک شاپ</h1>
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-700 text-white">
+                        <tr>
+                            <th class="px-2 py-2 border-b text-right text-xs">#</th>
+                            <th class="px-2 py-2 border-b text-right text-xs"></th>
+                            <th class="px-2 py-2 border-b text-right text-xs">مشتری</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">شماره فاکتور</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">آدرس</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">تاریخ</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">آماده</th>
+                            <th class="px-2 py-2 border-b text-right text-xs"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="yadakRemining">
+
+                        <?php if (!empty($yadakRemaining)): ?>
+                            <?php foreach ($yadakRemaining as $index => $delivery): ?>
+                                <tr id="record_<?= htmlspecialchars($delivery['bill_number']) ?>"
+                                    class="hover:bg-gray-100 even:bg-gray-50 relative group">
+
+                                    <td class="px-2 py-2 border-b text-xs"><?= ++$index; ?></td>
+
+                                    <td class="border-b text-xs">
+                                        <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $delivery['bill_id'] ?>">
+                                            <img class="w-5 cursor-pointer" title="مشاهده جزئیات"
+                                                src="../callcenter/assets/img/explore.svg" />
+                                        </a>
+                                    </td>
+
+                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?></td>
+
+                                    <!-- شماره فاکتور + Tooltip -->
+                                    <td class="px-2 py-2 border-b text-xs relative">
+                                        <?= htmlspecialchars($delivery['bill_number']) ?>
+                                    </td>
+
+                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?>
+                                        <?php if (!empty($delivery['items_preview'])): ?>
+                                            <div class="absolute left-0 top-full mt-1 w-64 bg-gray-800 text-white text-xs 
+                                        rounded p-2 hidden group-hover:block z-50 whitespace-pre-line shadow-lg">
+                                                <?php foreach ($delivery['items_preview'] as $item): ?>
+                                                    • <?= htmlspecialchars(mb_strimwidth($item['partName'], 0, 40, '...')) ?>
+                                                    (x<?= $item['quantity'] ?>)<br>
+                                                <?php endforeach; ?>
+                                                <?php if (count(json_decode($delivery['billDetails'], true)) > 3): ?>
+                                                    ...
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="px-2 py-2 border-b text-xs">
+                                        <?= jdate('Y/m/d', strtotime($delivery['created_at'])) ?>
+                                    </td>
+
+                                    <td class="px-2 py-2 border-b text-xs">
+                                        <input type="checkbox" onclick="toggleStatus(this, <?= $delivery['id'] ?>)"
+                                            name="is_ready" <?= $delivery['is_ready'] ? 'checked' : ''; ?>>
+                                    </td>
+
+                                    <td class="px-2 py-2 border-b text-xs">
+                                        <?php if ($delivery['is_ready']): ?>
+                                            <img class="w-6 h-6 rounded-full"
+                                                src="../../public/userimg/<?= $delivery['is_ready'] ?>.jpg" alt="">
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr class="hover:bg-gray-100 even:bg-gray-50">
+                                <td colspan="7" class="px-2 py-2 border-b text-xs text-center">
+                                    موردی برای این تاریخ ثبت نشده است.
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="py-8">
+                <h1 class="text-xl font-semibold mb-2"> پیک مشتری بعد تایید روز های قبل</h1>
+                <table class="min-w-full bg-white">
+                    <thead class="bg-green-700 text-white">
+                        <tr>
+                            <th class="px-2 py-2 border-b text-right text-xs">#</th>
+                            <th class="px-2 py-2 border-b text-right text-xs"></th>
+                            <th class="px-2 py-2 border-b text-right text-xs">مشتری</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">شماره فاکتور</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">آدرس</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">تاریخ</th>
+                            <th class="px-2 py-2 border-b text-right text-xs">آماده</th>
+                            <th class="px-2 py-2 border-b text-right text-xs"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="customerRemaining">
+                        <?php if (!empty($customerRemaining)): ?>
+                            <?php foreach ($customerRemaining as $index => $delivery): ?>
+                                <tr id="record_<?= $delivery['bill_number'] ?>"
+                                    class="hover:bg-gray-100 even:bg-gray-50 relative group">
+
+                                    <td class="px-2 py-2 border-b text-xs"><?= ++$index; ?></td>
+
+                                    <td class="border-b text-xs">
+                                        <a href="../factor/externalView.php?factorNumber=<?= $delivery['bill_id'] ?>">
+                                            <img class="w-5 cursor-pointer" title="مشاهده جزئیات"
+                                                src="../callcenter/assets/img/explore.svg" />
+                                        </a>
+                                    </td>
+
+                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?></td>
+
+                                    <!-- شماره فاکتور + Tooltip -->
+                                    <td class="px-2 py-2 border-b text-xs relative">
+                                        <?= htmlspecialchars($delivery['bill_number']) ?>
+                                    </td>
+
+                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?>
+                                        <?php if (!empty($delivery['items_preview'])): ?>
+                                            <div class="absolute left-0 top-full mt-1 w-64 bg-gray-800 text-white text-xs rounded 
+                                        p-2 hidden group-hover:block z-50 whitespace-pre-line shadow-lg">
+                                                <?php foreach ($delivery['items_preview'] as $item): ?>
+                                                    • <?= htmlspecialchars(mb_strimwidth($item['partName'], 0, 40, '...')) ?>
+                                                    (x<?= $item['quantity'] ?>)<br>
+                                                <?php endforeach; ?>
+                                                <?php if (count(json_decode($delivery['billDetails'], true)) > 3): ?>
+                                                    ...
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="px-2 py-2 border-b text-xs">
+                                        <?= jdate('Y/m/d', strtotime($delivery['created_at'])) ?>
+                                    </td>
+                                    <td class="px-2 py-2 border-b text-xs">
+                                        <input type="checkbox"
+                                            onclick="toggleStatus(this, <?= $delivery['id'] ?>)"
+                                            <?= $delivery['is_ready'] ? 'checked' : ''; ?>>
+                                    </td>
+
+                                    <td class="px-2 py-2 border-b text-xs">
+                                        <?php if ($delivery['is_ready']): ?>
+                                            <img class="w-6 h-6 rounded-full"
+                                                src="../../public/userimg/<?= $delivery['is_ready'] ?>.jpg" alt="">
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="7" class="text-center text-xs py-2">
+                                    موردی برای این تاریخ ثبت نشده است.
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
