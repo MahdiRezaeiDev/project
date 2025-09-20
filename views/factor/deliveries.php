@@ -5,8 +5,6 @@ require_once './components/header.php';
 require_once '../../app/controller/factor/DeliveriesController.php';
 require_once '../../layouts/callcenter/nav.php';
 require_once '../../layouts/callcenter/sidebar.php';
-
-print_r(json_encode(getYadakShopNotReadyDeliveries()))
 ?>
 <div class="flex flex-col w-full h-full">
     <div class="flex flex-col w-full h-full">
