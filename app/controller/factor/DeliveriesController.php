@@ -134,7 +134,7 @@ function getYadakShopNotReadyDeliveries()
         ON bd.bill_id = b.id
     WHERE (
               (d.is_ready = 0 AND DATE(d.created_at) < CURDATE())
-           OR (DATE(d.updated_at) = CURDATE() AND DATE(d.created_at) < CURDATE())
+           OR (DATE(d.updated_at) = CURDATE() AND DATE(d.created_at) < CURDATE() AND d.is_ready = 1)
           )
       AND d.type = 'پیک یدک شاپ'
     ORDER BY d.created_at DESC ");
@@ -179,7 +179,7 @@ function getCustomerNotReadyDeliveries()
         ON bd.bill_id = b.id
     WHERE (
               (d.is_ready = 0 AND DATE(d.created_at) < CURDATE())
-           OR (DATE(d.updated_at) = CURDATE() AND DATE(d.created_at) < CURDATE())
+           OR (DATE(d.updated_at) = CURDATE() AND DATE(d.created_at) < CURDATE() AND d.is_ready = 1)
           )
       AND d.type = 'پیک خود مشتری بعد از اطلاع'
     ORDER BY d.created_at DESC ");
