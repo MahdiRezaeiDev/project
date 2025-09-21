@@ -13,8 +13,10 @@ require_once '../../layouts/callcenter/sidebar.php';
 </div>
 <script>
     const container = document.getElementById('full');
+    const params = new URLSearchParams();
+    params.append('getTelegramAutoMessage', 'getTelegramAutoMessage');
     axios
-        .get("http://auto.yadak.center/")
+        .post("http://auto.yadak.center/", params)
         .then(function(response) {
             if (typeof response.data === 'object' && Object.keys(response.data).length !== 0) {
                 try {

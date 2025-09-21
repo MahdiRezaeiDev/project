@@ -36,9 +36,8 @@ function sendMessage() {
     params.append("data", JSON.stringify(receivers));
 
     axios
-      .post(externalAddressPoint, params)
+      .post('http://partners.yadak.center/api/message', params)
       .then(function (response) {
-        console.log(response.data);
       })
       .catch(function (error) {});
 
@@ -275,8 +274,12 @@ async function getContacts() {
       // Make the Axios request to fetch contact data
       const params = new URLSearchParams();
       params.append("getContacts", "getContacts");
-      const response = await axios.post(externalAddressPoint, params);
-      displayTelegramData(response.data);
+      const response = await axios.post(
+        "http://partners.yadak.center/api/contacts",
+        params
+      );
+      // Call the function to display the contact data
+      displayTelegramData(response.data.data);
       isLoadedTelegramContacts = true;
     } catch (error) {
       console.log(error);
