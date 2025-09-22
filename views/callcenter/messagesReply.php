@@ -60,7 +60,7 @@ require_once '../../layouts/callcenter/sidebar.php';
 
       try {
         const response = await axios.post("https://partners.yadak.center/api/replay", params);
-        const data = response.data;
+        const data = response.data.data;
         const container = document.getElementById("messages");
         container.innerHTML = "";
 
