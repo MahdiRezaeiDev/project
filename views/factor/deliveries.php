@@ -4,8 +4,8 @@ $iconUrl = 'delivery.svg';
 require_once './components/header.php';
 require_once '../../app/controller/factor/DeliveriesController.php';
 require_once '../../layouts/callcenter/nav.php';
-require_once '../../layouts/callcenter/sidebar.php';?>
-
+require_once '../../layouts/callcenter/sidebar.php';
+?>
 <div class="flex flex-col w-full h-full">
     <div class="flex flex-col w-full h-full">
         <div class="flex items-center justify-between px-2 py-2 bg-white shadow-md">
@@ -233,6 +233,8 @@ require_once '../../layouts/callcenter/sidebar.php';?>
                 </table>
 
             </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 p-4">
             <div class="py-8">
                 <h1 class="text-xl font-semibold mb-2">روز های قبل پیک یدک شاپ</h1>
                 <table class="min-w-full bg-white">
@@ -251,56 +253,66 @@ require_once '../../layouts/callcenter/sidebar.php';?>
                     <tbody id="yadakRemining">
 
                         <?php if (!empty($yadakRemaining)): ?>
-                            <?php foreach ($yadakRemaining as $index => $delivery): ?>
-                                <tr id="record_<?= htmlspecialchars($delivery['bill_number']) ?>"
-                                    class="hover:bg-gray-100 even:bg-gray-50 relative group">
-
-                                    <td class="px-2 py-2 border-b text-xs"><?= ++$index; ?></td>
-
-                                    <td class="border-b text-xs">
-                                        <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $delivery['bill_id'] ?>">
-                                            <img class="w-5 cursor-pointer" title="مشاهده جزئیات"
-                                                src="../callcenter/assets/img/explore.svg" />
-                                        </a>
-                                    </td>
-
-                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?></td>
-
-                                    <!-- شماره فاکتور + Tooltip -->
-                                    <td class="px-2 py-2 border-b text-xs relative">
-                                        <?= htmlspecialchars($delivery['bill_number']) ?>
-                                    </td>
-
-                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?>
-                                        <?php if (!empty($delivery['items_preview'])): ?>
-                                            <div class="absolute left-0 top-full mt-1 w-64 bg-gray-800 text-white text-xs 
-                                        rounded p-2 hidden group-hover:block z-50 whitespace-pre-line shadow-lg">
-                                                <?php foreach ($delivery['items_preview'] as $item): ?>
-                                                    • <?= htmlspecialchars(mb_strimwidth($item['partName'], 0, 40, '...')) ?>
-                                                    (x<?= $item['quantity'] ?>)<br>
-                                                <?php endforeach; ?>
-                                                <?php if (count(json_decode($delivery['billDetails'], true)) > 3): ?>
-                                                    ...
-                                                <?php endif; ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="px-2 py-2 border-b text-xs">
-                                        <?= jdate('Y/m/d', strtotime($delivery['created_at'])) ?>
-                                    </td>
-
-                                    <td class="px-2 py-2 border-b text-xs">
-                                        <input type="checkbox" onclick="toggleStatus(this, <?= $delivery['id'] ?>)"
-                                            name="is_ready" <?= $delivery['is_ready'] ? 'checked' : ''; ?>>
-                                    </td>
-
-                                    <td class="px-2 py-2 border-b text-xs">
-                                        <?php if ($delivery['is_ready']): ?>
-                                            <img class="w-6 h-6 rounded-full"
-                                                src="../../public/userimg/<?= $delivery['is_ready'] ?>.jpg" alt="">
-                                        <?php endif; ?>
+                            <?php foreach ($yadakRemaining as $date => $deliveries): ?>
+                                <tr class="bg-gray-200">
+                                    <td colspan="8" class="px-2 py-1 border-b text-xs font-bold text-center">
+                                        <?php
+                                        $daysPassed = (new DateTime())->diff(new DateTime($date))->days;
+                                        echo jdate('Y/m/d', strtotime($date)) . " — " . $daysPassed . " روز قبل";
+                                        ?>
                                     </td>
                                 </tr>
+                                <?php foreach ($deliveries as $index => $delivery): ?>
+                                    <tr id="record_<?= htmlspecialchars($delivery['bill_number']) ?>"
+                                        class="hover:bg-gray-100 even:bg-gray-50 relative group">
+
+                                        <td class="px-2 py-2 border-b text-xs"><?= ++$index; ?></td>
+
+                                        <td class="border-b text-xs">
+                                            <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $delivery['bill_id'] ?>">
+                                                <img class="w-5 cursor-pointer" title="مشاهده جزئیات"
+                                                    src="../callcenter/assets/img/explore.svg" />
+                                            </a>
+                                        </td>
+
+                                        <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?></td>
+
+                                        <!-- شماره فاکتور + Tooltip -->
+                                        <td class="px-2 py-2 border-b text-xs relative">
+                                            <?= htmlspecialchars($delivery['bill_number']) ?>
+                                        </td>
+
+                                        <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?>
+                                            <?php if (!empty($delivery['items_preview'])): ?>
+                                                <div class="absolute left-0 top-full mt-1 w-64 bg-gray-800 text-white text-xs 
+                                        rounded p-2 hidden group-hover:block z-50 whitespace-pre-line shadow-lg">
+                                                    <?php foreach ($delivery['items_preview'] as $item): ?>
+                                                        • <?= htmlspecialchars(mb_strimwidth($item['partName'], 0, 40, '...')) ?>
+                                                        (x<?= $item['quantity'] ?>)<br>
+                                                    <?php endforeach; ?>
+                                                    <?php if (count(json_decode($delivery['billDetails'], true)) > 3): ?>
+                                                        ...
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="px-2 py-2 border-b text-xs">
+                                            <?= jdate('Y/m/d', strtotime($delivery['created_at'])) ?>
+                                        </td>
+
+                                        <td class="px-2 py-2 border-b text-xs">
+                                            <input type="checkbox" onclick="toggleStatus(this, <?= $delivery['id'] ?>)"
+                                                name="is_ready" <?= $delivery['is_ready'] ? 'checked' : ''; ?>>
+                                        </td>
+
+                                        <td class="px-2 py-2 border-b text-xs">
+                                            <?php if ($delivery['is_ready']): ?>
+                                                <img class="w-6 h-6 rounded-full"
+                                                    src="../../public/userimg/<?= $delivery['is_ready'] ?>.jpg" alt="">
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr class="hover:bg-gray-100 even:bg-gray-50">
@@ -330,56 +342,66 @@ require_once '../../layouts/callcenter/sidebar.php';?>
                     </thead>
                     <tbody id="customerRemaining">
                         <?php if (!empty($customerRemaining)): ?>
-                            <?php foreach ($customerRemaining as $index => $delivery): ?>
-                                <tr id="record_<?= $delivery['bill_number'] ?>"
-                                    class="hover:bg-gray-100 even:bg-gray-50 relative group">
-
-                                    <td class="px-2 py-2 border-b text-xs"><?= ++$index; ?></td>
-
-                                    <td class="border-b text-xs">
-                                        <a href="../factor/externalView.php?factorNumber=<?= $delivery['bill_id'] ?>">
-                                            <img class="w-5 cursor-pointer" title="مشاهده جزئیات"
-                                                src="../callcenter/assets/img/explore.svg" />
-                                        </a>
-                                    </td>
-
-                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?></td>
-
-                                    <!-- شماره فاکتور + Tooltip -->
-                                    <td class="px-2 py-2 border-b text-xs relative">
-                                        <?= htmlspecialchars($delivery['bill_number']) ?>
-                                    </td>
-
-                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?>
-                                        <?php if (!empty($delivery['items_preview'])): ?>
-                                            <div class="absolute left-0 top-full mt-1 w-64 bg-gray-800 text-white text-xs rounded 
-                                        p-2 hidden group-hover:block z-50 whitespace-pre-line shadow-lg">
-                                                <?php foreach ($delivery['items_preview'] as $item): ?>
-                                                    • <?= htmlspecialchars(mb_strimwidth($item['partName'], 0, 40, '...')) ?>
-                                                    (x<?= $item['quantity'] ?>)<br>
-                                                <?php endforeach; ?>
-                                                <?php if (count(json_decode($delivery['billDetails'], true)) > 3): ?>
-                                                    ...
-                                                <?php endif; ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="px-2 py-2 border-b text-xs">
-                                        <?= jdate('Y/m/d', strtotime($delivery['created_at'])) ?>
-                                    </td>
-                                    <td class="px-2 py-2 border-b text-xs">
-                                        <input type="checkbox"
-                                            onclick="toggleStatus(this, <?= $delivery['id'] ?>)"
-                                            <?= $delivery['is_ready'] ? 'checked' : ''; ?>>
-                                    </td>
-
-                                    <td class="px-2 py-2 border-b text-xs">
-                                        <?php if ($delivery['is_ready']): ?>
-                                            <img class="w-6 h-6 rounded-full"
-                                                src="../../public/userimg/<?= $delivery['is_ready'] ?>.jpg" alt="">
-                                        <?php endif; ?>
+                            <?php foreach ($customerRemaining as $date => $deliveries): ?>
+                                <tr class="bg-gray-200">
+                                    <td colspan="8" class="px-2 py-1 border-b text-xs font-bold text-center">
+                                        <?php
+                                        $daysPassed = (new DateTime())->diff(new DateTime($date))->days;
+                                        echo jdate('Y/m/d', strtotime($date)) . " — " . $daysPassed . " روز قبل";
+                                        ?>
                                     </td>
                                 </tr>
+                                <?php foreach ($deliveries as $index => $delivery): ?>
+                                    <tr id="record_<?= $delivery['bill_number'] ?>"
+                                        class="hover:bg-gray-100 even:bg-gray-50 relative group">
+
+                                        <td class="px-2 py-2 border-b text-xs"><?= ++$index; ?></td>
+
+                                        <td class="border-b text-xs">
+                                            <a href="../factor/externalView.php?factorNumber=<?= $delivery['bill_id'] ?>">
+                                                <img class="w-5 cursor-pointer" title="مشاهده جزئیات"
+                                                    src="../callcenter/assets/img/explore.svg" />
+                                            </a>
+                                        </td>
+
+                                        <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?></td>
+
+                                        <!-- شماره فاکتور + Tooltip -->
+                                        <td class="px-2 py-2 border-b text-xs relative">
+                                            <?= htmlspecialchars($delivery['bill_number']) ?>
+                                        </td>
+
+                                        <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?>
+                                            <?php if (!empty($delivery['items_preview'])): ?>
+                                                <div class="absolute left-0 top-full mt-1 w-64 bg-gray-800 text-white text-xs rounded 
+                                        p-2 hidden group-hover:block z-50 whitespace-pre-line shadow-lg">
+                                                    <?php foreach ($delivery['items_preview'] as $item): ?>
+                                                        • <?= htmlspecialchars(mb_strimwidth($item['partName'], 0, 40, '...')) ?>
+                                                        (x<?= $item['quantity'] ?>)<br>
+                                                    <?php endforeach; ?>
+                                                    <?php if (count(json_decode($delivery['billDetails'], true)) > 3): ?>
+                                                        ...
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="px-2 py-2 border-b text-xs">
+                                            <?= jdate('Y/m/d', strtotime($delivery['created_at'])) ?>
+                                        </td>
+                                        <td class="px-2 py-2 border-b text-xs">
+                                            <input type="checkbox"
+                                                onclick="toggleStatus(this, <?= $delivery['id'] ?>)"
+                                                <?= $delivery['is_ready'] ? 'checked' : ''; ?>>
+                                        </td>
+
+                                        <td class="px-2 py-2 border-b text-xs">
+                                            <?php if ($delivery['is_ready']): ?>
+                                                <img class="w-6 h-6 rounded-full"
+                                                    src="../../public/userimg/<?= $delivery['is_ready'] ?>.jpg" alt="">
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>

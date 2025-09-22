@@ -11,6 +11,22 @@ $users = getAllUsers();
 $yadakRemaining = getYadakShopNotReadyDeliveries();
 $customerRemaining = getCustomerNotReadyDeliveries();
 
+function getAllUsers()
+{
+    $stmt = PDO_CONNECTION->prepare("
+    SELECT u.id, u.name, u.family
+    FROM users u
+    WHERE u.name != '' 
+      AND u.username IS NOT NULL 
+      AND u.password IS NOT NULL 
+      AND u.password != ''
+      AND EXISTS (
+          SELECT 1 FROM factor.deliveries d WHERE d.user_id = u.id
+      )");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 function getDeliveries()
 {
     $stmt = PDO_CONNECTION->prepare("
@@ -121,61 +137,63 @@ function getAllDeliveries()
 function getYadakShopNotReadyDeliveries()
 {
     $stmt = PDO_CONNECTION->prepare("
-    SELECT d.*, 
-           b.id as bill_id, 
-           s.kharidar
-    FROM factor.deliveries d
-    INNER JOIN factor.bill b 
-        ON d.bill_number = b.bill_number
-    INNER JOIN factor.shomarefaktor s 
-        ON b.bill_number = s.shomare
-    WHERE (
-              (d.is_ready = 0 AND DATE(d.created_at) < CURDATE())
-           OR (DATE(d.updated_at) = CURDATE() AND DATE(d.created_at) < CURDATE())
-          )
-      AND d.type = 'پیک یدک شاپ'
-    ORDER BY d.created_at DESC ");
+        SELECT DATE(d.created_at) as delivery_date,
+               d.*, 
+               b.id as bill_id, 
+               s.kharidar
+        FROM factor.deliveries d
+        INNER JOIN factor.bill b 
+            ON d.bill_number = b.bill_number
+        INNER JOIN factor.shomarefaktor s 
+            ON b.bill_number = s.shomare
+        WHERE (
+                  (d.is_ready = 0 AND DATE(d.created_at) < CURDATE())
+               OR (DATE(d.updated_at) = CURDATE() AND DATE(d.created_at) < CURDATE())
+              )
+          AND d.type = 'پیک یدک شاپ'
+        ORDER BY delivery_date DESC, d.created_at DESC
+    ");
 
     $stmt->execute();
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    return $rows;
+
+    // Group rows by delivery_date
+    $grouped = [];
+    foreach ($rows as $row) {
+        $grouped[$row['delivery_date']][] = $row;
+    }
+
+    return $grouped;
 }
 
 function getCustomerNotReadyDeliveries()
 {
     $stmt = PDO_CONNECTION->prepare("
-    SELECT d.*, 
-           b.id as bill_id, 
-           s.kharidar
-    FROM factor.deliveries d
-    INNER JOIN factor.bill b 
-        ON d.bill_number = b.bill_number
-    INNER JOIN factor.shomarefaktor s 
-        ON b.bill_number = s.shomare
-    WHERE (
-              (d.is_ready = 0 AND DATE(d.created_at) < CURDATE())
-           OR (DATE(d.updated_at) = CURDATE() AND DATE(d.created_at) < CURDATE())
-          )
-      AND d.type = 'پیک خود مشتری بعد از اطلاع'
-    ORDER BY d.created_at DESC ");
+        SELECT DATE(d.created_at) as delivery_date,
+               d.*, 
+               b.id as bill_id, 
+               s.kharidar
+        FROM factor.deliveries d
+        INNER JOIN factor.bill b 
+            ON d.bill_number = b.bill_number
+        INNER JOIN factor.shomarefaktor s 
+            ON b.bill_number = s.shomare
+        WHERE (
+                  (d.is_ready = 0 AND DATE(d.created_at) < CURDATE())
+               OR (DATE(d.updated_at) = CURDATE() AND DATE(d.created_at) < CURDATE())
+              )
+          AND d.type = 'پیک خود مشتری بعد از اطلاع'
+        ORDER BY delivery_date DESC, d.created_at DESC
+    ");
 
     $stmt->execute();
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    return $rows;
-}
 
-function getAllUsers()
-{
-    $stmt = PDO_CONNECTION->prepare("
-    SELECT u.id, u.name, u.family
-    FROM users u
-    WHERE u.name != '' 
-      AND u.username IS NOT NULL 
-      AND u.password IS NOT NULL 
-      AND u.password != ''
-      AND EXISTS (
-          SELECT 1 FROM factor.deliveries d WHERE d.user_id = u.id
-      )");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Group rows by delivery_date
+    $grouped = [];
+    foreach ($rows as $row) {
+        $grouped[$row['delivery_date']][] = $row;
+    }
+
+    return $grouped;
 }

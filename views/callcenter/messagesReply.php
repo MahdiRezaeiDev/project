@@ -40,7 +40,7 @@ require_once '../../layouts/callcenter/sidebar.php';
   <script>
     function isNegative(text) {
       const negatives = ['نه', 'نمیشه', 'مشکل', 'fail', 'no', 'noo', 'متاسفانه', 'نمیخوام', 'نمیخواد', 'ندارم', 'نداریم'];
-      const exactNegatives = ['*', '**', '-', '0', 'خیر']; // exact-only
+      const exactNegatives = ['*', '**', '-', '0', 'خیر', 'ن', 'N', '00']; // exact-only
 
       text = (text || "").trim().toLowerCase();
 
@@ -59,8 +59,8 @@ require_once '../../layouts/callcenter/sidebar.php';
       params.append("getMessagesReply", "getMessagesReply");
 
       try {
-        const response = await axios.post("https://partners.yadak.center/", params);
-        const data = response.data;
+        const response = await axios.post("https://partners.yadak.center/api/replay", params);
+        const data = response.data.data;
         const container = document.getElementById("messages");
         container.innerHTML = "";
 
