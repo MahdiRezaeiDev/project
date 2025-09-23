@@ -39,7 +39,7 @@ require_once '../../layouts/callcenter/sidebar.php';
                             <th class="px-2 py-2 border-b text-right text-xs">شماره فاکتور</th>
                             <th class="px-2 py-2 border-b text-right text-xs">آدرس</th>
                             <th class="px-2 py-2 border-b text-right text-xs">آماده</th>
-                            <th class="px-2 py-2 border-b text-right text-xs"></th>
+                            <th class="px-2 py-2 border-b text-right text-xs">کاربر</th>
                         </tr>
                     </thead>
                     <tbody id="yadak">
@@ -115,7 +115,7 @@ require_once '../../layouts/callcenter/sidebar.php';
                             <th class="px-2 py-2 border-b text-right text-xs">شماره فاکتور</th>
                             <th class="px-2 py-2 border-b text-right text-xs">آدرس</th>
                             <th class="px-2 py-2 border-b text-right text-xs">آماده</th>
-                            <th class="px-2 py-2 border-b text-right text-xs"></th>
+                            <th class="px-2 py-2 border-b text-right text-xs">کاربر</th>
                         </tr>
                     </thead>
                     <tbody id="customer">
@@ -337,7 +337,7 @@ require_once '../../layouts/callcenter/sidebar.php';
                             <th class="px-2 py-2 border-b text-right text-xs">آدرس</th>
                             <th class="px-2 py-2 border-b text-right text-xs">تاریخ</th>
                             <th class="px-2 py-2 border-b text-right text-xs">آماده</th>
-                            <th class="px-2 py-2 border-b text-right text-xs"></th>
+                            <th class="px-2 py-2 border-b text-right text-xs">کاربر</th>
                         </tr>
                     </thead>
                     <tbody id="customerRemaining">

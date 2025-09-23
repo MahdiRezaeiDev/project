@@ -94,6 +94,7 @@ $billItemsDescription = $preSellFactor ? (json_decode($preSellFactorItemsDescrip
                         <th class="border border-gray-300 px-3 py-2 text-center whitespace-nowrap">تعداد</th>
                         <th class="border border-gray-300 px-3 py-2 text-center whitespace-nowrap">قیمت واحد</th>
                         <th class="border border-gray-300 px-3 py-2 text-center whitespace-nowrap">قیمت مجموع</th>
+                        <th class="border border-gray-300 px-3 py-2 text-center whitespace-nowrap">موقعیت</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -219,6 +220,24 @@ $billItemsDescription = $preSellFactor ? (json_decode($preSellFactorItemsDescrip
                             </td>
                             <td class="border border-gray-300 text-sm text-center py-2 text-green-600 font-medium">
                                 <?= number_format((int)$item['quantity'] * $item['price_per']) ?> ریال
+                            </td>
+                            <td class="border border-gray-300 text-sm text-center py-2 text-green-600 font-medium">
+                                <table style="direction:ltr !important; width: 100%;">
+                                    <tbody>
+                                        <?php foreach ($relatedPreSellItems as $preItem):
+                                            $specialBrandClass = in_array($preItem['brandName'], ['MOB', 'GEN', 'اصلی']) ? '' : 'text-white bg-gray-700 p-1 rounded-sm';
+                                        ?>
+                                            <tr>
+                                                <td>
+                                                    <?= htmlspecialchars($preItem['pos1']) ?>
+                                                </td>
+                                                <td>
+                                                    <?= htmlspecialchars($preItem['pos2']) ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
                             </td>
                         </tr>
                     <?php
