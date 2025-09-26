@@ -25,69 +25,126 @@ $dateTime = jdate('Y-m-d'); ?>
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
         <div class="p-4 border-b border-gray-200 flex items-center justify-between">
             <h2 class="font-semibold text-lg text-gray-700">لیست فاکتورها</h2>
-            <input type="text" placeholder="جستجو..."
-                class="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <form>
+                <label class="text-sm font-semibold" for="invoice_time">
+                    <img class="hidden sm:inline" src="./assets/img/filter.svg" alt="filter icon">
+                </label>
+                <input class="text-sm py-2 px-3 font-semibold sm:w-60 border-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="invoice_time" id="invoice_time">
+            </form>
         </div>
-
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm text-right">
-                <thead class="bg-gray-100 text-gray-600">
-                    <tr>
-                        <th class="px-4 py-3">#</th>
-                        <th class="px-4 py-3">شماره فاکتور</th>
-                        <th class="px-4 py-3">مشتری</th>
-                        <th class="px-4 py-3">تاریخ</th>
-                        <th class="px-4 py-3">مبلغ فاکتور</th>
-                        <th class="px-4 py-3">وضعیت</th>
-                        <th class="px-4 py-3">عملیات</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    <?php
-                    // Example data - replace with DB fetch
-                    $factors = $allPendingSells; // Assume this variable is populated with pending sells data
-
-                    foreach ($factors as $i => $f):
-                        $statusMatch = $f['bill_quantity'] == $f['difference']; // Example condition
-                    ?>
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-4 py-3"><?= $i + 1 ?></td>
-                            <td class="px-4 py-3 font-medium"><?= $f['bill_number'] ?></td>
-                            <td class="px-4 py-3"><?= $f['customer_name'] . ' ' . $f['customer_family'] ?></td>
-                            <td class="px-4 py-3"><?= $f['bill_date'] ?></td>
-                            <td class="px-4 py-3 text-gray-700"><?= number_format($f['total']) ?> ریال</td>
-                            <td class="px-4 py-3">
-                                <?php if ($f['exit_quantity'] > 0): ?>
-                                    <?php if ($statusMatch): ?>
-                                        <span class="px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">
-                                            مطابقت دارد
-                                        </span>
-                                    <?php else: ?>
-                                        <span class="px-2 py-1 text-xs font-semibold text-red-700 bg-red-100 rounded-full">
-                                            مغایرت دارد
-                                        </span an>
-                                    <?php endif; ?>
-                                <?php else: ?>
-                                    <span class="px-2 py-1 text-xs font-semibold text-yellow-600 bg-yellow-100 rounded-full">
-                                        خروج نخورده
-                                    </span>
-                                <?php endif; ?>
-                            </td>
-                            <td class="px-4 py-3 flex gap-2">
-                                <a class="hide_while_print" href="../factor/complete.php?factor_number=<?= $f['id'] ?>">
-                                    <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده فاکتور" src="./assets/icons/receipt.svg" />
-                                </a>
-                                <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $f['id'] ?>">
-                                    <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده جزئیات" src="./assets/icons/telescope.svg" />
-                                </a>
-                            </td>
+        <div id="resultBox">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-right">
+                    <thead class="bg-gray-100 text-gray-600">
+                        <tr>
+                            <th class="px-4 py-3">#</th>
+                            <th class="px-4 py-3">شماره فاکتور</th>
+                            <th class="px-4 py-3">مشتری</th>
+                            <th class="px-4 py-3">تاریخ</th>
+                            <th class="px-4 py-3">مبلغ فاکتور</th>
+                            <th class="px-4 py-3">وضعیت</th>
+                            <th class="px-4 py-3">مقدار فاکتور/خروج</th>
+                            <th class="px-4 py-3">عملیات</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <?php
+                        // Example data - replace with DB fetch
+                        $factors = $allPendingSells; // Assume this variable is populated with pending sells data
+
+                        foreach ($factors as $i => $f):
+                            $statusMatch = $f['bill_quantity'] == $f['difference']; // Example condition
+                        ?>
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-4 py-3"><?= $i + 1 ?></td>
+                                <td class="px-4 py-3 font-medium"><?= $f['bill_number'] ?></td>
+                                <td class="px-4 py-3"><?= $f['customer_name'] . ' ' . $f['customer_family'] ?></td>
+                                <td class="px-4 py-3"><?= $f['bill_date'] ?></td>
+                                <td class="px-4 py-3 text-gray-700"><?= number_format($f['total']) ?> ریال</td>
+                                <td class="px-4 py-3">
+                                    <?php if ($f['exit_quantity'] > 0): ?>
+                                        <?php if ($statusMatch): ?>
+                                            <span class="px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">
+                                                مطابقت دارد
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="px-2 py-1 text-xs font-semibold text-red-700 bg-red-100 rounded-full">
+                                                مغایرت دارد
+                                            </span an>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <span class="px-2 py-1 text-xs font-semibold text-yellow-600 bg-yellow-100 rounded-full">
+                                            خروج نخورده
+                                        </span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <?= $f['bill_quantity'] . ' / ' . $f['exit_quantity'] ?>
+                                </td>
+                                <td class="px-4 py-3 flex gap-2">
+                                    <a class="hide_while_print" href="../factor/complete.php?factor_number=<?= $f['id'] ?>">
+                                        <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده فاکتور" src="./assets/icons/receipt.svg" />
+                                    </a>
+                                    <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $f['id'] ?>">
+                                        <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده جزئیات" src="./assets/icons/telescope.svg" />
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    const resultBox = document.getElementById('resultBox');
+    $(function() {
+        $("#invoice_time").persianDatepicker({
+            months: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"],
+            dowTitle: ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه"],
+            shortDowTitle: ["ش", "ی", "د", "س", "چ", "پ", "ج"],
+            showGregorianDate: !1,
+            persianNumbers: !0,
+            formatDate: "YYYY/MM/DD",
+            selectedBefore: !1,
+            selectedDate: null,
+            startDate: null,
+            endDate: null,
+            prevArrow: '\u25c4',
+            nextArrow: '\u25ba',
+            theme: 'default',
+            alwaysShow: !1,
+            selectableYears: null,
+            selectableMonths: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            cellWidth: 25, // by px
+            cellHeight: 20, // by px
+            fontSize: 13, // by px
+            isRTL: !1,
+            calendarPosition: {
+                x: 0,
+                y: 0,
+            },
+            onShow: function() {},
+            onHide: function() {},
+            onSelect: function() {
+                const date = ($("#invoice_time").attr("data-gdate"));
+                var params = new URLSearchParams();
+                params.append('getFactor', 'getFactor');
+                params.append('date', date);
+                axios.post("../../app/api/inventory/pendingSellsApi.php", params)
+                    .then(function(response) {
+                        resultBox.innerHTML = response.data;
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+            },
+            onRender: function() {}
+        });
+    });
+</script>
 
 <?php
 require_once './components/footer.php';
