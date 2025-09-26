@@ -25,7 +25,8 @@ LEFT JOIN (
     GROUP BY invoice_number
 ) e ON b.bill_number = e.invoice_number
 LEFT JOIN callcenter.customer c ON b.customer_id = c.id
-WHERE DATE(b.created_at) < CURDATE()
+WHERE b.created_at >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+  AND b.created_at < CURDATE()
   AND (
         e.exit_quantity IS NULL 
         OR e.exit_quantity <> b.quantity
