@@ -26,10 +26,25 @@ $dateTime = jdate('Y-m-d'); ?>
         <div class="p-4 border-b border-gray-200 flex items-center justify-between">
             <h2 class="font-semibold text-lg text-gray-700">لیست فاکتورها</h2>
             <form>
-                <label class="text-sm font-semibold" for="invoice_time">
-                    <img class="hidden sm:inline" src="./assets/img/filter.svg" alt="filter icon">
-                </label>
-                <input class="text-sm py-2 px-3 font-semibold sm:w-60 border-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="invoice_time" id="invoice_time">
+                <div class="relative cursor-pointer mb-2">
+                    <label class="text-sm font-semibold absolute top-1.5 left-0" for="invoice_time">
+                        <img class="hidden sm:inline" src="./assets/img/calender.svg" alt="calender icon">
+                    </label>
+                    <input class="text-sm py-2 px-3 font-semibold sm:w-60 border-2" data-gdate="<?= date('Y/m/d') ?>" value="<?= (jdate("Y/m/d", time(), "", "Asia/Tehran", "en")) ?>" type="text" name="invoice_time" id="invoice_time">
+                </div>
+                <div id="loading_box" class="flex gap-2 items-center hidden">
+                    <svg width="15px" height="15px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none" class="animate-spin">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <g fill="#000000" fill-rule="evenodd" clip-rule="evenodd">
+                                <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8z" opacity=".2"></path>
+                                <path d="M7.25.75A.75.75 0 018 0a8 8 0 018 8 .75.75 0 01-1.5 0A6.5 6.5 0 008 1.5a.75.75 0 01-.75-.75z"></path>
+                            </g>
+                        </g>
+                    </svg>
+                    <p class="text-xs"> لطفا صبور باشید ...</p>
+                </div>
             </form>
         </div>
         <div id="resultBox">
@@ -100,6 +115,7 @@ $dateTime = jdate('Y-m-d'); ?>
 
 <script>
     const resultBox = document.getElementById('resultBox');
+    const loading_box = document.getElementById('loading_box');
     $(function() {
         $("#invoice_time").persianDatepicker({
             months: ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"],
@@ -130,12 +146,14 @@ $dateTime = jdate('Y-m-d'); ?>
             onHide: function() {},
             onSelect: function() {
                 const date = ($("#invoice_time").attr("data-gdate"));
+                loading_box.classList.remove('hidden')
                 var params = new URLSearchParams();
                 params.append('getFactor', 'getFactor');
                 params.append('date', date);
                 axios.post("../../app/api/inventory/pendingSellsApi.php", params)
                     .then(function(response) {
                         resultBox.innerHTML = response.data;
+                        loading_box.classList.add('hidden');
                     })
                     .catch(function(error) {
                         console.log(error);
