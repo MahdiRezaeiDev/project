@@ -53,7 +53,7 @@ $dateTime = jdate('Y-m-d'); ?>
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-4 py-3"><?= $i + 1 ?></td>
                             <td class="px-4 py-3 font-medium"><?= $f['bill_number'] ?></td>
-                            <td class="px-4 py-3"><?= $f['name'] . ' ' . $f['family'] ?></td>
+                            <td class="px-4 py-3"><?= $f['customer_name'] . ' ' . $f['customer_family'] ?></td>
                             <td class="px-4 py-3"><?= $f['bill_date'] ?></td>
                             <td class="px-4 py-3 text-gray-700"><?= number_format($f['total']) ?> ریال</td>
                             <td class="px-4 py-3">

@@ -8,24 +8,30 @@ $allPendingSells = getPendingSells();
 function getPendingSells()
 {
     $sql = "SELECT 
-                b.id,
-                b.bill_number,
-                b.quantity AS bill_quantity,
-                b.total,
-                b.bill_date,
-                c.name,
-                c.family,
-                IFNULL(SUM(e.qty), 0) AS exit_quantity,
-                (b.quantity - IFNULL(SUM(e.qty), 0)) AS difference
-            FROM factor.bill b
-            LEFT JOIN stock_1404.exitrecord e 
-                ON e.invoice_number = b.bill_number
-            INNER JOIN callcenter.customer as c
-                ON c.id = b.customer_id
-            WHERE DATE(b.created_at) < CURDATE()   -- فقط فاکتورهای قبل از امروز
-            GROUP BY b.id, b.bill_number, b.quantity
-            HAVING difference <> 0   -- یا اختلاف داره یا کلاً خروج نخوردن
-            ORDER BY b.id DESC;";
+    b.id,
+    b.bill_number,
+    b.quantity AS bill_quantity,
+    b.total,
+    b.bill_date,
+    c.name AS customer_name,
+    c.family AS customer_family,
+    c.address AS customer_address,
+    IFNULL(e.exit_quantity, 0) AS exit_quantity,
+    (b.quantity - IFNULL(e.exit_quantity, 0)) AS difference
+FROM factor.bill b
+LEFT JOIN (
+    SELECT invoice_number, SUM(qty) AS exit_quantity
+    FROM stock_1404.exitrecord
+    GROUP BY invoice_number
+) e ON b.bill_number = e.invoice_number
+LEFT JOIN callcenter.customer c ON b.customer_id = c.id
+WHERE DATE(b.created_at) < CURDATE()
+  AND (
+        e.exit_quantity IS NULL 
+        OR e.exit_quantity <> b.quantity
+      )
+ORDER BY b.id DESC;
+";
 
     $stmt = PDO_CONNECTION->prepare($sql);
     $stmt->execute();
