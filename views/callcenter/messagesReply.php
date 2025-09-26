@@ -39,8 +39,8 @@ require_once '../../layouts/callcenter/sidebar.php';
 
   <script>
     function isNegative(text) {
-      const negatives = ['نه', 'نمیشه', 'مشکل', 'fail', 'no', 'noo', 'متاسفانه', 'نمیخوام', 'نمیخواد', 'ندارم', 'نداریم'];
-      const exactNegatives = ['*', '**', '-', '0', 'خیر', 'ن', 'N', '00']; // exact-only
+      const negatives = ['نمیشه', 'مشکل', 'fail', 'no', 'noo', 'متاسفانه', 'نمیخوام', 'نمیخواد', 'ندارم', 'نداریم'];
+      const exactNegatives = ['*', '**', '-', '0', 'خیر', 'ن', 'N', '00', 'نه']; // exact-only
 
       text = (text || "").trim().toLowerCase();
 

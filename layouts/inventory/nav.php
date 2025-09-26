@@ -22,6 +22,12 @@ $fileName = basename($_SERVER['PHP_SELF']);
                 خروج کالا
             </a>
         </li>
+        <li class="mx-1 <?= $fileName == 'pendingSells.php' ? 'bg-gray-400' : 'bg-rose-400' ?> hover:bg-gray-400 text-sm font-bold">
+            <a class="p-2 menu_item flex items-center gap-2" href="pendingSells.php">
+                <img class="hidden sm:inline-block" src="./assets/icons/subtract.svg" alt="add icon">
+                منتظر خروج
+            </a>
+        </li>
         <li class="mx-1 <?= $fileName == 'newSell.php' ? 'bg-gray-400' : 'bg-rose-400' ?> hover:bg-gray-400 text-sm font-bold">
             <a class="p-2 menu_item flex items-center gap-2" href="newSell.php">
                 <img class="hidden sm:inline-block" src="./assets/icons/subtract.svg" alt="add icon">
