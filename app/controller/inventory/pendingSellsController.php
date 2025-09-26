@@ -31,6 +31,7 @@ WHERE b.created_at >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)
         e.exit_quantity IS NULL 
         OR e.exit_quantity <> b.quantity
       )
+    AND b.status =1
 ORDER BY b.id DESC;
 ";
 
