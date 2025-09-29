@@ -1,7 +1,4 @@
 <?php
-
-use function Symfony\Component\Clock\now;
-
 $pageTitle = "قیمت دستوری";
 $iconUrl = 'report.png';
 require_once './components/header.php';
@@ -206,38 +203,46 @@ if ($isValidCustomer) :
                                                 </p>
                                             <?php
                                             } else if ($max) {
-                                                $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
+                                                $finalPrice = 'نیاز به قیمت';
 
-                                                foreach ($codesToCheck as $code) {
-                                                    $hussin_part = get_hussain_parts(strtoupper($code));
-                                                    if (count($hussin_part) > 0) {
-                                                        $item = $hussin_part[0];
-                                                        $price = (int)($item['offer_price'] / 10000);
-                                                        $today = lastActiveRate(); // تاریخ و ساعت فعلی
-                                                        $finalPrice = (applyManualDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
-                                                        $isDisplayAllowed = true;
-                                                        break;
-                                                    } else {
-                                                        $finalPrice = 'نیاز به قیمت';
+                                                if (count(($existing[$code]))) {
+                                                    $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
+
+                                                    foreach ($codesToCheck as $code) {
+                                                        $hussin_part = get_hussain_parts(strtoupper($code));
+                                                        if (count($hussin_part) > 0) {
+                                                            $item = $hussin_part[0];
+                                                            $price = (int)($item['offer_price'] / 10000);
+                                                            $today = lastActiveRate(); // تاریخ و ساعت فعلی
+                                                            $finalPrice = (applyManualDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
+                                                            $isDisplayAllowed = true;
+                                                            break;
+                                                        } else {
+                                                        }
                                                     }
                                                 }
 
                                                 echo "<p style='direction: ltr !important;' data-relation='" . $relation_id . "' id='" . $code . '-append' . "'class ='text-green-400'>$finalPrice </p>";
                                             } else if ($max == 0) {
-                                                $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
-                                                foreach ($codesToCheck as $code) {
-                                                    $hussin_part = get_hussain_parts(strtoupper($code));
-                                                    if (count($hussin_part) > 0) {
-                                                        $item = $hussin_part[0];
-                                                        $price = (int)($item['offer_price'] / 10000);
-                                                        $today = lastActiveRate(); // تاریخ و ساعت فعلی
-                                                        $finalPrice = (applyManualDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
-                                                        $isDisplayAllowed = true;
-                                                        break;
-                                                    } else {
-                                                        $finalPrice = 'موجود نیست';
+
+                                                $finalPrice = 'موجود نیست';
+                                                if (count(($existing[$code]))) {
+                                                    $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
+
+                                                    foreach ($codesToCheck as $code) {
+                                                        $hussin_part = get_hussain_parts(strtoupper($code));
+                                                        if (count($hussin_part) > 0) {
+                                                            $item = $hussin_part[0];
+                                                            $price = (int)($item['offer_price'] / 10000);
+                                                            $today = lastActiveRate(); // تاریخ و ساعت فعلی
+                                                            $finalPrice = (applyManualDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
+                                                            $isDisplayAllowed = true;
+                                                            break;
+                                                        } else {
+                                                        }
                                                     }
                                                 }
+
                                                 echo "<p style='direction: ltr !important;' data-relation='" . $relation_id . "' id='" . $code . '-append' . "'>" . $finalPrice . "</p>";
                                             }
 
