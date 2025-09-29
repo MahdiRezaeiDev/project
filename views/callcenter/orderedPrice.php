@@ -206,7 +206,7 @@ if ($isValidCustomer) :
                                                 </p>
                                             <?php
                                             } else if ($max) {
-                                                $codesToCheck = array_keys($existing[$code]);
+                                                $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
 
                                                 foreach ($codesToCheck as $code) {
                                                     $hussin_part = get_hussain_parts(strtoupper($code));
@@ -214,7 +214,7 @@ if ($isValidCustomer) :
                                                         $item = $hussin_part[0];
                                                         $price = (int)($item['offer_price'] / 10000);
                                                         $today = lastActiveRate(); // تاریخ و ساعت فعلی
-                                                        $finalPrice = (applyDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
+                                                        $finalPrice = (applyManualDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
                                                         $isDisplayAllowed = true;
                                                         break;
                                                     } else {
@@ -224,15 +224,14 @@ if ($isValidCustomer) :
 
                                                 echo "<p style='direction: ltr !important;' data-relation='" . $relation_id . "' id='" . $code . '-append' . "'class ='text-green-400'>$finalPrice </p>";
                                             } else if ($max == 0) {
-                                                $codesToCheck = array_keys($existing[$code]);
-
+                                                $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
                                                 foreach ($codesToCheck as $code) {
                                                     $hussin_part = get_hussain_parts(strtoupper($code));
                                                     if (count($hussin_part) > 0) {
                                                         $item = $hussin_part[0];
                                                         $price = (int)($item['offer_price'] / 10000);
                                                         $today = lastActiveRate(); // تاریخ و ساعت فعلی
-                                                        $finalPrice = (applyDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
+                                                        $finalPrice = (applyManualDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
                                                         $isDisplayAllowed = true;
                                                         break;
                                                     } else {

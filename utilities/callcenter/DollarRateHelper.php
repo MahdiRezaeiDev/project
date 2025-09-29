@@ -417,3 +417,60 @@ function getFinalSanitizedPrice($givenPrices, $existing_brands, $applyDiscount =
     }
     return implode(" / ", array_unique($filteredPrices)); // Ensure uniqueness
 }
+
+function applyManualDollarRate($price, $priceDate, $applyDiscount = 0)
+{
+    $priceDate = date('Y-m-d', strtotime($priceDate));
+    $rate = 0;
+    $discount = 0;
+    foreach ($GLOBALS['rateSpecification'] as $option) {
+        if ($priceDate <= $option['created_at']) {
+            $rate = $option['rate'];
+            $discount = $option['discount'];
+            break;
+        }
+    }
+
+    $GLOBALS['appliedRate'] = 3;
+    $GLOBALS['appliedDiscount'] = $discount;
+    // Split the input string into words using space as the delimiter
+    $words = explode(' ', $price);
+
+    // Iterate through the words and modify numbers with optional forward slashes
+    foreach ($words as &$word) {
+        // Define a regular expression pattern to match numbers with optional forward slashes
+        $pattern = '/(\d+(?:\/\d+)?)/';
+
+        // Check if the word matches the pattern
+        if (preg_match($pattern, $word)) {
+            // Extract the matched number, removing any forward slashes
+            $number = preg_replace('/\//', '', $word);
+
+
+            if (ctype_digit($number)) {
+                // Increase the matched number by 2%
+                $modifiedNumber = $number + (($number * $rate) / 100);
+
+                if ($modifiedNumber >= 10) {
+                    // Round the number to the nearest multiple of 10
+                    $roundedNumber = ceil($modifiedNumber / 10) * 10;
+                } else {
+                    $roundedNumber = round($modifiedNumber);
+                }
+
+                if ($applyDiscount) {
+                    $discountAmount =  (($number * $discount) / 100);
+                    $roundedNumber -= $discountAmount;
+                }
+
+
+                // Replace the word with the modified number
+                $word = str_replace($number, $roundedNumber, $word);
+            }
+        }
+    }
+    // Reconstruct the modified string by joining the words with spaces
+    $modifiedString = implode(' ', $words);
+
+    return $modifiedString;
+}
