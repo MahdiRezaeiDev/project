@@ -214,7 +214,7 @@ if ($isValidCustomer) :
                                                             $item = $hussin_part[0];
                                                             $price = (int)($item['offer_price'] / 10000);
                                                             $today = lastActiveRate(); // تاریخ و ساعت فعلی
-                                                            $finalPrice = (applyManualDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
+                                                            $finalPrice = (applyDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
                                                             $isDisplayAllowed = true;
                                                             break;
                                                         } else {
@@ -235,7 +235,7 @@ if ($isValidCustomer) :
                                                             $item = $hussin_part[0];
                                                             $price = (int)($item['offer_price'] / 10000);
                                                             $today = lastActiveRate(); // تاریخ و ساعت فعلی
-                                                            $finalPrice = (applyManualDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
+                                                            $finalPrice = (applyDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
                                                             $isDisplayAllowed = true;
                                                             break;
                                                         } else {
