@@ -19,6 +19,13 @@ $excludedSellers = [
     'کاربر دستوری مفقود'
 ];
 
+$brandMap = [
+    'Genuine' => 'GEN',
+    'MOBIS'   => 'MOB',
+    'HANON'   => 'HAN',
+    'DL'      => 'DL',
+];
+
 if ($isValidCustomer) :
     if ($finalResult) :
         $explodedCodes = $finalResult['explodedCodes'];
@@ -196,22 +203,34 @@ if ($isValidCustomer) :
                                                 </p>
                                             <?php
                                             } else if ($max) {
-                                                $hussin_part = get_hussain_parts(strtoupper($code));
-                                                if (count($hussin_part) > 0) {
-                                                    $item = $hussin_part[0];
-                                                    $finalPrice = number_format($item['offer_price'] / 10000) . ' ' . $item['brand'];
-                                                } else {
-                                                    $finalPrice = 'موجود نیست';
+                                                $codesToCheck = array_keys($existing[$code]);
+
+                                                foreach ($codesToCheck as $code) {
+                                                    $hussin_part = get_hussain_parts(strtoupper($code));
+                                                    if (count($hussin_part) > 0) {
+                                                        $item = $hussin_part[0];
+                                                        $finalPrice = number_format($item['offer_price'] / 10000) . ' ' . $brandMap[$item['brand']] ?? $item['brand'];
+                                                        $isDisplayAllowed = true;
+                                                        break;
+                                                    } else {
+                                                        $finalPrice = 'نیاز به قیمت';
+                                                    }
                                                 }
+
                                                 echo "<p style='direction: ltr !important;' data-relation='" . $relation_id . "' id='" . $code . '-append' . "'class ='text-green-400'>$finalPrice </p>";
                                             } else if ($max == 0) {
-                                                $hussin_part = get_hussain_parts(strtoupper($code));
-                                                if (count($hussin_part) > 0) {
-                                                    $item = $hussin_part[0];
-                                                    $finalPrice = number_format($item['offer_price'] / 10000) . ' ' . $item['brand'];
-                                                    $isDisplayAllowed = true;
-                                                } else {
-                                                    $finalPrice = 'موجود نیست';
+                                                $codesToCheck = array_keys($existing[$code]);
+
+                                                foreach ($codesToCheck as $code) {
+                                                    $hussin_part = get_hussain_parts(strtoupper($code));
+                                                    if (count($hussin_part) > 0) {
+                                                        $item = $hussin_part[0];
+                                                        $finalPrice = number_format($item['offer_price'] / 10000) . ' ' . $brandMap[$item['brand']] ?? $item['brand'];
+                                                        $isDisplayAllowed = true;
+                                                        break;
+                                                    } else {
+                                                        $finalPrice = 'موجود نیست';
+                                                    }
                                                 }
                                                 echo "<p style='direction: ltr !important;' data-relation='" . $relation_id . "' id='" . $code . '-append' . "'>" . $finalPrice . "</p>";
                                             }

@@ -335,15 +335,15 @@
                                         <tr class="text-xs bg-gray-200 odd:bg-purple-400">
 
                                             <td class="p-2 text-left font-semibold">
-                                                <span><?= number_format($item['offer_price'] / 10000) ?></span>
+                                                <span><?= (int) ($item['offer_price'] / 10000) ?></span>
                                             </td>
 
                                             <td class="p-2 text-left font-semibold">
-                                                <span><?= $item['stock'] ?></span>
+                                                <span><?= (int) $item['stock'] ?></span>
                                             </td>
 
                                             <td class="p-2 text-left font-semibold">
-                                                <span><?= $item['brand'] ?></span>
+                                                <span><?= $brandMap[$item['brand']] ?? $item['brand'] ?></span>
                                             </td>
 
                                             <td class="p-2 text-left font-semibold">
