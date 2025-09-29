@@ -148,7 +148,11 @@ if ($isValidCustomer) :
                                     <?php
                                     if (count($existing) > 0):
                                         if (isset($existing[$code]) && count($existing[$code]) > 0):
-                                            echo '(' . current(current($existing[$code])['relation']['goods'])['description'] . ')';
+                                            $goods = $existing[$code]['relation']['goods'] ?? [];
+                                            $firstGood = is_array($goods) ? current($goods) : null;
+                                            $desc = $firstGood['description'] ?? '';
+
+                                            echo $desc ? "($desc)" : '';
                                         endif;
                                     endif;
                                     ?>
@@ -192,7 +196,14 @@ if ($isValidCustomer) :
                                                 </p>
                                             <?php
                                             } else if ($max) {
-                                                echo "<p style='direction: ltr !important;' data-relation='" . $relation_id . "' id='" . $code . '-append' . "'class ='text-green-400'>نیاز به قیمت</p>";
+                                                $hussin_part = get_hussain_parts(strtoupper($code));
+                                                if (count($hussin_part) > 0) {
+                                                    $item = $hussin_part[0];
+                                                    $finalPrice = number_format($item['offer_price'] / 10000) . ' ' . $item['brand'];
+                                                } else {
+                                                    $finalPrice = 'موجود نیست';
+                                                }
+                                                echo "<p style='direction: ltr !important;' data-relation='" . $relation_id . "' id='" . $code . '-append' . "'class ='text-green-400'>$finalPrice </p>";
                                             } else if ($max == 0) {
                                                 echo "<p style='direction: ltr !important;' data-relation='" . $relation_id . "' id='" . $code . '-append' . "'>" . 'موجود نیست' . "</p>";
                                             }

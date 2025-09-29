@@ -431,3 +431,12 @@ function overallSpecification($id, $type)
 
     return $allLimit;
 }
+
+function get_hussain_parts($partNumber)
+{
+    $stmt = PDO_CONNECTION->prepare("SELECT property_code, brand, stock, offer_price, id, similar_code FROM hoseinparts_products WHERE property_code  = :partnumber");
+    $stmt->bindParam(':partnumber', $partNumber);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}

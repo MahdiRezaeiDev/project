@@ -317,6 +317,47 @@
                         </table>
                     </td>
                 </tr>
+                <tr>
+                    <td colspan="2">
+                        <?php $hussin_part = get_hussain_parts($goods[$index]['partnumber']);
+                        if (count($hussin_part) > 0) : ?>
+                            <table dir="ltr" class="w-full text-left text-sm font-light custom-table mt-2">
+                                <thead class="font-medium bg-gray-700 text-white">
+                                    <tr>
+                                        <th class="text-xs text-center">قیمت</th>
+                                        <th class="text-xs text-center">موجودی</th>
+                                        <th class="text-xs text-center">برند</th>
+                                        <th class="text-xs text-center">کد فنی</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($hussin_part as $item) : ?>
+                                        <tr class="text-xs bg-gray-200 odd:bg-purple-400">
+
+                                            <td class="p-2 text-left font-semibold">
+                                                <span><?= number_format($item['offer_price'] / 10000) ?></span>
+                                            </td>
+
+                                            <td class="p-2 text-left font-semibold">
+                                                <span><?= $item['stock'] ?></span>
+                                            </td>
+
+                                            <td class="p-2 text-left font-semibold">
+                                                <span><?= $item['brand'] ?></span>
+                                            </td>
+
+                                            <td class="p-2 text-left font-semibold">
+                                                <span><?= $item['property_code'] ?></span>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+
+                        <?php endif; ?>
+                    </td>
+                    <td colspan="1"></td>
+                </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
@@ -380,4 +421,5 @@
             </form>
         </div>
     <?php endif; ?>
+
 </div>
