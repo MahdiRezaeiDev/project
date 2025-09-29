@@ -440,3 +440,12 @@ function get_hussain_parts($partNumber)
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+
+function lastActiveRate()
+{
+    $stmt = PDO_CONNECTION->query("SELECT * FROM shop.dollarrate WHERE status = 1 ORDER BY id DESC LIMIT 1");
+    $lastRate = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $lastRate['created_at'];
+}

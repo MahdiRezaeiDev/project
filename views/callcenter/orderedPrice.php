@@ -1,4 +1,7 @@
 <?php
+
+use function Symfony\Component\Clock\now;
+
 $pageTitle = "قیمت دستوری";
 $iconUrl = 'report.png';
 require_once './components/header.php';
@@ -209,7 +212,9 @@ if ($isValidCustomer) :
                                                     $hussin_part = get_hussain_parts(strtoupper($code));
                                                     if (count($hussin_part) > 0) {
                                                         $item = $hussin_part[0];
-                                                        $finalPrice = ($item['offer_price'] / 10000) . ' ' . $brandMap[$item['brand']] ?? $item['brand'];
+                                                        $price = (int)($item['offer_price'] / 10000);
+                                                        $today = lastActiveRate(); // تاریخ و ساعت فعلی
+                                                        $finalPrice = (applyDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
                                                         $isDisplayAllowed = true;
                                                         break;
                                                     } else {
@@ -225,7 +230,9 @@ if ($isValidCustomer) :
                                                     $hussin_part = get_hussain_parts(strtoupper($code));
                                                     if (count($hussin_part) > 0) {
                                                         $item = $hussin_part[0];
-                                                        $finalPrice = ($item['offer_price'] / 10000) . ' ' . $brandMap[$item['brand']] ?? $item['brand'];
+                                                        $price = (int)($item['offer_price'] / 10000);
+                                                        $today = lastActiveRate(); // تاریخ و ساعت فعلی
+                                                        $finalPrice = (applyDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
                                                         $isDisplayAllowed = true;
                                                         break;
                                                     } else {
