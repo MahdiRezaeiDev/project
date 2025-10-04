@@ -434,6 +434,21 @@ function overallSpecification($id, $type)
 
 function get_hussain_parts($partNumber)
 {
+    // Fetch dynamic percentages from hussain_api (assuming only one row)
+    $stmt2 = PDO_CONNECTION->prepare("SELECT percent, benefit, status FROM hussain_api LIMIT 1");
+    $stmt2->execute();
+    $config = $stmt2->fetch(PDO::FETCH_ASSOC);
+
+    $percent = (float)($config['percent'] ?? 30); // default 30%
+    $benefit = (float)($config['benefit'] ?? 3);  // default 3%
+    $status  = intval($config['status'] ?? 0);
+
+    // If status is disabled, stop and return false
+    if ($status !== 1) {
+        return false;
+    }
+
+    // Fetch the part from hoseinparts_products
     $stmt = PDO_CONNECTION->prepare("
         SELECT 
             property_code, 
@@ -449,36 +464,33 @@ function get_hussain_parts($partNumber)
         WHERE property_code = :partnumber 
         LIMIT 1
     ");
-
     $stmt->bindParam(':partnumber', $partNumber);
     $stmt->execute();
+    $part = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($result) {
-        // Convert numeric fields safely
-        $offerPrice        = (float)($result['offer_price'] ?? 0);
-        $instant_offer_price = (float)($result['instant_offer_price'] ?? 0);
-        $last_sale_price     = (float)($result['last_sale_price'] ?? 0);
-        $online_price       = (float)($result['online_price'] ?? 0);
-
-        // Step 1: add 30% to online price
-        $online_priceWith30 = $online_price * 1.3;
-
-        // Step 2: find the max among all
-        $maxPrice = max($offerPrice, $instant_offer_price, $last_sale_price, $online_priceWith30);
-
-        // Step 3: add 3% to the max price
-        $yadakPrice = $maxPrice * 1.03;
-
-        // Add yadakprice to result
-        $result['yadakprice'] = round($yadakPrice, 2); // rounded to 2 decimals
+    if (!$part) {
+        return false; // part not found
     }
 
-    return $result;
+    // Convert numeric fields safely
+    $offerPrice          = (float)($part['offer_price'] ?? 0);
+    $instant_offer_price = (float)($part['instant_offer_price'] ?? 0);
+    $last_sale_price     = (float)($part['last_sale_price'] ?? 0);
+    $online_price        = (float)($part['online_price'] ?? 0);
+
+    // Step 1: add dynamic percent to online price
+    $online_priceWithPercent = $online_price * (1 + $percent / 100);
+
+    // Step 2: find the max among all
+    $maxPrice = max($offerPrice, $instant_offer_price, $last_sale_price, $online_priceWithPercent);
+
+    // Step 3: add dynamic benefit
+    $yadakPrice = $maxPrice * (1 + $benefit / 100);
+
+    $part['yadakprice'] = round($yadakPrice, 2); // rounded to 2 decimals
+
+    return $part;
 }
-
-
 
 function lastActiveRate()
 {
