@@ -320,7 +320,7 @@
                 <tr>
                     <td colspan="2">
                         <?php $hussin_part = get_hussain_parts($goods[$index]['partnumber']);
-                        if (count($hussin_part) > 0) : ?>
+                        if ($hussin_part) : ?>
                             <table dir="ltr" class="w-full text-left text-sm font-light custom-table mt-2">
                                 <thead class="font-medium bg-gray-700 text-white">
                                     <tr>
@@ -331,26 +331,25 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($hussin_part as $item) : ?>
-                                        <tr class="text-xs bg-gray-200 odd:bg-purple-400">
 
-                                            <td class="p-2 text-left font-semibold">
-                                                <span><?= (int) ($item['offer_price'] / 10000) ?></span>
-                                            </td>
+                                    <tr class="text-xs bg-gray-200 odd:bg-purple-400">
 
-                                            <td class="p-2 text-left font-semibold">
-                                                <span><?= (int) $item['stock'] ?></span>
-                                            </td>
+                                        <td class="p-2 text-left font-semibold">
+                                            <span><?= (int) ($hussin_part['yadakprice'] / 10000) ?></span>
+                                        </td>
 
-                                            <td class="p-2 text-left font-semibold">
-                                                <span><?= $brandMap[$item['brand']] ?? $item['brand'] ?></span>
-                                            </td>
+                                        <td class="p-2 text-left font-semibold">
+                                            <span><?= (int) $hussin_part['stock'] ?></span>
+                                        </td>
 
-                                            <td class="p-2 text-left font-semibold">
-                                                <span><?= $item['property_code'] ?></span>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
+                                        <td class="p-2 text-left font-semibold">
+                                            <span><?= $brandMap[$hussin_part['brand']] ?? $hussin_part['brand'] ?></span>
+                                        </td>
+
+                                        <td class="p-2 text-left font-semibold">
+                                            <span><?= $hussin_part['property_code'] ?></span>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
 

@@ -164,20 +164,59 @@ if ($isValidCustomer) :
                                     endif;
                                     ?>
                                 </p>
-                                <tr class="border">
-                                    <?php
-                                    if (in_array($code, $not_exist)) {
-                                    ?>
-                                        <td data-persianName="<?= strtoupper($code) ?>" class="px-3 py-2 text-left text-white hover:cursor-pointer" data-move="<?= $code ?>" onclick="onScreen(this)"><?= strtoupper($code) ?></td>
-                                    <?php
-                                    } else {
-                                    ?>
-                                        <td data-persianName="<?= $persianName ?>" class="px-3 py-2 text-left text-white hover:cursor-pointer" data-move="<?= $code ?>" onclick="onScreen(this)"><?= strtoupper($code) ?></td>
+                                <?php
+                                $trBorderClass = ""; // default class
+
+                                if (in_array($code, $not_exist)) {
+                                    $trBorderClass = "border-r-4 border-red-600"; // کد اشتباه → قرمز
+                                } else {
+                                    if ($max && current($existing[$code])['givenPrice']) {
+                                        $trBorderClass = ""; // قیمت موجود عادی
+                                    } else if ($max) {
+                                        if (!empty($existing[$code])) {
+                                            $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
+                                            foreach ($codesToCheck as $c) {
+                                                $hussin_part = get_hussain_parts(strtoupper($c));
+                                                if (!empty($hussin_part)) {
+                                                    $trBorderClass = "border-r-4 border-r-orange-500"; // قیمت از حسین
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    } else if ($max == 0) {
+                                        if (!empty($existing[$code])) {
+                                            $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
+                                            foreach ($codesToCheck as $c) {
+                                                $hussin_part = get_hussain_parts(strtoupper($c));
+                                                if (!empty($hussin_part)) {
+                                                    $trBorderClass = "border-r-4 border-r-orange-400"; // حسین ولی بدون موجودی
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                ?>
+
+                                <tr class="border <?= $trBorderClass ?>">
+                                    <?php if (in_array($code, $not_exist)) { ?>
+                                        <td data-persianName="<?= strtoupper($code) ?>"
+                                            class="px-3 py-2 text-left text-white hover:cursor-pointer"
+                                            data-move="<?= $code ?>" onclick="onScreen(this)">
+                                            <?= strtoupper($code) ?>
+                                        </td>
+                                    <?php } else { ?>
+                                        <td data-persianName="<?= $persianName ?>"
+                                            class="px-3 py-2 text-left text-white hover:cursor-pointer"
+                                            data-move="<?= $code ?>" onclick="onScreen(this)">
+                                            <?= strtoupper($code) ?>
+                                        </td>
                                     <?php } ?>
+
                                     <td class="px-3 py-2 text-left text-white">
                                         <?php
                                         if (in_array($code, $not_exist)) {
-                                            echo "<p class ='text-red-600' data-relation='" . $relation_id . "' id='" . $code . '-append' . "'>کد اشتباه</p>";
+                                            echo "<p class ='text-red-600' data-relation='" . $relation_id . "' id='" . $code . "-append'>کد اشتباه</p>";
                                             echo "<span data-description='کد اشتباه'></span>";
                                         } else {
                                             if ($max && current($existing[$code])['givenPrice']) {
@@ -186,7 +225,6 @@ if ($isValidCustomer) :
                                                 $priceDate = $target['created_at'];
 
                                                 $rawPrice = current(current($existing[$code])['givenPrice']);
-
                                                 $existing_brands = getExistingBrands(current($existing[$code])['relation']['stockInfo']);
                                                 $finalPrice = getFinalSanitizedPrice([$rawPrice], $existing_brands, $discount);
 
@@ -198,63 +236,62 @@ if ($isValidCustomer) :
                                                     $isDisplayAllowed = true;
                                                 }
                                         ?>
-                                                <p style='direction: ltr !important;' data-relation='<?= $relation_id ?>' id='<?= $code ?>-append' class="<?= $finalPrice !== 'موجود نیست' ? '' : 'text-yellow-400' ?>">
+                                                <p style='direction: ltr !important;'
+                                                    data-relation='<?= $relation_id ?>'
+                                                    id='<?= $code ?>-append'
+                                                    class="<?= $finalPrice !== 'موجود نیست' ? '' : 'text-yellow-400' ?>">
                                                     <?= $finalPrice !== 'موجود نیست' ? $finalPrice : 'نیاز به بررسی' ?>
                                                 </p>
-                                            <?php
+                                        <?php
                                             } else if ($max) {
                                                 $finalPrice = 'نیاز به قیمت';
 
                                                 if (count(($existing[$code]))) {
                                                     $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
-
                                                     foreach ($codesToCheck as $code) {
                                                         $hussin_part = get_hussain_parts(strtoupper($code));
                                                         if (count($hussin_part) > 0) {
-                                                            $item = $hussin_part[0];
-                                                            $price = (int)($item['offer_price'] / 10000);
-                                                            $today = lastActiveRate(); // تاریخ و ساعت فعلی
-                                                            $finalPrice = (applyManualDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
+                                                            $item = $hussin_part;
+                                                            $price = (int)($item['yadakprice'] / 10000);
+                                                            $finalPrice = $price . ' ' . $brandMap[$item['brand']] ?? $item['brand'];
                                                             $isDisplayAllowed = true;
                                                             break;
-                                                        } else {
                                                         }
                                                     }
                                                 }
 
-                                                echo "<p style='direction: ltr !important;' data-relation='" . $relation_id . "' id='" . $code . '-append' . "'class ='text-green-400'>$finalPrice </p>";
+                                                echo "<p style='direction: ltr !important;' data-relation='" . $relation_id . "' id='" . $code . "-append' class='text-green-400'>$finalPrice </p>";
                                             } else if ($max == 0) {
-
                                                 $finalPrice = 'موجود نیست';
+                                                $class = '';
                                                 if (count(($existing[$code]))) {
                                                     $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
-
                                                     foreach ($codesToCheck as $code) {
                                                         $hussin_part = get_hussain_parts(strtoupper($code));
-                                                        if (count($hussin_part) > 0) {
-                                                            $item = $hussin_part[0];
-                                                            $price = (int)($item['offer_price'] / 10000);
-                                                            $today = lastActiveRate(); // تاریخ و ساعت فعلی
-                                                            $finalPrice = (applyManualDollarRate($price, $today)) . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
+                                                        if ($hussin_part) {
+                                                            $item = $hussin_part;
+                                                            $price = (int)($item['yadakprice'] / 10000);
+                                                            $finalPrice = $price . ' ' . $brandMap[$item['brand']] ?? $item['brand'];
                                                             $isDisplayAllowed = true;
+                                                            $class = 'color: orange !important;';
                                                             break;
-                                                        } else {
                                                         }
                                                     }
                                                 }
-
-                                                echo "<p style='direction: ltr !important;' data-relation='" . $relation_id . "' id='" . $code . '-append' . "'>" . $finalPrice . "</p>";
+                                                echo "<p style='{$class} direction: ltr !important;' data-relation='{$relation_id}' id='{$code}-append'>{$finalPrice}</p>";
                                             }
-
-                                            ?>
-                                            <span data-description="<?= $finalPrice ?>"></span>
-                                    </td>
-                                    <td class="text-left py-2" onclick="closeTab()">
-                                        <i title="کاپی کردن مقادیر" onclick="copyItemPrice(this)" class="px-4 text-white text-sm material-icons hover:cursor-pointer">content_copy</i>
-                                    </td>
-                                <?php
                                         }
-                                ?>
+                                        ?>
+                                        <span data-description="<?= $finalPrice ?>"></span>
+                                    </td>
+
+                                    <td class="text-left py-2" onclick="closeTab()">
+                                        <i title="کاپی کردن مقادیر"
+                                            onclick="copyItemPrice(this)"
+                                            class="px-4 text-white text-sm material-icons hover:cursor-pointer">
+                                            content_copy
+                                        </i>
+                                    </td>
                                 </tr>
                             <?php
                             }

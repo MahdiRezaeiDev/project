@@ -434,12 +434,50 @@ function overallSpecification($id, $type)
 
 function get_hussain_parts($partNumber)
 {
-    $stmt = PDO_CONNECTION->prepare("SELECT property_code, brand, stock, offer_price, id, similar_code FROM hoseinparts_products WHERE property_code  = :partnumber");
+    $stmt = PDO_CONNECTION->prepare("
+        SELECT 
+            property_code, 
+            brand, 
+            stock, 
+            offer_price, 
+            id, 
+            similar_code,
+            online_price,
+            instant_offer_price,
+            last_sale_price
+        FROM hoseinparts_products 
+        WHERE property_code = :partnumber 
+        LIMIT 1
+    ");
+
     $stmt->bindParam(':partnumber', $partNumber);
     $stmt->execute();
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($result) {
+        // Convert numeric fields safely
+        $offerPrice        = (float)($result['offer_price'] ?? 0);
+        $instant_offer_price = (float)($result['instant_offer_price'] ?? 0);
+        $last_sale_price     = (float)($result['last_sale_price'] ?? 0);
+        $online_price       = (float)($result['online_price'] ?? 0);
+
+        // Step 1: add 30% to online price
+        $online_priceWith30 = $online_price * 1.3;
+
+        // Step 2: find the max among all
+        $maxPrice = max($offerPrice, $instant_offer_price, $last_sale_price, $online_priceWith30);
+
+        // Step 3: add 3% to the max price
+        $yadakPrice = $maxPrice * 1.03;
+
+        // Add yadakprice to result
+        $result['yadakprice'] = round($yadakPrice, 2); // rounded to 2 decimals
+    }
+
+    return $result;
 }
+
 
 
 function lastActiveRate()
