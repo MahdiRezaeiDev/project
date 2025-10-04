@@ -92,6 +92,12 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
                             قیمت های تلگرام
                         </a>
                     </li>
+                    <li class="hover:bg-gray-900 text-white text-sm font-bold">
+                        <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>hussainAPI.php">
+                            <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/attention.svg" alt="add icon">
+                            قیمت API
+                        </a>
+                    </li>
                 </ul>
             </div>
         </li>

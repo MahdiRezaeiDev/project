@@ -250,7 +250,7 @@ if ($isValidCustomer) :
                                                     $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
                                                     foreach ($codesToCheck as $code) {
                                                         $hussin_part = get_hussain_parts(strtoupper($code));
-                                                        if (count($hussin_part) > 0) {
+                                                        if ($hussin_part) {
                                                             $item = $hussin_part;
                                                             $price = (int)($item['yadakprice'] / 10000);
                                                             $finalPrice = $price . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);

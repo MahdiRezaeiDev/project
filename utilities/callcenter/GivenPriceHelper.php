@@ -455,6 +455,8 @@ function get_hussain_parts($partNumber)
 
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    $benefits = getBenefitPercentage();
+
     if ($result) {
         // Convert numeric fields safely
         $offerPrice        = (float)($result['offer_price'] ?? 0);
@@ -478,7 +480,13 @@ function get_hussain_parts($partNumber)
     return $result;
 }
 
-
+function getBenefitPercentage()
+{
+    $stmt = PDO_CONNECTION->prepare("SELECT * FROM hussain_api");
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC)[0];
+    return $result;
+}
 
 function lastActiveRate()
 {
