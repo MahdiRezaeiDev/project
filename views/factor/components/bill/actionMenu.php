@@ -135,13 +135,6 @@
         </div>
     </div>
 </div>
-<style>
-    @media print {
-        .hide_while_print {
-            display: none !important;
-        }
-    }
-</style>
 <script>
     function handlePrint(factorNumber) {
         const params = new URLSearchParams();
@@ -216,7 +209,7 @@
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
         toast.textContent = message;
-        toast.className = `fixed bottom-5 right-5 px-4 py-2 rounded shadow-lg text-white z-50 transition-opacity duration-500 hide_while_print ${
+        toast.className = `fixed bottom-5 right-5 px-4 py-2 rounded shadow-lg text-white z-50 transition-opacity duration-500 ${
         type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
 
         document.body.appendChild(toast);
