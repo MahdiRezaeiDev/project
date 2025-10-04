@@ -20,7 +20,7 @@ function boot()
     if ($useMock) {
         // --- Mock JSON (test data) ---
         $mockResponse = '{
-            "169785118":{"info":[{"code":"256202g\n","message":"256202g\n\n\n\n????","date":1759586720}],"name":"فروشگاه ایران یدک (آقای رضا افشاری)","userName":169785118,"profile":"images.png"}        }';
+            "169785118":{"info":[{"code":"256202g600\n","message":"256202g600\n\n\n\n????","date":1759586720}],"name":"فروشگاه ایران یدک (آقای رضا افشاری)","userName":169785118,"profile":"images.png"}        }';
 
         $response = json_decode($mockResponse, true);
         validateMessages($response);
