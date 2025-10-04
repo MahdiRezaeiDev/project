@@ -318,16 +318,21 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2">
+                    <td colspan="3">
                         <?php $hussin_part = get_hussain_parts($goods[$index]['partnumber']);
                         if ($hussin_part) : ?>
                             <table dir="ltr" class="w-full text-left text-sm font-light custom-table mt-2">
                                 <thead class="font-medium bg-gray-700 text-white">
                                     <tr>
-                                        <th class="text-xs text-center">قیمت</th>
-                                        <th class="text-xs text-center">موجودی</th>
-                                        <th class="text-xs text-center">برند</th>
-                                        <th class="text-xs text-center">کد فنی</th>
+                                        <th class="text-xs px-2 text-left">قیمت</th>
+                                        <th class="text-xs px-2 text-left">موجودی</th>
+                                        <th class="text-xs px-2 text-left">30%</th>
+                                        <th class="text-xs px-2 text-left">last_sale_price</th>
+                                        <th class="text-xs px-2 text-left">instant_offer_price</th>
+                                        <th class="text-xs px-2 text-left">online_price</th>
+                                        <th class="text-xs px-2 text-left">offer_price</th>
+                                        <th class="text-xs px-2 text-left">برند</th>
+                                        <th class="text-xs px-2 text-left">کد فنی</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -343,9 +348,24 @@
                                         </td>
 
                                         <td class="p-2 text-left font-semibold">
-                                            <span><?= $brandMap[$hussin_part['brand']] ?? $hussin_part['brand'] ?></span>
+                                            <span><?= (int) (($hussin_part['online_price'] * 1.3) / 10000); ?></span>
                                         </td>
 
+                                        <td class="p-2 text-left font-semibold">
+                                            <span><?= $hussin_part['last_sale_price'] ?></span>
+                                        </td>
+                                        <td class="p-2 text-left font-semibold">
+                                            <span><?= $hussin_part['instant_offer_price'] ?></span>
+                                        </td>
+                                        <td class="p-2 text-left font-semibold">
+                                            <span><?= $hussin_part['online_price'] ?></span>
+                                        </td>
+                                        <td class="p-2 text-left font-semibold">
+                                            <span><?= $hussin_part['offer_price'] ?></span>
+                                        </td>
+                                        <td class="p-2 text-left font-semibold">
+                                            <span><?= $brandMap[$hussin_part['brand']] ?? $hussin_part['brand'] ?></span>
+                                        </td>
                                         <td class="p-2 text-left font-semibold">
                                             <span><?= $hussin_part['property_code'] ?></span>
                                         </td>
@@ -355,7 +375,6 @@
 
                         <?php endif; ?>
                     </td>
-                    <td colspan="1"></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

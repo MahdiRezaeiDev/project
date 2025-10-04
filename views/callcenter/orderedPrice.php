@@ -253,7 +253,7 @@ if ($isValidCustomer) :
                                                         if (count($hussin_part) > 0) {
                                                             $item = $hussin_part;
                                                             $price = (int)($item['yadakprice'] / 10000);
-                                                            $finalPrice = $price . ' ' . $brandMap[$item['brand']] ?? $item['brand'];
+                                                            $finalPrice = $price . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
                                                             $isDisplayAllowed = true;
                                                             break;
                                                         }
@@ -271,7 +271,7 @@ if ($isValidCustomer) :
                                                         if ($hussin_part) {
                                                             $item = $hussin_part;
                                                             $price = (int)($item['yadakprice'] / 10000);
-                                                            $finalPrice = $price . ' ' . $brandMap[$item['brand']] ?? $item['brand'];
+                                                            $finalPrice = $price . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
                                                             $isDisplayAllowed = true;
                                                             $class = 'color: orange !important;';
                                                             break;
