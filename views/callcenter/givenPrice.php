@@ -146,7 +146,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh'];
     #customAlert {
         display: none;
         position: fixed;
-        top: 60px;
+        bottom: 60px;
         right: 16px;
         background: #27ae60;
         color: #fff;
@@ -163,7 +163,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh'];
 
 <?php if (in_array($_SESSION['username'], $qualified)): ?><!-- Sidebar toggle button -->
     <button onclick="toggleSidebar()"
-        style="position:fixed; top:60px; left:16px; z-index:10001; background:#4f46e5; color:#fff; padding:8px 12px; border-radius:5px;">
+        style="position:fixed; top:60px; right:16px; z-index:10001; background:#4f46e5; color:#fff; padding:8px 12px; border-radius:5px;">
         تنظیمات حسین پارت
     </button>
 <?php endif; ?>
