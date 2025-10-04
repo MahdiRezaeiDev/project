@@ -3,72 +3,60 @@ require_once '../config/constants.php';
 require_once '../database/db_connect.php';
 require_once '../utilities/callcenter/DollarRateHelper.php';
 require_once '../app/controller/telegram/AutoMessageController.php';
-
 $status = getStatus();
-
 function boot()
 {
     $now = date('H:i:s');
     echo "\n\n*************** Cron job started ( $now ) ************************\n\n";
-?>
-    <br>
-    <?php
+    // API endpoint URL
+    $apiUrl = 'http://auto.yadak.center/';
 
-    // 👉 Toggle this flag to switch between mock JSON and real API
-    $useMock = true;
+    $postData = [
+        'getMessagesAuto' => 'getMessagesAuto'
+    ];
 
-    if ($useMock) {
-        // --- Mock JSON (test data) ---
-        $mockResponse = '{
-            "169785118":{"info":[{"code":"256202g600\n","message":"256202g600\n\n\n\n????","date":1759586720}],"name":"فروشگاه ایران یدک (آقای رضا افشاری)","userName":169785118,"profile":"images.png"}        }';
+    // Initialize curl
+    $curl = curl_init();
 
-        $response = json_decode($mockResponse, true);
-        validateMessages($response);
+    curl_setopt_array($curl, [
+        CURLOPT_URL => $apiUrl,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_MAXREDIRS => 5,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => http_build_query($postData),
+        CURLOPT_HTTPHEADER => [
+            'Content-Type: application/x-www-form-urlencoded',
+        ],
+    ]);
+
+
+    // Execute the request
+    $response = curl_exec($curl);
+
+    // Check for errors
+    if (curl_errno($curl)) {
+        $errorMessage = curl_error($curl);
+        // Handle the error
+        echo "cURL error: $errorMessage";
     } else {
-        // --- Real API call ---
-        $apiUrl = 'http://auto.yadak.center/';
-
-        $postData = [
-            'getMessagesAuto' => 'getMessagesAuto'
-        ];
-
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $apiUrl,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS => 5,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => http_build_query($postData),
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/x-www-form-urlencoded',
-            ],
-        ]);
-
-        $response = curl_exec($curl);
-
-        if (curl_errno($curl)) {
-            $errorMessage = curl_error($curl);
-            echo "cURL error: $errorMessage";
+        // Handle the response` 
+        $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE); // Get HTTP status code
+        if ($statusCode >= 200 && $statusCode < 300) {
+            // Request was successful]
+            $response = json_decode($response, true);
+            validateMessages($response);
         } else {
-            $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-            if ($statusCode >= 200 && $statusCode < 300) {
-                $response = json_decode($response, true);
-                validateMessages($response);
-            } else {
-                echo "Request failed with status code $statusCode";
-            }
+            // Request failed
+            echo "Request failed with status code $statusCode";
+            // You can handle different status codes here
         }
-
-        curl_close($curl);
     }
 
-    $now = date('H:i:s');
-    ?>
-    <br>
-<?php
+    // Close curl
+    curl_close($curl);
 }
 
 function validateMessages($messages)
@@ -100,19 +88,32 @@ function validateMessages($messages)
         }
 
         $latestRequests = getReceiverLatestRequests($sender);
+
         array_walk($latestRequests, function (&$request) {
             $request = explode(' ', $request);
         });
+
         $latestRequests = array_merge(...$latestRequests);
 
         $allMessages = $message['info'];
 
         foreach ($allMessages as $message) {
+
+            // Step 1: Explode the message codes into an array
             $rawCodes = explode("\n", $message['code']);
+
+            // Step 2: Remove the last element of the array
             array_pop($rawCodes);
+            // Step 3: Convert all codes to uppercase
             $rawCodes = array_map('strtoupper', $rawCodes);
+
+            // Step 4: Trim whitespace from each code
             $rawCodes = array_map('trim', $rawCodes);
+
+            // Step 5: Ensure all codes are unique
             $rawCodes = array_unique($rawCodes);
+
+            // Step 6: Remove codes that are already in the latest requests
             $rawCodes = array_diff($rawCodes, $latestRequests);
 
             if (!count($rawCodes)) {
@@ -120,7 +121,7 @@ function validateMessages($messages)
             }
 
             $codes = isGoodSelected($rawCodes);
-
+            // Now $codes contains the filtered codes
             if (count($codes)) {
                 try {
                     $template = '';
@@ -128,6 +129,7 @@ function validateMessages($messages)
                     $index = rand(0, count($separators) - 1);
 
                     foreach ($codes as $code) {
+                        // Check if the code has already been sent to this sender
                         if (isset($sentMessages[$sender]) && in_array($code, $sentMessages[$sender])) {
                             continue;
                         }
@@ -142,16 +144,19 @@ function validateMessages($messages)
                                 }
                                 $template .= $code . $separators[$index] . $item['finalPrice'] . "\n";
                                 $conversation .= $code . $separators[$index] . $item['finalPrice'] . "\n";
-                                // saveConversation($sender, $code, $conversation);
+                                saveConversation($sender, $code, $conversation);
                                 $conversation = '';
                             }
                         }
 
                         if ($template !== '') {
+                            // Add the code to sentMessages before sending the template
                             $sentMessages[$sender][] = $code;
-                            // sendMessageWithTemplate($sender, $template);
+                            sendMessageWithTemplate($sender, $template);
                             echo $template;
-                            usleep(200000);
+
+                            usleep(200000); // Optional: 200ms delay between sends
+
                             $template = '';
                         }
                     }
@@ -170,22 +175,28 @@ function validateMessages($messages)
     echo "\n\n*************** Cron job ENDED ( $now ) ************************\n\n";
 }
 
+
 function getSpecification($completeCode)
 {
     $explodedCodes = explode("\n", $completeCode);
+
     $nonExistingCodes = [];
 
     $explodedCodes = array_filter($explodedCodes, function ($code) {
         return strlen($code) > 6;
     });
 
+    // Cleaning and filtering codes
     $sanitizedCodes = array_map(function ($code) {
         return strtoupper(preg_replace('/[^a-z0-9]/i', '', $code));
     }, $explodedCodes);
 
+    // Remove duplicate codes
     $explodedCodes = array_unique($sanitizedCodes);
-    $existing_code = [];
 
+    $existing_code = []; // This array will hold the id and partNumber of the existing codes in DB
+
+    // Prepare SQL statement outside the loop for better performance
     $sql = "SELECT id, partnumber FROM yadakshop.nisha WHERE partnumber LIKE :partNumber";
     $stmt = PDO_CONNECTION->prepare($sql);
 
@@ -208,6 +219,7 @@ function getSpecification($completeCode)
         if (!in_array($code, $nonExistingCodes)) {
             foreach ($existing_code[$code] as $item) {
                 $relation_exist = isInRelation($item['id']);
+
                 if ($relation_exist) {
                     if (!in_array($relation_exist, $relation_id)) {
                         array_push($relation_id, $relation_exist);
@@ -226,6 +238,7 @@ function getSpecification($completeCode)
     }
 
     $finalResult = [];
+
     foreach ($goodDetails as $partNumber => $goodDetail) {
         $brands = [];
         foreach ($goodDetail['existing'] as $item) {
@@ -236,7 +249,7 @@ function getSpecification($completeCode)
         $brands = [...array_unique(array_merge(...$brands))];
         $goodDetails[$partNumber]['brands'] = addRelatedBrands($brands);
         $goodDetails[$partNumber]['finalPrice'] = getFinalSanitizedPrice($goodDetail['givenPrice'], $goodDetails[$partNumber]['brands']);
-        $finalResult[$partNumber]['finalPrice'] = $goodDetails[$partNumber]['finalPrice'];
+        $finalResult[$partNumber]['finalPrice'] = getFinalSanitizedPrice($goodDetail['givenPrice'], $goodDetails[$partNumber]['brands']);
     }
 
     return $finalResult;
