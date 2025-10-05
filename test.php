@@ -1,13 +1,14 @@
 <?php
-require_once  './config/constants.php';
-require_once './database/db_connect.php'; // Make sure PDO_CONNECTION is defined here
+require_once './config/constants.php';
+require_once './database/db_connect.php';
 
 $apiUrl = "http://wsrest.hoseinparts.ir/ShowList";
 $pageLength = 50;
 $startRecord = 0;
-$hasMore = true;
+$allProducts = [];
 
-while ($hasMore) {
+// Step 1: Fetch all products from the API
+while (true) {
     $payload = [
         'menuID'        => 87,
         'userName'      => 'string',
@@ -36,58 +37,79 @@ while ($hasMore) {
     curl_close($ch);
 
     $data = json_decode($response, true);
+    $resultData = json_decode($data['result'] ?? '', true);
 
-    if (!isset($data['result']) || empty($data['result'])) {
-        $hasMore = false;
+    if (empty($resultData['Data'])) {
         break;
     }
 
-    // Decode the nested JSON string inside 'result'
-    $resultData = json_decode($data['result'], true);
-
-    if (!isset($resultData['Data']) || empty($resultData['Data'])) {
-        $hasMore = false;
+    $allProducts = array_merge($allProducts, $resultData['Data']);
+    if (count($resultData['Data']) < $pageLength) {
         break;
-    }
-
-    // Prepare insert/update statement
-    $stmt = PDO_CONNECTION->prepare("
-        INSERT INTO hoseinparts_products 
-        (api_id, property_code, similar_code, brand, offer_price, online_price, instant_offer_price, stock, last_sale_price) 
-        VALUES 
-        (:api_id, :property_code, :similar_code, :brand, :offer_price, :online_price, :instant_offer_price, :stock, :last_sale_price)
-        ON DUPLICATE KEY UPDATE
-            api_id = VALUES(api_id),
-            similar_code = VALUES(similar_code),
-            brand = VALUES(brand),
-            offer_price = VALUES(offer_price),
-            online_price = VALUES(online_price),
-            instant_offer_price = VALUES(instant_offer_price),
-            stock = VALUES(stock),
-            last_sale_price = VALUES(last_sale_price),
-            last_update = CURRENT_TIMESTAMP
-    ");
-
-    // Loop through each product
-    foreach ($resultData['Data'] as $item) {
-        $stmt->execute([
-            ':api_id'              => $item['ID'] ?? 0,
-            ':property_code'       => $item['PropertyCode'] ?? '',
-            ':similar_code'        => $item['SimilarCode'] ?? null,
-            ':brand'               => $item['Brand'] ?? null,
-            ':offer_price'         => $item['OfferPrice'] ?? 0,
-            ':online_price'        => $item['onlineprice'] ?? 0,
-            ':instant_offer_price' => $item['InstantOfferPrice'] ?? 0,
-            ':stock'               => $item['Stock'] ?? 0,
-            ':last_sale_price'     => $item['LastSalePrice'] ?? 0
-        ]);
     }
 
     $startRecord += $pageLength;
-
-    if (count($resultData['Data']) < $pageLength) {
-        $hasMore = false;
-    }
 }
 
-echo "All products inserted/updated successfully.\n";
+// Step 1b: Remove duplicates strictly by PropertyCode
+$uniqueProducts = [];
+foreach ($allProducts as $product) {
+    $code = isset($product['PropertyCode']) ? trim(strtolower($product['PropertyCode'])) : '';
+    if ($code) {
+        $uniqueProducts[$code] = $product; // last occurrence wins
+    }
+}
+$allProducts = array_values($uniqueProducts); // reset keys
+
+if (empty($allProducts)) {
+    echo "No products found.\n";
+    exit;
+}
+
+// Step 2: Truncate table
+PDO_CONNECTION->exec("TRUNCATE TABLE hoseinparts_products");
+
+// Step 3: Prepare for batch insert
+$columns = [
+    'api_id',
+    'property_code',
+    'similar_code',
+    'brand',
+    'offer_price',
+    'online_price',
+    'instant_offer_price',
+    'stock',
+    'last_sale_price',
+    'last_update'
+];
+
+$chunkSize = 1000; // insert 1000 rows per batch
+$totalProducts = count($allProducts);
+$chunks = array_chunk($allProducts, $chunkSize);
+
+PDO_CONNECTION->beginTransaction();
+foreach ($chunks as $chunk) {
+    $placeholders = [];
+    $values = [];
+
+    foreach ($chunk as $item) {
+        $placeholders[] = '(' . implode(',', array_fill(0, count($columns), '?')) . ')';
+        $values[] = $item['ID'] ?? 0;
+        $values[] = $item['PropertyCode'] ?? '';
+        $values[] = $item['SimilarCode'] ?? null;
+        $values[] = $item['Brand'] ?? null;
+        $values[] = $item['OfferPrice'] ?? 0;
+        $values[] = $item['onlineprice'] ?? 0;
+        $values[] = $item['InstantOfferPrice'] ?? 0;
+        $values[] = $item['Stock'] ?? 0;
+        $values[] = $item['LastSalePrice'] ?? 0;
+        $values[] = date('Y-m-d H:i:s');
+    }
+
+    $insertSql = "INSERT INTO hoseinparts_products (" . implode(',', $columns) . ") VALUES " . implode(',', $placeholders);
+    $stmt = PDO_CONNECTION->prepare($insertSql);
+    $stmt->execute($values);
+}
+PDO_CONNECTION->commit();
+
+echo "All products refreshed successfully. Total unique products: " . $totalProducts . "\n";
