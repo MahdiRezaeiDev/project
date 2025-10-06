@@ -179,24 +179,20 @@ function validateMessages($messages)
 function getSpecification($completeCode)
 {
     $explodedCodes = explode("\n", $completeCode);
-
     $nonExistingCodes = [];
 
     $explodedCodes = array_filter($explodedCodes, function ($code) {
         return strlen($code) > 6;
     });
 
-    // Cleaning and filtering codes
     $sanitizedCodes = array_map(function ($code) {
         return strtoupper(preg_replace('/[^a-z0-9]/i', '', $code));
     }, $explodedCodes);
 
-    // Remove duplicate codes
     $explodedCodes = array_unique($sanitizedCodes);
 
-    $existing_code = []; // This array will hold the id and partNumber of the existing codes in DB
+    $existing_code = [];
 
-    // Prepare SQL statement outside the loop for better performance
     $sql = "SELECT id, partnumber FROM yadakshop.nisha WHERE partnumber LIKE :partNumber";
     $stmt = PDO_CONNECTION->prepare($sql);
 
@@ -219,17 +215,20 @@ function getSpecification($completeCode)
         if (!in_array($code, $nonExistingCodes)) {
             foreach ($existing_code[$code] as $item) {
                 $relation_exist = isInRelation($item['id']);
-
                 if ($relation_exist) {
                     if (!in_array($relation_exist, $relation_id)) {
                         array_push($relation_id, $relation_exist);
                         $goodDescription = relations($relation_exist, true);
+                        $total = array_sum(array_values($goodDescription['sorted']));
+                        $goodDetails[$item['partnumber']]['total'] = $total;
                         $goodDetails[$item['partnumber']]['existing'] = $goodDescription['existing'];
                         $goodDetails[$item['partnumber']]['givenPrice'] = givenPrice(array_keys($goodDescription['goods']), $relation_exist);
                         break;
                     }
                 } else {
                     $goodDescription = relations($item['partnumber'], false);
+                    $total = array_sum(array_values($goodDescription['sorted']));
+                    $goodDetails[$item['partnumber']]['total'] = $total;
                     $goodDetails[$item['partnumber']]['existing'] = $goodDescription['existing'];
                     $goodDetails[$item['partnumber']]['givenPrice'] = givenPrice(array_keys($goodDescription['goods']));
                 }
@@ -238,7 +237,6 @@ function getSpecification($completeCode)
     }
 
     $finalResult = [];
-
     foreach ($goodDetails as $partNumber => $goodDetail) {
         $brands = [];
         foreach ($goodDetail['existing'] as $item) {
@@ -249,12 +247,17 @@ function getSpecification($completeCode)
         $brands = [...array_unique(array_merge(...$brands))];
         $goodDetails[$partNumber]['brands'] = addRelatedBrands($brands);
         $goodDetails[$partNumber]['finalPrice'] = getFinalSanitizedPrice($goodDetail['givenPrice'], $goodDetails[$partNumber]['brands']);
-        $finalResult[$partNumber]['finalPrice'] = getFinalSanitizedPrice($goodDetail['givenPrice'], $goodDetails[$partNumber]['brands']);
+        if (!$goodDetails[$partNumber]['total']) {
+            $finalResult[$partNumber]['finalPrice'] = 'موجود نیست';
+        } else {
+            $finalResult[$partNumber]['finalPrice'] = getFinalSanitizedPrice($goodDetail['givenPrice'], $goodDetails[$partNumber]['brands']);
+        }
     }
 
     return $finalResult;
 }
 
+// ================== RUN SCRIPT ==================
 if ($status) {
     boot();
 } else {
