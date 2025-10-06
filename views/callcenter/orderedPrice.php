@@ -251,8 +251,9 @@ if ($isValidCustomer) :
                                                 if (count(($existing[$code]))) {
                                                     $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
                                                     foreach ($codesToCheck as $code) {
+
                                                         $hussin_part = get_hussain_parts(strtoupper($code));
-                                                        if ($hussin_part) {
+                                                        if (is_hussain_enabled() && !empty($hussin_part)) {
                                                             $item = $hussin_part;
                                                             $price = (int)($item['yadakprice'] / 10000);
                                                             $finalPrice = $price . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
@@ -270,7 +271,7 @@ if ($isValidCustomer) :
                                                     $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
                                                     foreach ($codesToCheck as $code) {
                                                         $hussin_part = get_hussain_parts(strtoupper($code));
-                                                        if ($hussin_part) {
+                                                        if (is_hussain_enabled() && !empty($hussin_part)) {
                                                             $item = $hussin_part;
                                                             $price = (int)($item['yadakprice'] / 10000);
                                                             $finalPrice = $price . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
