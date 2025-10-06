@@ -155,7 +155,7 @@ if ($isValidCustomer) :
                                     <?php
                                     if (count($existing) > 0):
                                         if (isset($existing[$code]) && count($existing[$code]) > 0):
-                                            $goods = $existing[$code]['relation']['goods'] ?? [];
+                                            $goods = current($existing[$code])['relation']['goods'] ?? [];
                                             $firstGood = is_array($goods) ? current($goods) : null;
                                             $desc = $firstGood['description'] ?? '';
 
@@ -177,10 +177,12 @@ if ($isValidCustomer) :
                                             $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
                                             foreach ($codesToCheck as $c) {
                                                 $hussin_part = get_hussain_parts(strtoupper($c));
-                                                if (!empty($hussin_part)) {
+                                                if (is_hussain_enabled() && !empty($hussin_part)) :
+
                                                     $trBorderClass = "border-r-4 border-r-orange-500"; // قیمت از حسین
                                                     break;
-                                                }
+
+                                                endif;
                                             }
                                         }
                                     } else if ($max == 0) {
@@ -188,7 +190,7 @@ if ($isValidCustomer) :
                                             $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
                                             foreach ($codesToCheck as $c) {
                                                 $hussin_part = get_hussain_parts(strtoupper($c));
-                                                if (!empty($hussin_part)) {
+                                                if (is_hussain_enabled() && !empty($hussin_part)) {
                                                     $trBorderClass = "border-r-4 border-r-orange-400"; // حسین ولی بدون موجودی
                                                     break;
                                                 }

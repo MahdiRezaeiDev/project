@@ -23,14 +23,11 @@
                      </li>
                  <?php endforeach; ?>
              </ul>
-             <?php if (isset($information['relationInfo']['description']) && strlen($information['relationInfo']['description']) > 0) {
-                    var_dump($information['relationInfo']['description']);
-                ?>
-                 <p class="mt-3 text-rose-600 font-semibold">توضیحات:</p>
-                 <p class="bg-red-500 text-white rounded-md p-2 shake">
-                     <?= $information['relationInfo']['description'] ?>
-                 </p>
-             <?php } ?>
+
+             <p class="mt-3 text-rose-600 font-semibold">توضیحات:</p>
+             <p class="bg-red-500 text-white rounded-md p-2 shake">
+                 <?= $information['relationInfo']['description'] ?>
+             </p>
          </div>
          <p class="my-2 font-semibold">قطعات مرتبط: </p>
          <table>
@@ -84,9 +81,7 @@
      <?php endif; ?>
      <div class="mt-5">
          <label for="description">توضیحات</label>
-         <?php if (isset(current($goods)['description'])): ?>
-             <textarea onblur="alterDescription(this.value, '<?= current($goods)['id'] ?>')" class="w-full border-2" name="description" id="description"><?= current($goods)['description'] ?></textarea>
-         <?php endif; ?>
+         <textarea onblur="alterDescription(this.value, '<?= current($goods)['id'] ?>')" class="w-full border-2" name="description" id="description"><?= current($goods)['description'] ?></textarea>
      </div>
  </div>
  <script>

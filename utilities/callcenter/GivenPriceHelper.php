@@ -432,6 +432,18 @@ function overallSpecification($id, $type)
     return $allLimit;
 }
 
+function is_hussain_enabled()
+{
+    // Fetch the status from hussain_api (assuming only one row)
+    $stmt = PDO_CONNECTION->prepare("SELECT status FROM hussain_api LIMIT 1");
+    $stmt->execute();
+    $config = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $status = intval($config['status'] ?? 0);
+
+    return $status === 1;
+}
+
 function get_hussain_parts($partNumber)
 {
     // Fetch dynamic percentages from hussain_api (assuming only one row)
@@ -441,12 +453,6 @@ function get_hussain_parts($partNumber)
 
     $percent = (float)($config['percent'] ?? 30); // default 30%
     $benefit = (float)($config['benefit'] ?? 3);  // default 3%
-    $status  = intval($config['status'] ?? 0);
-
-    // If status is disabled, stop and return false
-    if ($status !== 1) {
-        return false;
-    }
 
     // Fetch the part from hoseinparts_products
     $stmt = PDO_CONNECTION->prepare("
@@ -459,7 +465,8 @@ function get_hussain_parts($partNumber)
             similar_code,
             online_price,
             instant_offer_price,
-            last_sale_price
+            last_sale_price,
+            last_update
         FROM hoseinparts_products 
         WHERE property_code = :partnumber 
         LIMIT 1

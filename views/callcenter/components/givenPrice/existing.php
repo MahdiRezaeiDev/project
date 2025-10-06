@@ -324,6 +324,7 @@
                             <table dir="ltr" class="w-full text-left text-sm font-light custom-table mt-2">
                                 <thead class="font-medium bg-gray-700 text-white">
                                     <tr>
+                                        <th class="text-xs px-2 text-left">آپدیت</th>
                                         <th class="text-xs px-2 text-left">فروش ما</th>
                                         <th class="text-xs px-2 text-left">موجودی</th>
                                         <th class="text-xs px-2 text-left">30%</th>
@@ -339,6 +340,10 @@
 
                                     <tr class="text-xs bg-gray-200 odd:bg-purple-400">
 
+                                        <td class="p-2 text-left font-semibold">
+                                            <span><?= jdate('Y/m/d H:i', strtotime($hussin_part['last_update'])) ?>
+                                            </span>
+                                        </td>
                                         <td class="p-2 text-left font-semibold">
                                             <span><?= (int) ($hussin_part['yadakprice'] / 10000) ?></span>
                                         </td>
