@@ -30,7 +30,7 @@ require_once '../../layouts/callcenter/sidebar.php';
     }
 </style>
 
-<div class="mx-4 bg-white rounded-lg shadow-lg h-screen">
+<div class="mx-4 bg-white rounded-lg shadow-lg">
     <div class="flex bg-gray-800  rounded-t-lg p-2">
         <button class="px-4 py-2 text-white ml-2 tab-header" data-tab="tab1" onclick="openTab(this)">
             ارسال پیام
