@@ -263,15 +263,39 @@ function getItemName($good, $brands)
     return $name;
 }
 
-function getIdealGood($goods, $partNumber)
+function getIdealGood(array $goods, string $partNumber)
 {
-    if (empty($goods[$partNumber]['partName'])) {
-        foreach ($goods as $key => &$good) {
-            if (!empty($good['partName'])) {
-                $good['partnumber'] = $partNumber;
-                return $good;
-            }
+    // 1) check first element in $goods (if any)
+    if (!empty($goods)) {
+        // array_key_first requires PHP 7.3+. fallback to reset/key if not available.
+        if (function_exists('array_key_first')) {
+            $firstKey = array_key_first($goods);
+        } else {
+            reset($goods);
+            $firstKey = key($goods);
+        }
+
+        if ($firstKey !== null && !empty($goods[$firstKey]['partName'])) {
+            $result = $goods[$firstKey];
+            // if returning a substitute, set its partnumber to the requested one
+            $result['partnumber'] = $partNumber;
+            return $result;
         }
     }
-    return $goods[$partNumber];
+
+    // 2) then check the requested partNumber itself
+    if (!empty($goods[$partNumber]['partName'])) {
+        return $goods[$partNumber];
+    }
+
+    // 3) otherwise search the rest for the first item that has partName
+    foreach ($goods as $key => $good) {
+        if (!empty($good['partName'])) {
+            $good['partnumber'] = $partNumber;
+            return $good;
+        }
+    }
+
+    // 4) final fallback: return the original entry for the partNumber (or empty array)
+    return $goods[$partNumber] ?? [];
 }
