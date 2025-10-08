@@ -351,7 +351,6 @@ require_once './components/factor.php';
 
         // Ensure the targetIndex is within the valid range
         if (targetIndex >= 0 && targetIndex < factorItems.length) {
-            console.log(targetIndex);
             if (position === 'before') {
                 factorItems.splice(targetIndex, 0, newItem);
             } else if (position === 'after') {
