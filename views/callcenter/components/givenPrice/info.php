@@ -36,15 +36,22 @@
              <?php foreach ($goods as $key => $item) : ?>
                  <?php if ($first) : ?>
                      <!-- First Item (Soft Highlight) -->
+                     <tr>
+                         <td colspan="2">
+                             <span class="text-xs text-gray-400">
+                                 لطفا برای ویرایش اسم جنس در فاکتور به روی اسم اولین آینم دبل کلیک نمایید.
+                             </span>
+                         </td>
+                     </tr>
                      <tr class="bg-blue-300 text-gray-900 font-semibold text-base shadow-sm">
                          <td class="p-3 w-80">
                              <div class="editable w-full">
-                                 <span class="partname block w-full" ondblclick="editPartName(this)">
+                                 <span class=" block w-full text-xs" ondblclick="editPartName(this)">
                                      <?= empty($item['partName']) ? 'فاقد نام' : $item['partName'] ?>
                                  </span>
                                  <input
                                      type="text"
-                                     class="mt-1 w-full rounded border-2 border-blue-200 bg-white p-2 text-gray-800 outline-none"
+                                     class="mt-1 w-full rounded border-2 text-xs border-blue-200 bg-white p-2 text-gray-800 outline-none"
                                      value="<?= $item['partName'] ?>"
                                      onblur="savePartName(this)"
                                      onkeydown="checkEnter(event, this)"
@@ -52,7 +59,7 @@
                                      data-id="<?= $item['id'] ?>">
                              </div>
                          </td>
-                         <td class="p-3 text-left font-medium">
+                         <td class="p-3 text-sm text-left font-medium">
                              <?= $item['partnumber'] ?>
                          </td>
                      </tr>
@@ -89,16 +96,23 @@
                  <?php $first = true; ?>
                  <?php foreach ($goods as $key => $item) : ?>
                      <?php if ($first) : ?>
+                         <tr>
+                             <td colspan="2">
+                                 <span class="text-xs text-gray-400">
+                                     لطفا برای ویرایش اسم جنس در فاکتور به روی اسم اولین آینم دبل کلیک نمایید.
+                                 </span>
+                             </td>
+                         </tr>
                          <!-- First Item (Soft Highlight) -->
                          <tr class="bg-blue-300 text-gray-900 font-semibold text-base shadow-sm">
                              <td class="p-3 w-80">
                                  <div class="editable w-full">
-                                     <span class="text-sm partname block w-full" ondblclick="editPartName(this)">
+                                     <span class="text-xs partname block w-full" ondblclick="editPartName(this)">
                                          <?= empty($item['partName']) ? 'فاقد نام' : $item['partName'] ?>
                                      </span>
                                      <input
                                          type="text"
-                                         class="mt-1 text-sm w-full rounded border-2 border-blue-200 bg-white p-2 text-gray-800 outline-none"
+                                         class="mt-1 text-xs w-full rounded border-2 border-blue-200 bg-white p-2 text-gray-800 outline-none"
                                          value="<?= $item['partName'] ?>"
                                          onblur="savePartName(this)"
                                          onkeydown="checkEnter(event, this)"
@@ -106,7 +120,7 @@
                                          data-id="<?= $item['id'] ?>">
                                  </div>
                              </td>
-                             <td class="p-3 text-left font-medium">
+                             <td class="p-3 text-sm text-left font-medium">
                                  <?= $item['partnumber'] ?>
                              </td>
                          </tr>
@@ -163,6 +177,10 @@
          span.textContent = input.value;
          span.style.display = 'inline';
          input.style.display = 'none';
+         if (!input.value) {
+             input.value = "فاقد نام"
+             return;
+         }
 
          const id = input.getAttribute('data-id');
 

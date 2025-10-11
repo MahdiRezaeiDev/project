@@ -451,7 +451,6 @@ function get_hussain_parts($partNumber)
     $stmt2->execute();
     $config = $stmt2->fetch(PDO::FETCH_ASSOC);
 
-    $percent = (float)($config['percent'] ?? 30); // default 30%
     $benefit = (float)($config['benefit'] ?? 3);  // default 3%
 
     // Fetch the part from hoseinparts_products
@@ -480,19 +479,10 @@ function get_hussain_parts($partNumber)
     }
 
     // Convert numeric fields safely
-    $offerPrice          = (float)($part['offer_price'] ?? 0);
-    $instant_offer_price = (float)($part['instant_offer_price'] ?? 0);
-    $last_sale_price     = (float)($part['last_sale_price'] ?? 0);
-    $online_price        = (float)($part['online_price'] ?? 0);
-
-    // Step 1: add dynamic percent to online price
-    $online_priceWithPercent = $online_price * (1 + $percent / 100);
-
-    // Step 2: find the max among all
-    $maxPrice = max($offerPrice, $instant_offer_price, $last_sale_price, $online_priceWithPercent);
+    $offerPrice  = (float)($part['offer_price'] ?? 0);
 
     // Step 3: add dynamic benefit
-    $yadakPrice = $maxPrice * (1 + $benefit / 100);
+    $yadakPrice = $offerPrice * (1 + $benefit / 100);
 
     $part['yadakprice'] = round($yadakPrice, 2); // rounded to 2 decimals
 
