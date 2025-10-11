@@ -23,56 +23,120 @@
                      </li>
                  <?php endforeach; ?>
              </ul>
-
-             <p class="mt-3 text-rose-600 font-semibold">توضیحات:</p>
-             <p class="bg-red-500 text-white rounded-md p-2 shake">
-                 <?= $information['relationInfo']['description'] ?>
-             </p>
+             <?php if (!empty($information['relationInfo']['description'])) : ?>
+                 <p class="mt-3 text-rose-600 font-semibold">توضیحات:</p>
+                 <p class="bg-red-500 text-white rounded-md p-2 shake">
+                     <?= $information['relationInfo']['description'] ?>
+                 </p>
+             <?php endif; ?>
          </div>
          <p class="my-2 font-semibold">قطعات مرتبط: </p>
          <table>
-             <?php foreach ($goods as $item) :
-                ?>
-                 <tr class="text-sm bg-gray-200 odd:bg-orange-200">
-                     <td class="p-2 w-80">
-                         <div class="editable w-full">
-                             <span class="partname w-full block" ondblclick="editPartName(this)">
-                                 <?= empty($item['partName']) ? 'فاقد نام' : $item['partName'] ?>
-                             </span>
-                             <input type="text" class="p-2 outline-none border-2 border-gray-200" value="<?= $item['partName'] ?>"
-                                 onblur="savePartName(this)" onkeydown="checkEnter(event, this)" style="display: none;" data-id="<?= $item['id'] ?>">
-                         </div>
-                     </td>
-                     <td class="p-2 text-left">
-                         <span>
+             <?php $first = true; ?>
+             <?php foreach ($goods as $key => $item) : ?>
+                 <?php if ($first) : ?>
+                     <!-- First Item (Soft Highlight) -->
+                     <tr class="bg-blue-300 text-gray-900 font-semibold text-base shadow-sm">
+                         <td class="p-3 w-80">
+                             <div class="editable w-full">
+                                 <span class="partname block w-full" ondblclick="editPartName(this)">
+                                     <?= empty($item['partName']) ? 'فاقد نام' : $item['partName'] ?>
+                                 </span>
+                                 <input
+                                     type="text"
+                                     class="mt-1 w-full rounded border-2 border-blue-200 bg-white p-2 text-gray-800 outline-none"
+                                     value="<?= $item['partName'] ?>"
+                                     onblur="savePartName(this)"
+                                     onkeydown="checkEnter(event, this)"
+                                     style="display: none;"
+                                     data-id="<?= $item['id'] ?>">
+                             </div>
+                         </td>
+                         <td class="p-3 text-left font-medium">
                              <?= $item['partnumber'] ?>
-                         </span>
-                     </td>
-                 </tr>
+                         </td>
+                     </tr>
+                     <?php $first = false; ?>
+                 <?php else : ?>
+                     <!-- Normal Items -->
+                     <tr class="text-sm even:bg-gray-100 odd:bg-orange-50 hover:bg-orange-100 transition">
+                         <td class="p-2 w-80">
+                             <div class="editable w-full">
+                                 <span class="partname w-full block" ondblclick="editPartName(this)">
+                                     <?= empty($item['partName']) ? 'فاقد نام' : $item['partName'] ?>
+                                 </span>
+                                 <input
+                                     type="text"
+                                     class="p-2 outline-none border-2 border-gray-200 rounded"
+                                     value="<?= $item['partName'] ?>"
+                                     onblur="savePartName(this)"
+                                     onkeydown="checkEnter(event, this)"
+                                     style="display: none;"
+                                     data-id="<?= $item['id'] ?>">
+                             </div>
+                         </td>
+                         <td class="p-2 text-left font-medium text-gray-700">
+                             <?= $item['partnumber'] ?>
+                         </td>
+                     </tr>
+                 <?php endif; ?>
              <?php endforeach; ?>
          </table>
          <?php else :
             if (count($goods) > 0) : ?>
              <p class="my-2 font-semibold">قطعات مرتبط: </p>
              <table>
-                 <?php foreach ($goods as $item) : ?>
-                     <tr class="text-sm bg-gray-200 odd:bg-orange-200">
-                         <td class="p-2 w-80">
-                             <div class="editable w-full">
-                                 <span class="partname w-full block" ondblclick="editPartName(this)">
-                                     <?= empty($item['partName']) ? 'فاقد نام' : $item['partName'] ?>
-                                 </span>
-                                 <input type="text" class="p-2 outline-none border-2 border-gray-200" value="<?= $item['partName'] ?>"
-                                     onblur="savePartName(this)" onkeydown="checkEnter(event, this)" style="display: none;" data-id="<?= $item['id'] ?>">
-                             </div>
-                         </td>
-                         <td class="p-2 text-left">
-                             <span>
+                 <?php $first = true; ?>
+                 <?php foreach ($goods as $key => $item) : ?>
+                     <?php if ($first) : ?>
+                         <!-- First Item (Soft Highlight) -->
+                         <tr class="bg-blue-300 text-gray-900 font-semibold text-base shadow-sm">
+                             <td class="p-3 w-80">
+                                 <div class="editable w-full">
+                                     <span class="text-sm partname block w-full" ondblclick="editPartName(this)">
+                                         <?= empty($item['partName']) ? 'فاقد نام' : $item['partName'] ?>
+                                     </span>
+                                     <input
+                                         type="text"
+                                         class="mt-1 text-sm w-full rounded border-2 border-blue-200 bg-white p-2 text-gray-800 outline-none"
+                                         value="<?= $item['partName'] ?>"
+                                         onblur="savePartName(this)"
+                                         onkeydown="checkEnter(event, this)"
+                                         style="display: none;"
+                                         data-id="<?= $item['id'] ?>">
+                                 </div>
+                             </td>
+                             <td class="p-3 text-left font-medium">
                                  <?= $item['partnumber'] ?>
-                             </span>
-                         </td>
-                     </tr>
+                             </td>
+                         </tr>
+                         <?php $first = false; ?>
+                     <?php else : ?>
+                         <!-- Normal Items -->
+                         <tr class="text-sm even:bg-gray-100 odd:bg-orange-50 hover:bg-orange-100 transition">
+                             <td class="p-2 w-80">
+                                 <div class="editable w-full">
+                                     <span class="partname w-full block" ondblclick="editPartName(this)">
+                                         <?= empty($item['partName']) ? 'فاقد نام' : $item['partName'] ?>
+                                     </span>
+                                     <input
+                                         type="text"
+                                         class="p-2 outline-none border-2 border-gray-200 rounded"
+                                         value="<?= $item['partName'] ?>"
+                                         onblur="savePartName(this)"
+                                         onkeydown="checkEnter(event, this)"
+                                         style="display: none;"
+                                         data-id="<?= $item['id'] ?>">
+                                 </div>
+                             </td>
+                             <td class="p-2 text-left font-medium text-gray-700">
+                                 <?= $item['partnumber'] ?>
+                             </td>
+                         </tr>
+                     <?php endif; ?>
                  <?php endforeach; ?>
+
+
              </table>
          <?php endif; ?>
          <p class="text-sm font-semibold p-2 text-center">
@@ -126,8 +190,6 @@
 
          axios.post('../../app/api/callcenter/OrderedPriceApi.php', param)
              .then((response) => {
-                 console.log(response.data);
-
                  form_success.style.bottom = "10px";
                  setTimeout(() => {
                      form_success.style.bottom = "-300px";
