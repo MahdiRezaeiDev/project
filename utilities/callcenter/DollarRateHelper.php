@@ -348,6 +348,7 @@ function addRelatedBrands($brands)
         'FORCEONE' => ['KOREA'],
         'DAEWHA' => ['KOREA'],
         'AUTOFIX' => ['KOREA'],
+        'BOSUNG' => ['KOREA'],
     ];
 
     // Normalize brand names to uppercase
