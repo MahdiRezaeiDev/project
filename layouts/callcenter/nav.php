@@ -23,16 +23,16 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
         <li class="mx-1 bg-gray-200 text-sm font-bold">
             <img id="close" onclick="toggleSidebar()" class="cursor-pointer p-2" id="open_aside_icon" src="../../public/icons/menu.svg" alt="menu icon">
         </li>
-        <li class="mx-1 hidden sm:block <?= $fileName == 'purchase.php' ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold">
+        <li class="mx-1  sm:block <?= $fileName == 'purchase.php' ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold">
             <a class="p-2 flex items-center gap-3" href="<?= $append ?>cartable.php">
-                <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/cartable.svg" alt="telegram icon">
+                <img class=" sm:inline-block" src="../../layouts/callcenter/icons/cartable.svg" alt="telegram icon">
                 کارتابل
             </a>
         </li>
-        <li class="mx-1 cursor-pointer <?= in_array($fileName, ['generalCall.php', 'callToBazar.php', 'last-calling-time.php']) ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold hidden sm:flex items-center gap-3">
+        <li class="mx-1 cursor-pointer <?= in_array($fileName, ['generalCall.php', 'callToBazar.php', 'last-calling-time.php']) ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold  sm:flex items-center gap-3">
             <div class="dropdown">
                 <a class="flex p-2 items-center gap-2 cursor-pointer" href="<?= $append ?>callToBazar.php">
-                    <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/telephone.svg" alt="telegram icon">
+                    <img class=" sm:inline-block" src="../../layouts/callcenter/icons/telephone.svg" alt="telegram icon">
                     تماس
                     <img src="../inventory/assets/icons/down_arrow.svg" alt="down arrow">
                 </a>
@@ -40,25 +40,25 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
                     <ul class="dropdown_menu bg-gray-800 border border-gray-800">
                         <li class="hover:bg-gray-900 text-white text-sm font-bold">
                             <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>generalCall.php">
-                                <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/handshake.svg" alt="add icon">
+                                <img class=" sm:inline-block" src="../../layouts/callcenter/icons/handshake.svg" alt="add icon">
                                 تماس عمومی
                             </a>
                         </li>
                         <li class="hover:bg-gray-900 text-white text-sm font-bold">
                             <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>callToBazar.php">
-                                <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/auto.svg" alt="add icon">
+                                <img class=" sm:inline-block" src="../../layouts/callcenter/icons/auto.svg" alt="add icon">
                                 تماس بازار
                             </a>
                         </li>
                         <li class="hover:bg-gray-900 text-white text-sm font-bold">
                             <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>saveBazarPrice.php">
-                                <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/auto.svg" alt="add icon">
+                                <img class=" sm:inline-block" src="../../layouts/callcenter/icons/auto.svg" alt="add icon">
                                 ثبت قیمت بازار
                             </a>
                         </li>
                         <li class="hover:bg-gray-900 text-white text-sm font-bold">
                             <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>last-calling-time.php">
-                                <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/latest.svg" alt="add icon">
+                                <img class=" sm:inline-block" src="../../layouts/callcenter/icons/latest.svg" alt="add icon">
                                 آخرین تماس ها
                             </a>
                         </li>
@@ -68,7 +68,7 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
         </li>
         <li class="dropdown mx-1 cursor-pointer <?= in_array($fileName, ['telegramPartner.php', 'telegramProcess.php', 'dashboard.php']) ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold flex items-center gap-3 pl-2">
             <a class="p-2 flex items-center gap-2 cursor-pointer" href="<?= $append ?>telegramPartner.php">
-                <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/telegram.svg" alt="telegram icon">
+                <img class=" sm:inline-block" src="../../layouts/callcenter/icons/telegram.svg" alt="telegram icon">
                 تلگرام
                 <img src="../inventory/assets/icons/down_arrow.svg" alt="down arrow">
             </a>
@@ -76,34 +76,34 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
                 <ul class="dropdown_menu bg-gray-800 border border-gray-800">
                     <li class="hover:bg-gray-900 text-white text-sm font-bold">
                         <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>telegramPartner.php">
-                            <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/handshake.svg" alt="add icon">
+                            <img class=" sm:inline-block" src="../../layouts/callcenter/icons/handshake.svg" alt="add icon">
                             همکار تلگرام
                         </a>
                     </li>
                     <li class="hover:bg-gray-900 text-white text-sm font-bold">
                         <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="../telegram/dashboard.php">
-                            <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/auto.svg" alt="add icon">
+                            <img class=" sm:inline-block" src="../../layouts/callcenter/icons/auto.svg" alt="add icon">
                             پیام خودکار
                         </a>
                     </li>
                     <li class="hover:bg-gray-900 text-white text-sm font-bold">
                         <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>telegramProcess.php">
-                            <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/attention.svg" alt="add icon">
+                            <img class=" sm:inline-block" src="../../layouts/callcenter/icons/attention.svg" alt="add icon">
                             قیمت های تلگرام
                         </a>
                     </li>
                     <li class="hover:bg-gray-900 text-white text-sm font-bold">
                         <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>hussainAPI.php">
-                            <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/attention.svg" alt="add icon">
+                            <img class=" sm:inline-block" src="../../layouts/callcenter/icons/attention.svg" alt="add icon">
                             قیمت API
                         </a>
                     </li>
                 </ul>
             </div>
         </li>
-        <li class="dropdown mx-1 hidden sm:block <?= $fileName == 'askedPrices.php' ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold ">
+        <li class="dropdown mx-1  sm:block <?= $fileName == 'askedPrices.php' ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold ">
             <a class="p-2 flex items-center gap-2" href="<?= $append ?>askedPrices.php">
-                <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/price.svg" alt="telegram icon">
+                <img class=" sm:inline-block" src="../../layouts/callcenter/icons/price.svg" alt="telegram icon">
                 قیمت گرفته شده
                 <img src="../inventory/assets/icons/down_arrow.svg" alt="down arrow">
             </a>
@@ -111,7 +111,7 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
                 <ul class="dropdown_menu bg-gray-800 border border-gray-800">
                     <li class="hover:bg-gray-900 text-white text-sm font-bold">
                         <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>messagesReply.php">
-                            <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/handshake.svg" alt="add icon">
+                            <img class=" sm:inline-block" src="../../layouts/callcenter/icons/handshake.svg" alt="add icon">
                             قیمت گیری هوشمند
                         </a>
                     </li>
@@ -120,7 +120,7 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
         </li>
         <li class="dropdown mx-1 cursor-pointer  <?= in_array($fileName, ['factor.php']) ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold flex items-center gap-3 pl-2">
             <a class="p-2 flex items-center gap-2 cursor-pointer" href="<?= $append ?>factor.php">
-                <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/bill.svg" alt="telegram icon">
+                <img class=" sm:inline-block" src="../../layouts/callcenter/icons/bill.svg" alt="telegram icon">
                 فاکتور
                 <img src="../inventory/assets/icons/down_arrow.svg" alt="down arrow">
             </a>
@@ -128,25 +128,25 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
                 <ul class="dropdown_menu bg-gray-800 border border-gray-800">
                     <li class="hover:bg-gray-900 text-white text-sm font-bold">
                         <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>factor.php">
-                            <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/list.svg" alt="add icon">
+                            <img class=" sm:inline-block" src="../../layouts/callcenter/icons/list.svg" alt="add icon">
                             شماره فاکتور
                         </a>
                     </li>
                     <li class="hover:bg-gray-900 text-white text-sm font-bold">
                         <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="../factor/index.php">
-                            <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/authority.svg" alt="add icon">
+                            <img class=" sm:inline-block" src="../../layouts/callcenter/icons/authority.svg" alt="add icon">
                             مدیریت فاکتور
                         </a>
                     </li>
                     <li class="hover:bg-gray-900 text-white text-sm font-bold">
                         <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="../factor/payments.php">
-                            <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/authority.svg" alt="add icon">
+                            <img class=" sm:inline-block" src="../../layouts/callcenter/icons/authority.svg" alt="add icon">
                             واریزی ها
                         </a>
                     </li>
                     <li class="hover:bg-gray-900 text-white text-sm font-bold">
                         <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="../factor/deliveries.php">
-                            <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/delivery.svg" alt="add icon">
+                            <img class=" sm:inline-block" src="../../layouts/callcenter/icons/delivery.svg" alt="add icon">
                             مرسولات
                         </a>
                     </li>
@@ -155,14 +155,14 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
         </li>
         <li class="mx-1 <?= $fileName == 'givenPrice.php' ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold">
             <a target="_self" class="p-2 flex items-center gap-2" href="<?= $append ?>givenPrice.php">
-                <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/approve.svg" alt="telegram icon">
+                <img class=" sm:inline-block" src="../../layouts/callcenter/icons/approve.svg" alt="telegram icon">
                 قیمت دستوری
             </a>
         </li>
-        <li class="mx-1 hidden sm:block <?= $fileName == 'pricesHistory.php' ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold">
+        <li class="mx-1  sm:block <?= $fileName == 'pricesHistory.php' ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold">
             <div class="dropdown">
                 <a class="p-2 flex items-center gap-2" target="_blank" href="<?= $append ?>pricesHistory.php">
-                    <img class="hidden sm:inline-block" src="../../layouts/callcenter/icons/history.svg" alt="telegram icon">
+                    <img class=" sm:inline-block" src="../../layouts/callcenter/icons/history.svg" alt="telegram icon">
                     تاریخچه
                     <img src="../inventory/assets/icons/down_arrow.svg" alt="down arrow">
                 </a>

@@ -156,7 +156,7 @@ function displayLocalData() {
           .split(",")
           .map((c) => c.trim());
         const imgUrl = (user.profile || "").replace(
-          "http://partners.yadak.center/",
+          "http://telegram.yadak.center/",
           externalAddressPoint
         );
 

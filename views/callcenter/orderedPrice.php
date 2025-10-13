@@ -157,7 +157,7 @@ if ($isValidCustomer) :
                                         if (isset($existing[$code]) && count($existing[$code]) > 0):
                                             $goods = current($existing[$code])['relation']['goods'] ?? [];
                                             $firstGood = is_array($goods) ? current($goods) : null;
-                                            $desc = $firstGood['description'] ?? '';
+                                            $desc = trim($firstGood['description']) ?? '';
 
                                             echo $desc ? "($desc)" : '';
                                         endif;
