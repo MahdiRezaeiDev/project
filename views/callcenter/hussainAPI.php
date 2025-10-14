@@ -219,6 +219,14 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC)[0];
                             )">ویرایش</button>
                     </td>
                 </tr>
+                <tr>
+                    <td>
+                        <button class="px-3 py-2 bg-teal-700 text-white" onclick="loadHussainPartData()">بروزسانی اطلاعات</button>
+                    </td>
+                    <td colspan="3">
+                        <p id="message" class="text-gray-800">Hello</p>
+                    </td>
+                </tr>
             <?php } ?>
         </tbody>
     </table>
@@ -274,6 +282,19 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC)[0];
             alertBox.classList.remove('show');
         }, 3000); // hide after 3 seconds
     <?php endif; ?>
+
+    function loadHussainPartData() {
+        const message = document.getElementById("message");
+        message.classList.remove("hidden");
+        message.innerHTML = "در حال پراسس، لطفا منتظر باشید.";
+        axios.get("../../test.php").then((response) => {
+            const message = document.getElementById("message");
+            message.innerHTML = response.data;
+
+        }).catch((e) => {
+            console.log(e);
+        });
+    }
 </script>
 
 <?php require_once './components/footer.php'; ?>
