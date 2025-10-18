@@ -87,7 +87,7 @@ require_once '../../layouts/callcenter/sidebar.php';
 
     function connect() {
         var params = new URLSearchParams();
-        params.append('getContacts', 'getContacts');
+        params.append('getBlockedContacts', 'getBlockedContacts');
         const container = document.getElementById('newContacts');
         container.innerHTML = `
                         <tr class="even:bg-gray-200">
@@ -99,50 +99,51 @@ require_once '../../layouts/callcenter/sidebar.php';
                         </tr>`;
 
         axios
-            .post("http://auto.yadak.center/", params)
+            .post("../../app/api/telegram/ContactsApi.php", params)
             .then(function(response) {
                 const contacts = response.data;
-                if (contacts.length > 0) {
-                    let template = ``;
-                    let counter = 1;
-                    for (contact of contacts) {
-                        if ((!existingContacts.includes(contact.id)) && contact.type == "user") {
-                            NewContacts.push(contact);
-                            const firstName = contact.first_name ?? '';
-                            const lastName = contact.last_name ?? '';
+                let template = ``;
+                let counter = 1;
+                let newContactFound = false;
 
-                            const clientName = firstName + " " + lastName;
-                            template += `
-                        <tr class="even:bg-gray-200 odd:bg-white">
-                            <td class="py-2 px-3 text-sm">${counter}</td>
-                            <td class="py-2 px-3 text-sm">${clientName ?? ''}</td>
-                            <td class="py-2 px-3 text-sm">${contact.username ?? ''}</td>
-                            <td class="py-2 px-3 text-sm cursor-pointer" 
-                                onclick="addContact(
-                                    '${clientName ?? ''}',
-                                    '${contact.username ?? ''}',
-                                    '${contact.id ?? ''}',
-                                    'rezaei.jpeg'
-                                )">
-                                <img src="./assets/img/add.svg" alt="plus icon">
-                            </td>
-                        </tr>`;
-                            counter++;
-                        } else {
-                            container.innerHTML = `
-                                <tr class="even:bg-gray-200">
-                                    <td class="py-5 px-3 text-sm text-center" colspan="4">
-                                        <p class="text-sm">هیچ مخاطب جدیدی یافت نشد</p>
-                                    </td>
-                                </tr>`;
-                        }
+                for (const contact of contacts) {
+                    if ((!existingContacts.includes(contact.id))) {
+                        NewContacts.push(contact);
+                        template += `
+                    <tr class="even:bg-gray-200 odd:bg-white" id=${contact.chat_id}>
+                        <td class="py-2 px-3 text-sm">${counter}</td>
+                        <td class="py-2 px-3 text-sm">${contact.name}</td>
+                        <td class="py-2 px-3 text-sm">${contact.username ?? ''}</td>
+                        <td class="py-2 px-3 text-sm cursor-pointer" 
+                            onclick="addContact(
+                                '${contact.name}',
+                                '${contact.username ?? ''}',
+                                '${contact.chat_id}',
+                                'rezaei.jpeg'
+                            )">
+                            <img src="./assets/img/add.svg" alt="plus icon">
+                        </td>
+                    </tr>`;
+                        counter++;
+                        newContactFound = true;
                     }
-                    container.innerHTML = template;
                 }
+
+                if (!newContactFound) {
+                    template = `
+                <tr class="even:bg-gray-200">
+                    <td class="py-5 px-3 text-sm text-center" colspan="4">
+                        <p class="text-sm">هیچ مخاطب جدیدی یافت نشد</p>
+                    </td>
+                </tr>`;
+                }
+
+                container.innerHTML = template;
             })
             .catch(function(error) {
                 console.log(error);
             });
+
     }
 
     function addContact(name, username, chat_id, profile) {
@@ -159,7 +160,8 @@ require_once '../../layouts/callcenter/sidebar.php';
                 if (data == 'exist') {
                     alert('مخاطب از قبل در سیستم موجود است.');
                 } else if (data == true) {
-                    window.location.reload();
+                    alert('مخاطب موفقانه اضافه شد.');
+                    document.getElementById(chat_id).remove();
                 } else {
                     alert('مشکلی  در هنگام اضافه کردن مخاطب رخ داده است.');
                 }
@@ -171,6 +173,7 @@ require_once '../../layouts/callcenter/sidebar.php';
     }
 
     function addAllContacts() {
+
         var params = new URLSearchParams();
         params.append('addAllContact', 'addAllContact');
         params.append('contacts', JSON.stringify(NewContacts));

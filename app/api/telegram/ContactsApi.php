@@ -14,13 +14,41 @@ if (isset($_POST['deleteContact'])) {
 
 function deleteContact($id)
 {
-    $sql = "DELETE FROM telegram.receiver WHERE id = :id";
+    // First, get the contact details from receiver
+    $sql = "SELECT chat_id, name, username, profile FROM telegram.receiver WHERE id = :id";
     $statement = PDO_CONNECTION->prepare($sql);
     $statement->bindParam(':id', $id);
-    $result = $statement->execute();
-    if ($result) {
+    $statement->execute();
+    $contact = $statement->fetch(PDO::FETCH_ASSOC);
+
+    if (!$contact) {
+        // Contact not found
+        return false;
+    }
+
+    // Begin transaction to ensure atomicity
+    PDO_CONNECTION->beginTransaction();
+    try {
+        // Insert into blocked table
+        $insertSql = "INSERT INTO telegram.blocked (chat_id, name, username, profile) VALUES 
+                      (:chat_id, :name, :username, :profile)";
+        $statement = PDO_CONNECTION->prepare($insertSql);
+        $statement->bindParam(':chat_id', $contact['chat_id']);
+        $statement->bindParam(':name', $contact['name']);
+        $statement->bindParam(':username', $contact['username']);
+        $statement->bindParam(':profile', $contact['profile']);
+        $statement->execute();
+
+        // Delete from receiver table
+        $deleteSql = "DELETE FROM telegram.receiver WHERE id = :id";
+        $statement = PDO_CONNECTION->prepare($deleteSql);
+        $statement->bindParam(':id', $id);
+        $statement->execute();
+
+        PDO_CONNECTION->commit();
         return true;
-    } else {
+    } catch (PDOException $e) {
+        PDO_CONNECTION->rollBack();
         return false;
     }
 }
@@ -35,6 +63,7 @@ if (isset($_POST['addContact'])) {
 
 function addContact($name, $username, $chat_id, $profile)
 {
+    // Check if chat_id already exists in receiver
     $sql = "SELECT COUNT(chat_id) AS total FROM telegram.receiver WHERE chat_id = :chat_id";
     $statement = PDO_CONNECTION->prepare($sql);
     $statement->bindParam(':chat_id', $chat_id);
@@ -42,17 +71,32 @@ function addContact($name, $username, $chat_id, $profile)
     $result = $statement->fetch(PDO::FETCH_ASSOC)['total'];
 
     if (!$result) {
-        $addSql = "INSERT INTO telegram.receiver (cat_id, chat_id, name, username, profile) VALUES 
-                    ('1', :chat_id , :name , :username , :profile)";
-        $statement = PDO_CONNECTION->prepare($addSql);
-        $statement->bindParam(':chat_id', $chat_id);
-        $statement->bindParam(':name', $name);
-        $statement->bindParam(':username', $username);
-        $statement->bindParam(':profile', $profile);
-        $status = $statement->execute();
-        if ($status) {
+        // Begin transaction to ensure both actions succeed together
+        PDO_CONNECTION->beginTransaction();
+
+        try {
+            // Insert into receiver
+            $addSql = "INSERT INTO telegram.receiver (cat_id, chat_id, name, username, profile) VALUES 
+                        ('1', :chat_id , :name , :username , :profile)";
+            $statement = PDO_CONNECTION->prepare($addSql);
+            $statement->bindParam(':chat_id', $chat_id);
+            $statement->bindParam(':name', $name);
+            $statement->bindParam(':username', $username);
+            $statement->bindParam(':profile', $profile);
+            $statement->execute();
+
+            // Delete from blocked if exists
+            $deleteSql = "DELETE FROM telegram.blocked WHERE chat_id = :chat_id";
+            $statement = PDO_CONNECTION->prepare($deleteSql);
+            $statement->bindParam(':chat_id', $chat_id);
+            $statement->execute();
+
+            // Commit transaction
+            PDO_CONNECTION->commit();
+
             echo 'true';
-        } else {
+        } catch (PDOException $e) {
+            PDO_CONNECTION->rollBack();
             echo 'false';
         }
     } else {
@@ -73,14 +117,13 @@ if (isset($_POST['addAllContact'])) {
 
 function addAllContacts($contact)
 {
-    $chat_id = $contact->id;
-    $name = $contact->first_name ?? '';
-    $lastName = $contact->last_name ?? '';
+    $chat_id = $contact->chat_id;
 
-    $clientName = trim($name . ' ' . $lastName);
+    $clientName = $contact->name;
     $username = $contact->username ?? '';
-    $profile = '$contact->profile';
+    $profile = $contact->profile ?? ''; // corrected variable usage
 
+    // Check if chat_id already exists in receiver
     $sql = "SELECT COUNT(chat_id) AS total FROM telegram.receiver WHERE chat_id = :chat_id";
     $statement = PDO_CONNECTION->prepare($sql);
     $statement->bindParam(':chat_id', $chat_id);
@@ -88,19 +131,36 @@ function addAllContacts($contact)
     $result = $statement->fetch(PDO::FETCH_ASSOC)['total'];
 
     if (!$result) {
-        $addSql = "INSERT INTO telegram.receiver (cat_id, chat_id, name, username, profile) VALUES 
-                    ('1', :chat_id , :name, :username, :profile)";
-        $statement = PDO_CONNECTION->prepare($addSql);
-        $statement->bindParam(':chat_id', $chat_id);
-        $statement->bindParam(':name', $clientName);
-        $statement->bindParam(':username', $username);
-        $statement->bindParam(':profile', $profile);
-        $status = $statement->execute();
-        if ($status) {
+        // Begin transaction to ensure insert and delete happen together
+        PDO_CONNECTION->beginTransaction();
+        try {
+            // Insert into receiver
+            $addSql = "INSERT INTO telegram.receiver (cat_id, chat_id, name, username, profile) VALUES 
+                        ('1', :chat_id, :name, :username, :profile)";
+            $statement = PDO_CONNECTION->prepare($addSql);
+            $statement->bindParam(':chat_id', $chat_id);
+            $statement->bindParam(':name', $clientName);
+            $statement->bindParam(':usefrname', $username);
+            $statement->bindParam(':profile', $profile);
+            $statement->execute();
+
+            // Delete from blocked if exists
+            $deleteSql = "DELETE FROM telegram.blocked WHERE chat_id = :chat_id";
+            $statement = PDO_CONNECTION->prepare($deleteSql);
+            $statement->bindParam(':chat_id', $chat_id);
+            $statement->execute();
+
+            // Commit transaction
+            PDO_CONNECTION->commit();
+
             return true;
-        } else {
+        } catch (PDOException $e) {
+            PDO_CONNECTION->rollBack();
             return false;
         }
+    } else {
+        // Already exists
+        return false;
     }
 }
 
@@ -216,4 +276,19 @@ function toggleStatus()
             return 0;
         }
     }
+}
+
+
+if (isset($_POST['getBlockedContacts'])) {
+    header('Content-Type: application/json');
+    echo json_encode(getBlockedContacts(), JSON_UNESCAPED_UNICODE);
+}
+
+function getBlockedContacts()
+{
+    $sql = "SELECT * FROM telegram.blocked ORDER BY id";
+    $statement = PDO_CONNECTION->prepare($sql);
+    $statement->execute();
+    $contacts = $statement->fetchAll(PDO::FETCH_ASSOC);
+    return $contacts;
 }
