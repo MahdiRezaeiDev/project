@@ -23,6 +23,7 @@ function getPendingSells($date = null)
                 b.quantity AS bill_quantity,
                 b.total,
                 b.bill_date,
+                s.status as orderStatus,
                 c.name AS customer_name,
                 c.family AS customer_family,
                 c.address AS customer_address,
@@ -35,6 +36,7 @@ function getPendingSells($date = null)
                 GROUP BY invoice_number
             ) e ON b.bill_number = e.invoice_number
             LEFT JOIN callcenter.customer c ON b.customer_id = c.id
+            LEFT JOIN factor.shomarefaktor s ON b.bill_number = s.shomare
             WHERE b.created_at >= :start
               AND b.created_at < :end
               AND (

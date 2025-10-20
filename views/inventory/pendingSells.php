@@ -88,9 +88,15 @@ $dateTime = jdate('Y-m-d'); ?>
                                             </span an>
                                         <?php endif; ?>
                                     <?php else: ?>
-                                        <span class="px-2 py-1 text-xs font-semibold text-yellow-600 bg-yellow-100 rounded-full">
-                                            خروج نخورده
-                                        </span>
+                                        <?php if (!$f['orderStatus']): ?>
+                                            <span class="px-2 py-1 text-xs font-semibold text-red-600 bg-red-100 rounded-full">
+                                                کنسل شده
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="px-2 py-1 text-xs font-semibold text-yellow-600 bg-yellow-100 rounded-full">
+                                                خروج نخورده
+                                            </span>
+                                        <?php endif; ?>
                                     <?php endif; ?>
                                 </td>
                                 <td class="px-4 py-3">

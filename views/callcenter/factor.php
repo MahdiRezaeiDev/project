@@ -161,7 +161,11 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                 <td class="text-center align-middle">
                                     <span class="flex justify-center items-center gap-2 bg-blue-500 rounded-sm text-white sm:w-24 py-2 mx-auto cursor-pointer" title="کپی کردن شماره فاکتور" data-billNumber="<?= $factor['shomare'] ?>" onClick="copyBillNumberSingle(this)">
                                         <span class="factorNumberContainer"><?= $factor['shomare'] ?></span>
-                                        <img src="./assets/img/copy.svg" alt="copy icon" />
+                                        <?php if (!$factor["status"]): ?>
+                                            <img src="./assets/img/close.svg" alt="cross icon">
+                                        <?php else: ?>
+                                            <img src="./assets/img/copy.svg" alt="copy icon" />
+                                        <?php endif; ?>
                                     </span>
                                 </td>
                                 <td class="text-center align-middle ">
@@ -456,7 +460,10 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                             <?php } ?>
                         </select>
                     </div>
-                    <button onclick="saveChanges()" class="bg-blue-500 text-white py-2 px-5 rounded-md tet-sm" type="button">ثبت تغیرات</button>
+                    <div>
+                        <button onclick="saveChanges()" class="bg-blue-500 text-white py-2 px-5 rounded-md tet-sm" type="button">ثبت تغیرات</button>
+                        <button onclick="cancelFactor()" class="bg-rose-500 text-white py-2 px-5 rounded-md tet-sm" type="button">لغو فاکتور</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -718,6 +725,37 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
         params.append('customer', customer);
         params.append('factor', factor);
         params.append('edit_user_id', edit_user_id);
+        axios.post("../../app/api/callcenter/FactorApi.php", params)
+            .then(function(response) {
+
+                const date = ($("#invoice_time").attr("data-gdate"));
+                params.append('getNewFactor', 'getNewFactor');
+                params.append('date', date);
+                axios.post("../../app/partials/factors/factor.php", params)
+                    .then(function(response) {
+                        resultBox.innerHTML = response.data;
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+
+                document.getElementById('operation_message').classList.remove('hidden');
+
+                setTimeout(() => {
+                    document.getElementById('operation_message').classList.add('hidden');
+                    toggleModal();
+                }, 4000);
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+    }
+
+    function cancelFactor() {
+        const factor = document.getElementById('edit_facto_id').value;
+        var params = new URLSearchParams();
+        params.append('cancelFactor', 'cancelFactor');
+        params.append('factor', factor);
         axios.post("../../app/api/callcenter/FactorApi.php", params)
             .then(function(response) {
 

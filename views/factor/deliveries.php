@@ -62,7 +62,14 @@ require_once '../../layouts/callcenter/sidebar.php';
 
                                     <!-- شماره فاکتور + Tooltip -->
                                     <td class="px-2 py-2 border-b text-xs relative">
-                                        <?= htmlspecialchars($delivery['bill_number']) ?>
+                                        <span class="flex items-center gap-2">
+                                            <span>
+                                                <?= htmlspecialchars($delivery['bill_number']) ?>
+                                            </span>
+                                            <?php if (!$delivery['orderStatus']): ?>
+                                                <img src="./assets/img/close.svg" alt="">
+                                            <?php endif; ?>
+                                        </span>
                                     </td>
 
                                     <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?>
@@ -135,9 +142,15 @@ require_once '../../layouts/callcenter/sidebar.php';
 
                                     <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['kharidar']) ?></td>
 
-                                    <!-- شماره فاکتور + Tooltip -->
                                     <td class="px-2 py-2 border-b text-xs relative">
-                                        <?= htmlspecialchars($delivery['bill_number']) ?>
+                                        <span class="flex items-center gap-2">
+                                            <span>
+                                                <?= htmlspecialchars($delivery['bill_number']) ?>
+                                            </span>
+                                            <?php if (!$delivery['orderStatus']): ?>
+                                                <img src="./assets/img/close.svg" alt="">
+                                            <?php endif; ?>
+                                        </span>
                                     </td>
 
                                     <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?>
@@ -218,7 +231,16 @@ require_once '../../layouts/callcenter/sidebar.php';
                                             ?>
                                         </div>
                                     </td>
-                                    <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['bill_number']) ?></td>
+                                    <td class="px-2 py-2 border-b text-xs">
+                                        <span class="flex items-center gap-2">
+                                            <span>
+                                                <?= htmlspecialchars($delivery['bill_number']) ?>
+                                            </span>
+                                            <?php if (!$delivery['orderStatus']): ?>
+                                                <img src="./assets/img/close.svg" alt="">
+                                            <?php endif; ?>
+                                        </span>
+                                    </td>
                                     <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['contact_type']) ?></td>
                                     <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?></td>
                                     <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['type']) ?></td>
@@ -279,7 +301,14 @@ require_once '../../layouts/callcenter/sidebar.php';
 
                                         <!-- شماره فاکتور + Tooltip -->
                                         <td class="px-2 py-2 border-b text-xs relative">
-                                            <?= htmlspecialchars($delivery['bill_number']) ?>
+                                            <span class="flex items-center gap-2">
+                                                <span>
+                                                    <?= htmlspecialchars($delivery['bill_number']) ?>
+                                                </span>
+                                                <?php if (!$delivery['orderStatus']): ?>
+                                                    <img src="./assets/img/close.svg" alt="">
+                                                <?php endif; ?>
+                                            </span>
                                         </td>
 
                                         <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?>
@@ -368,7 +397,14 @@ require_once '../../layouts/callcenter/sidebar.php';
 
                                         <!-- شماره فاکتور + Tooltip -->
                                         <td class="px-2 py-2 border-b text-xs relative">
-                                            <?= htmlspecialchars($delivery['bill_number']) ?>
+                                            <span class="flex items-center gap-2">
+                                                <span>
+                                                    <?= htmlspecialchars($delivery['bill_number']) ?>
+                                                </span>
+                                                <?php if (!$delivery['orderStatus']): ?>
+                                                    <img src="./assets/img/close.svg" alt="">
+                                                <?php endif; ?>
+                                            </span>
                                         </td>
 
                                         <td class="px-2 py-2 border-b text-xs"><?= htmlspecialchars($delivery['destination']) ?>

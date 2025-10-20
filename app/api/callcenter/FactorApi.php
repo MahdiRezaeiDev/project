@@ -35,6 +35,25 @@ if (isset($_POST["changeStatus"])) {
     UpdateStatus($factor_id, $status);
 }
 
+if (isset($_POST['cancelFactor'])) {
+    $factor_id = $_POST['factor'];
+    cancelFactor($factor_id);
+}
+
+function cancelFactor($factor_id)
+{
+    $sql = "UPDATE factor.shomarefaktor SET status = 0 WHERE shomare = :factor_id";
+    $stmt = PDO_CONNECTION->prepare($sql);
+    $stmt->bindParam(':factor_id', $factor_id, PDO::PARAM_INT);
+    if ($stmt->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+
 function UpdateStatus($factor_id, $status)
 {
     $sql = "UPDATE factor.shomarefaktor SET approved=:status WHERE shomare = :factor_id";

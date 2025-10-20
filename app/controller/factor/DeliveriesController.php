@@ -29,22 +29,22 @@ function getAllUsers()
 
 function getDeliveries()
 {
-    $stmt = PDO_CONNECTION->prepare("
-        SELECT d.*, 
-               b.id as bill_id, 
-               s.kharidar,
-               bd.billDetails
-        FROM factor.deliveries d
-        INNER JOIN factor.bill b 
-            ON d.bill_number = b.bill_number
-        INNER JOIN factor.shomarefaktor s 
-            ON b.bill_number = s.shomare
-        LEFT JOIN factor.bill_details bd 
-            ON bd.bill_id = b.id
-        WHERE DATE(d.created_at) = CURDATE() 
-          AND d.type = 'پیک یدک شاپ'
-        ORDER BY d.created_at DESC
-    ");
+    $stmt = PDO_CONNECTION->prepare("SELECT d.*, 
+                                        b.id as bill_id, 
+                                        s.kharidar,
+                                        s.status as orderStatus,
+                                        bd.billDetails
+                                    FROM factor.deliveries d
+                                    INNER JOIN factor.bill b 
+                                        ON d.bill_number = b.bill_number
+                                    INNER JOIN factor.shomarefaktor s 
+                                        ON b.bill_number = s.shomare
+                                    LEFT JOIN factor.bill_details bd 
+                                        ON bd.bill_id = b.id
+                                    WHERE DATE(d.created_at) = CURDATE() 
+                                    AND d.type = 'پیک یدک شاپ'
+                                    ORDER BY d.created_at DESC
+                                ");
     $stmt->execute();
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -71,16 +71,15 @@ function getDeliveries()
 
 function getCustomerDeliveries()
 {
-    $stmt = PDO_CONNECTION->prepare("
-        SELECT d.*, b.id AS bill_id, s.kharidar, bd.billDetails
-        FROM factor.deliveries d
-        INNER JOIN factor.bill b ON d.bill_number = b.bill_number
-        INNER JOIN factor.shomarefaktor s ON b.bill_number = s.shomare
-        LEFT JOIN factor.bill_details bd ON b.id = bd.bill_id
-        WHERE DATE(d.created_at) = CURDATE()
-          AND d.type = 'پیک خود مشتری بعد از اطلاع'
-        ORDER BY d.created_at DESC
-    ");
+    $stmt = PDO_CONNECTION->prepare("SELECT d.*, b.id AS bill_id, s.kharidar, s.status as orderStatus, bd.billDetails
+                                    FROM factor.deliveries d
+                                    INNER JOIN factor.bill b ON d.bill_number = b.bill_number
+                                    INNER JOIN factor.shomarefaktor s ON b.bill_number = s.shomare
+                                    LEFT JOIN factor.bill_details bd ON b.id = bd.bill_id
+                                    WHERE DATE(d.created_at) = CURDATE()
+                                    AND d.type = 'پیک خود مشتری بعد از اطلاع'
+                                    ORDER BY d.created_at DESC
+                                ");
     $stmt->execute();
     $deliveries = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -101,16 +100,17 @@ function getCustomerDeliveries()
 
 function getAllDeliveries()
 {
-    $stmt = PDO_CONNECTION->prepare("
-        SELECT deliveries.*, bill.id as bill_id, shomarefaktor.kharidar 
-        FROM factor.deliveries
-        INNER JOIN factor.bill ON deliveries.bill_number = bill.bill_number
-        INNER JOIN factor.shomarefaktor ON bill.bill_number = shomare
-        WHERE DATE(deliveries.created_at) = CURDATE() 
-          AND type != 'پیک خود مشتری بعد از اطلاع' 
-          AND type != 'پیک یدک شاپ' 
-        ORDER BY deliveries.created_at DESC
-    ");
+    $stmt = PDO_CONNECTION->prepare("SELECT deliveries.*, bill.id as bill_id,
+                                        shomarefaktor.kharidar, 
+                                        shomarefaktor.status as orderStatus
+                                    FROM factor.deliveries
+                                    INNER JOIN factor.bill ON deliveries.bill_number = bill.bill_number
+                                    INNER JOIN factor.shomarefaktor ON bill.bill_number = shomare
+                                    WHERE DATE(deliveries.created_at) = CURDATE() 
+                                    AND type != 'پیک خود مشتری بعد از اطلاع' 
+                                    AND type != 'پیک یدک شاپ' 
+                                    ORDER BY deliveries.created_at DESC
+                                ");
     $stmt->execute();
     $deliveries = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -136,23 +136,23 @@ function getAllDeliveries()
 
 function getYadakShopNotReadyDeliveries()
 {
-    $stmt = PDO_CONNECTION->prepare("
-        SELECT DATE(d.created_at) as delivery_date,
-               d.*, 
-               b.id as bill_id, 
-               s.kharidar
-        FROM factor.deliveries d
-        INNER JOIN factor.bill b 
-            ON d.bill_number = b.bill_number
-        INNER JOIN factor.shomarefaktor s 
-            ON b.bill_number = s.shomare
-        WHERE (
-                  (d.is_ready = 0 AND DATE(d.created_at) < CURDATE())
-               OR (DATE(d.updated_at) = CURDATE() AND DATE(d.created_at) < CURDATE())
-              )
-          AND d.type = 'پیک یدک شاپ'
-        ORDER BY delivery_date DESC, d.created_at DESC
-    ");
+    $stmt = PDO_CONNECTION->prepare("SELECT DATE(d.created_at) as delivery_date,
+                                        d.*, 
+                                        b.id as bill_id, 
+                                        s.kharidar,
+                                        s.status as orderStatus
+                                    FROM factor.deliveries d
+                                    INNER JOIN factor.bill b 
+                                        ON d.bill_number = b.bill_number
+                                    INNER JOIN factor.shomarefaktor s 
+                                        ON b.bill_number = s.shomare
+                                    WHERE (
+                                            (d.is_ready = 0 AND DATE(d.created_at) < CURDATE())
+                                        OR (DATE(d.updated_at) = CURDATE() AND DATE(d.created_at) < CURDATE())
+                                        )
+                                    AND d.type = 'پیک یدک شاپ'
+                                    ORDER BY delivery_date DESC, d.created_at DESC
+                                ");
 
     $stmt->execute();
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -168,23 +168,23 @@ function getYadakShopNotReadyDeliveries()
 
 function getCustomerNotReadyDeliveries()
 {
-    $stmt = PDO_CONNECTION->prepare("
-        SELECT DATE(d.created_at) as delivery_date,
-               d.*, 
-               b.id as bill_id, 
-               s.kharidar
-        FROM factor.deliveries d
-        INNER JOIN factor.bill b 
-            ON d.bill_number = b.bill_number
-        INNER JOIN factor.shomarefaktor s 
-            ON b.bill_number = s.shomare
-        WHERE (
-                  (d.is_ready = 0 AND DATE(d.created_at) < CURDATE())
-               OR (DATE(d.updated_at) = CURDATE() AND DATE(d.created_at) < CURDATE())
-              )
-          AND d.type = 'پیک خود مشتری بعد از اطلاع'
-        ORDER BY delivery_date DESC, d.created_at DESC
-    ");
+    $stmt = PDO_CONNECTION->prepare("SELECT DATE(d.created_at) as delivery_date,
+                                        d.*, 
+                                        b.id as bill_id, 
+                                        s.kharidar,
+                                        s.status as orderStatus
+                                    FROM factor.deliveries d
+                                    INNER JOIN factor.bill b 
+                                        ON d.bill_number = b.bill_number
+                                    INNER JOIN factor.shomarefaktor s 
+                                        ON b.bill_number = s.shomare
+                                    WHERE (
+                                            (d.is_ready = 0 AND DATE(d.created_at) < CURDATE())
+                                        OR (DATE(d.updated_at) = CURDATE() AND DATE(d.created_at) < CURDATE())
+                                        )
+                                    AND d.type = 'پیک خود مشتری بعد از اطلاع'
+                                    ORDER BY delivery_date DESC, d.created_at DESC
+                                ");
 
     $stmt->execute();
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
