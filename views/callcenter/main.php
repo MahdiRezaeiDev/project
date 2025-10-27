@@ -415,29 +415,36 @@ require_once '../../layouts/callcenter/sidebar.php';
         <h2 class="text-xl font-bold mb-4 text-gray-700">ارسال پیامک</h2>
 
         <label class="block mb-2 text-sm font-medium text-gray-700">شماره موبایل:</label>
-        <input id="phone" type="text" class="w-full border border-gray-300 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-yellow-400 outline-none" placeholder="مثلاً 09123456789" value="<?= $phone ?>" readonly>
+        <input id="phone" type="text"
+            value="<?php echo htmlspecialchars($phone ?? ''); ?>"
+            class="w-full border border-gray-300 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-yellow-400 outline-none"
+            placeholder="مثلاً 09123456789">
 
         <label class="block mb-2 text-sm font-medium text-gray-700">متن پیام:</label>
-        <textarea id="messageInput" class="w-full border border-gray-300 rounded-lg p-2 mb-3 h-28 resize-none focus:ring-2 focus:ring-yellow-400 outline-none" placeholder="متن پیام خود را وارد کنید"></textarea>
+        <textarea id="messageInput"
+            class="w-full border border-gray-300 rounded-lg p-2 mb-3 h-28 resize-none focus:ring-2 focus:ring-yellow-400 outline-none"
+            placeholder="متن پیام خود را وارد کنید"></textarea>
 
-        <!-- دکمه‌های پیام آماده -->
+
         <div id="readyMessages" class="flex flex-wrap gap-2 mb-4"></div>
 
         <div class="flex justify-between">
-            <button onclick="sendSMS()" class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition">
+            <button onclick="sendSMS(this)" class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition">
                 ارسال
             </button>
             <button type="button" onclick="closeModal()" class="px-4 py-2 border border-gray-400 rounded-lg hover:bg-gray-200 transition">
                 بستن
             </button>
         </div>
+
+        <pre id="results" class="mt-4 text-sm text-gray-700"></pre>
     </div>
 </div>
-
 <script>
     const modal = document.getElementById('smsModal');
     const messageInput = document.getElementById('messageInput');
     const readyMessagesDiv = document.getElementById('readyMessages');
+    const resultsBox = document.getElementById('results');
 
     function messageModal() {
         modal.classList.remove('hidden');
@@ -468,8 +475,10 @@ require_once '../../layouts/callcenter/sidebar.php';
     }
 
 
-    async function sendSMS() {
+    async function sendSMS(element) {
         const phone = document.getElementById('phone').value.trim();
+        const messageInput = document.getElementById('messageInput'); // ensure correct ID
+        const resultsBox = document.getElementById('resultsBox'); // ensure correct ID
         const message = messageInput.value.trim();
 
         if (!phone || !message) {
@@ -477,23 +486,36 @@ require_once '../../layouts/callcenter/sidebar.php';
             return;
         }
 
-        const res = await fetch('../../app/api/callcenter/sendMessageAPI.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                phone,
-                message
-            })
-        });
+        element.disabled = true;
+        const originalText = element.innerText;
+        element.innerText = 'در حال ارسال پیام';
 
-        const result = await res.json();
-        if (result.status == 200) {
-            alert(' پیام با موفقیت ارسال شد');
-            closeModal();
-        } else {
-            alert(' خطا در ارسال پیام: ' + (result.message || ''));
+        try {
+            const res = await fetch('../../app/api/callcenter/sendMessageAPI.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    phone,
+                    message
+                })
+            });
+
+            const result = await res.json();
+            const responseData = JSON.parse(result.response);
+
+            resultsBox.innerText = responseData.message;
+
+            if (responseData.status == 200) {
+                closeModal();
+            }
+        } catch (error) {
+            console.error('Error sending SMS:', error);
+            alert('خطا در ارسال پیام. لطفا دوباره تلاش کنید.');
+        } finally {
+            element.disabled = false;
+            element.innerText = originalText;
         }
     }
 </script>
