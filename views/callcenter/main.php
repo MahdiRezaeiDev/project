@@ -437,14 +437,14 @@ require_once '../../layouts/callcenter/sidebar.php';
             </button>
         </div>
 
-        <pre id="results" class="mt-4 text-sm text-gray-700"></pre>
+        <div id="resultsBox" class="bg-blue-100 text-blue-700 px-4 m-3 py-2 border border-gray-400 rounded-lg hover:bg-gray-200">موفق</div>
     </div>
 </div>
 <script>
     const modal = document.getElementById('smsModal');
     const messageInput = document.getElementById('messageInput');
     const readyMessagesDiv = document.getElementById('readyMessages');
-    const resultsBox = document.getElementById('results');
+    const resultsBox = document.getElementById('resultsBox');
 
     function messageModal() {
         modal.classList.remove('hidden');
@@ -459,16 +459,34 @@ require_once '../../layouts/callcenter/sidebar.php';
     };
 
 
+    function updateFullName() {
+        const fname = document.getElementById('name').value.trim();
+        const lname = document.getElementById('last_name').value.trim();
+
+        const fullname = [fname, lname].filter(Boolean).join(' ');
+
+        const fullNameInput = document.getElementById('full_name');
+        if (fullNameInput) {
+            fullNameInput.value = fullname;
+        }
+
+        return fullname;
+    }
+
+
     async function loadMessages() {
         const res = await fetch('./messages.json');
         const messages = await res.json();
+
         readyMessagesDiv.innerHTML = '';
+
         messages.forEach(m => {
             const btn = document.createElement('button');
             btn.textContent = m.title;
             btn.className = 'bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-lg text-sm';
             btn.onclick = () => {
-                messageInput.value = m.message;
+                const full_name = updateFullName();
+                messageInput.value = `${full_name} ${m.message}`;
             };
             readyMessagesDiv.appendChild(btn);
         });
