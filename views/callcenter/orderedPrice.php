@@ -267,20 +267,20 @@ if ($isValidCustomer) :
                                             } else if ($max == 0) {
                                                 $finalPrice = 'موجود نیست';
                                                 $class = '';
-                                                if (count(($existing[$code]))) {
-                                                    $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
-                                                    foreach ($codesToCheck as $code) {
-                                                        $hussin_part = get_hussain_parts(strtoupper($code));
-                                                        if (is_hussain_enabled() && !empty($hussin_part)) {
-                                                            $item = $hussin_part;
-                                                            $price = (int)($item['yadakprice'] / 10000);
-                                                            $finalPrice = $price . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
-                                                            $isDisplayAllowed = true;
-                                                            $class = 'color: orange !important;';
-                                                            break;
-                                                        }
-                                                    }
-                                                }
+                                                // if (count(($existing[$code]))) {
+                                                //     $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
+                                                //     foreach ($codesToCheck as $code) {
+                                                //         $hussin_part = get_hussain_parts(strtoupper($code));
+                                                //         if (is_hussain_enabled() && !empty($hussin_part)) {
+                                                //             $item = $hussin_part;
+                                                //             $price = (int)($item['yadakprice'] / 10000);
+                                                //             $finalPrice = $price . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
+                                                //             $isDisplayAllowed = true;
+                                                //             $class = 'color: orange !important;';
+                                                //             break;
+                                                //         }
+                                                //     }
+                                                // }
                                                 echo "<p style='{$class} direction: ltr !important;' data-relation='{$relation_id}' id='{$code}-append'>{$finalPrice}</p>";
                                             }
                                         }

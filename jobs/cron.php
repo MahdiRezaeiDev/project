@@ -1,7 +1,7 @@
 <?php
 // --- URLs ---
 $firstUrl  = 'http://check.cheraghbargh.ir/';           // Checks for new messages
-$secondUrl = 'https://telegram.cheraghbargh.ir/cron.php'; // Heavy Telegram cron task
+$secondUrl = 'https://telegram.cheraghbargh.ir/views/telegram/cron.php'; // Heavy Telegram cron task
 
 echo "[" . date('Y-m-d H:i:s') . "] Starting cron script...\n";
 
