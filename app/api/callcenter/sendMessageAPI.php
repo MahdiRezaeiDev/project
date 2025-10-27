@@ -16,7 +16,7 @@ function sendSMS($phone, $message)
         CURLOPT_HTTPHEADER => array(
             'Content-Type: application/json',
             'Accept: text/plain',
-            'x-api-key: ' . '***',
+            'x-api-key: 9tK8aP3sHQ5wWt8nBLi2D6CyoBoR8qTbKJkwujbCUrMsTUXw',
         ),
     ));
     $response = curl_exec($curl);

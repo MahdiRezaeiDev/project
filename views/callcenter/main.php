@@ -489,7 +489,7 @@ require_once '../../layouts/callcenter/sidebar.php';
         });
 
         const result = await res.json();
-        if (result.status === 'success') {
+        if (result.status == 200) {
             alert(' پیام با موفقیت ارسال شد');
             closeModal();
         } else {
