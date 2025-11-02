@@ -109,6 +109,12 @@ if (!isset($dbname)) {
                 بررسی قیمت کدفنی
             </a>
         </li>
+         <li>
+            <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'smsbank.php' ? 'bg-gray-400' : '' ?> items-center gap-2" href="<?= $append ?>smsbank.php">
+                <img src="../inventory/assets/icons/smsbank.svg" alt="dashboard icon">
+                پیام های آماده پیامک
+            </a>
+        </li>
     </ul>
     <!-- Authentication -->
     <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold items-center gap-2" href="../auth/logout.php">

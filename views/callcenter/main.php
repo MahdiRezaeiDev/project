@@ -411,14 +411,14 @@ require_once '../../layouts/callcenter/sidebar.php';
 </section>
 
 <div id="smsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl shadow-lg w-96 p-6 text-right relative">
+    <div class="bg-white rounded-2xl shadow-lg min-w-96 p-6 text-right relative">
         <h2 class="text-xl font-bold mb-4 text-gray-700">ارسال پیامک</h2>
 
         <label class="block mb-2 text-sm font-medium text-gray-700">شماره موبایل:</label>
         <input id="phone" type="text"
             value="<?php echo htmlspecialchars($phone ?? ''); ?>"
             class="w-full border border-gray-300 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-yellow-400 outline-none"
-            placeholder="مثلاً 09123456789">
+            placeholder="مثلاً 09123456789" disabled>
 
         <label class="block mb-2 text-sm font-medium text-gray-700">متن پیام:</label>
         <textarea id="messageInput"
@@ -437,167 +437,170 @@ require_once '../../layouts/callcenter/sidebar.php';
             </button>
         </div>
 
-        <div id="resultsBox" class="bg-blue-100 text-blue-700 px-4 m-3 py-2 border border-gray-400 rounded-lg hover:bg-gray-200">موفق</div>
+        <div id="resultsBox"></div>
     </div>
-</div>
-<script>
-    const modal = document.getElementById('smsModal');
-    const messageInput = document.getElementById('messageInput');
-    const readyMessagesDiv = document.getElementById('readyMessages');
-    const resultsBox = document.getElementById('resultsBox');
+    <script>
+        const modal = document.getElementById('smsModal');
+        const messageInput = document.getElementById('messageInput');
+        const readyMessagesDiv = document.getElementById('readyMessages');
+        const resultsBox = document.getElementById('resultsBox');
 
-    function messageModal() {
-        modal.classList.remove('hidden');
-        loadMessages();
-    }
-
-    function closeModal() {
-        modal.classList.add('hidden');
-    }
-    window.onclick = e => {
-        if (e.target === modal) closeModal();
-    };
-
-
-    function updateFullName() {
-        const fname = document.getElementById('name').value.trim();
-        const lname = document.getElementById('last_name').value.trim();
-
-        const fullname = [fname, lname].filter(Boolean).join(' ');
-
-        const fullNameInput = document.getElementById('full_name');
-        if (fullNameInput) {
-            fullNameInput.value = fullname;
+        function messageModal() {
+            modal.classList.remove('hidden');
+            loadMessages();
         }
 
-        return fullname;
-    }
-
-
-    async function loadMessages() {
-        const res = await fetch('./messages.json');
-        const messages = await res.json();
-
-        readyMessagesDiv.innerHTML = '';
-
-        messages.forEach(m => {
-            const btn = document.createElement('button');
-            btn.textContent = m.title;
-            btn.className = 'bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-lg text-sm';
-            btn.onclick = () => {
-                const full_name = updateFullName();
-                messageInput.value = `${full_name} ${m.message}`;
-            };
-            readyMessagesDiv.appendChild(btn);
-        });
-    }
-
-
-    async function sendSMS(element) {
-        const phone = document.getElementById('phone').value.trim();
-        const messageInput = document.getElementById('messageInput'); // ensure correct ID
-        const resultsBox = document.getElementById('resultsBox'); // ensure correct ID
-        const message = messageInput.value.trim();
-
-        if (!phone || !message) {
-            alert('شماره و متن پیام الزامی است');
-            return;
+        function closeModal() {
+            modal.classList.add('hidden');
         }
+        window.onclick = e => {
+            if (e.target === modal) closeModal();
+        };
 
-        element.disabled = true;
-        const originalText = element.innerText;
-        element.innerText = 'در حال ارسال پیام';
 
-        try {
-            const res = await fetch('../../app/api/callcenter/sendMessageAPI.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    phone,
-                    message
-                })
-            });
+        function updateFullName() {
+            const fname = document.getElementById('name').value.trim();
+            const lname = document.getElementById('last_name').value.trim();
 
-            const result = await res.json();
-            const responseData = JSON.parse(result.response);
+            let fullname = [fname, lname].filter(Boolean).join(' ');
 
-            resultsBox.innerText = responseData.message;
-
-            if (responseData.status == 200) {
-                closeModal();
+            if (!fullname) {
+                fullname = 'مشتری';
             }
-        } catch (error) {
-            console.error('Error sending SMS:', error);
-            alert('خطا در ارسال پیام. لطفا دوباره تلاش کنید.');
-        } finally {
-            element.disabled = false;
-            element.innerText = originalText;
+
+            const fullNameInput = document.getElementById('full_name');
+            if (fullNameInput) {
+                fullNameInput.value = fullname;
+            }
+
+            return fullname;
         }
-    }
-</script>
 
 
-<div class="operation_acknowledge text-white px-3 py-2" id="operation_acknowledge"></div>
+        async function loadMessages() {
+            const res = await fetch('./messages.json');
+            const messages = await res.json();
 
-<!-- MODAL SECTION -->
-<script src="./assets/js/cartable.js"></script>
-<script src="./assets/js/jquery.tagselect.js"></script>
-<script src="./assets/js/jquery.tagselect2.js"></script>
-<script>
-    const price_textarea = document.getElementById('givenCode');
-    const call_info_text = document.getElementById('call_info_text');
+            readyMessagesDiv.innerHTML = '';
 
-    function toEstelam() {
-        call_info_text.value = price_textarea.value;
-        price_textarea.value = null;
-    }
+            messages.forEach(m => {
+                const btn = document.createElement('button');
+                btn.textContent = m.title;
+                btn.className = 'bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-lg text-sm';
+                btn.onclick = () => {
+                    const full_name = updateFullName();
+                    messageInput.value = `${full_name} ${m.message}`;
+                };
+                readyMessagesDiv.appendChild(btn);
+            });
+        }
 
-    function toGivenPrice() {
-        price_textarea.value = call_info_text.value;
-        call_info_text.value = null;
-    }
 
-    $('.qtagselect__select').tagselect();
-    $('.quserselect__select').userselect();
+        async function sendSMS(element) {
+            const phone = document.getElementById('phone').value.trim();
+            const messageInput = document.getElementById('messageInput'); // ensure correct ID
+            const resultsBox = document.getElementById('resultsBox'); // ensure correct ID
+            const message = messageInput.value.trim();
 
-    $(document).ready(function() {
-        $(".click-to-call").click(function() {
-            window.open('http://admin:1028400NRa@<?= getIP($_SESSION["id"]) ?>/servlet?key=number=<?= $phone ?>&outgoing_uri=@192.168.9.10', 'برقراری تماس', 'width=400,height=400')
-        });
+            if (!phone || !message) {
+                alert('شماره و متن پیام الزامی است');
+                return;
+            }
 
-        $(".click-to-cancell").click(function() {
-            window.open('http://admin:1028400NRa@<?= getIP($_SESSION["id"]) ?>/servlet?key=CALLEND', 'برقراری تماس', 'width=400,height=400')
-        });
-    });
+            element.disabled = true;
+            const originalText = element.innerText;
+            element.innerText = 'در حال ارسال پیام';
 
-    document.addEventListener("DOMContentLoaded", function() {
-        const tabs = document.querySelectorAll(".tab");
-        const panels = document.querySelectorAll(".tab-content");
-
-        tabs.forEach((tab) => {
-            tab.addEventListener("click", function() {
-                const target = tab.dataset.target;
-
-                // Remove active classes from all tabs and panels
-                tabs.forEach((item) => {
-                    item.classList.remove("active", "text-blue-500", "border-b-2", "font-medium", "border-blue-500");
-                    item.classList.add("text-white");
+            try {
+                const res = await fetch('../../app/api/callcenter/sendMessageAPI.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        phone,
+                        message
+                    })
                 });
 
-                panels.forEach((panel) => {
-                    panel.classList.remove("active");
-                });
+                const result = await res.json();
+                const responseData = JSON.parse(result.response);
 
-                // Add active class to the clicked tab and corresponding panel
-                tab.classList.add("active", "text-blue-500", "border-b-2", "font-medium", "border-blue-500");
-                tab.classList.remove("text-white");
-                document.querySelector(`.${target}`).classList.add("active");
+                resultsBox.innerText = responseData.message;
+                resultsBox.className = 'bg-blue-100 text-blue-700 px-4 m-3 py-2 border border-gray-400 rounded-lg hover:bg-gray-200';
+                if (responseData.status == 200) {
+                    closeModal();
+                }
+            } catch (error) {
+                console.error('Error sending SMS:', error);
+                alert('خطا در ارسال پیام. لطفا دوباره تلاش کنید.');
+            } finally {
+                element.disabled = false;
+                element.innerText = originalText;
+            }
+        }
+    </script>
+
+
+    <div class="operation_acknowledge text-white px-3 py-2" id="operation_acknowledge"></div>
+
+    <!-- MODAL SECTION -->
+    <script src="./assets/js/cartable.js"></script>
+    <script src="./assets/js/jquery.tagselect.js"></script>
+    <script src="./assets/js/jquery.tagselect2.js"></script>
+    <script>
+        const price_textarea = document.getElementById('givenCode');
+        const call_info_text = document.getElementById('call_info_text');
+
+        function toEstelam() {
+            call_info_text.value = price_textarea.value;
+            price_textarea.value = null;
+        }
+
+        function toGivenPrice() {
+            price_textarea.value = call_info_text.value;
+            call_info_text.value = null;
+        }
+
+        $('.qtagselect__select').tagselect();
+        $('.quserselect__select').userselect();
+
+        $(document).ready(function() {
+            $(".click-to-call").click(function() {
+                window.open('http://admin:1028400NRa@<?= getIP($_SESSION["id"]) ?>/servlet?key=number=<?= $phone ?>&outgoing_uri=@192.168.9.10', 'برقراری تماس', 'width=400,height=400')
+            });
+
+            $(".click-to-cancell").click(function() {
+                window.open('http://admin:1028400NRa@<?= getIP($_SESSION["id"]) ?>/servlet?key=CALLEND', 'برقراری تماس', 'width=400,height=400')
             });
         });
-    });
-</script>
 
-<?php
-require_once './components/footer.php';
+        document.addEventListener("DOMContentLoaded", function() {
+            const tabs = document.querySelectorAll(".tab");
+            const panels = document.querySelectorAll(".tab-content");
+
+            tabs.forEach((tab) => {
+                tab.addEventListener("click", function() {
+                    const target = tab.dataset.target;
+
+                    // Remove active classes from all tabs and panels
+                    tabs.forEach((item) => {
+                        item.classList.remove("active", "text-blue-500", "border-b-2", "font-medium", "border-blue-500");
+                        item.classList.add("text-white");
+                    });
+
+                    panels.forEach((panel) => {
+                        panel.classList.remove("active");
+                    });
+
+                    // Add active class to the clicked tab and corresponding panel
+                    tab.classList.add("active", "text-blue-500", "border-b-2", "font-medium", "border-blue-500");
+                    tab.classList.remove("text-white");
+                    document.querySelector(`.${target}`).classList.add("active");
+                });
+            });
+        });
+    </script>
+
+    <?php
+    require_once './components/footer.php';
