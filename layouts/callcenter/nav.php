@@ -154,10 +154,24 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
             </div>
         </li>
         <li class="mx-1 <?= $fileName == 'givenPrice.php' ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold">
-            <a target="_self" class="p-2 flex items-center gap-2" href="<?= $append ?>givenPrice.php">
-                <img class=" sm:inline-block" src="../../layouts/callcenter/icons/approve.svg" alt="telegram icon">
-                قیمت دستوری
-            </a>
+            <div class="dropdown">
+
+                <a target="_self" class="p-2 flex items-center gap-2" href="<?= $append ?>givenPrice.php">
+                    <img class=" sm:inline-block" src="../../layouts/callcenter/icons/approve.svg" alt="telegram icon">
+                    قیمت دستوری
+                    <img src="../inventory/assets/icons/down_arrow.svg" alt="down arrow">
+
+                </a>
+                <div class="dropdown_container ">
+                    <ul class="dropdown_menu bg-gray-800 border border-gray-800">
+                        <li class="hover:bg-gray-900 text-white text-sm font-bold">
+                            <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>translate.php">
+                                مترجم
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </li>
         <li class="mx-1  sm:block <?= $fileName == 'pricesHistory.php' ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold">
             <div class="dropdown">

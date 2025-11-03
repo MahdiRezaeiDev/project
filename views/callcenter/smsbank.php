@@ -35,7 +35,9 @@ define('JSON_FILE', 'messages.json');
     .animate-fade-in-out {
         animation: fade-in-out 3s ease forwards;
     }
-
+textarea {
+    min-height: 285px;
+}
 </style>
 <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold mb-6 text-center">مدیریت اسمس ها‌</h1>
@@ -63,3 +65,4 @@ define('JSON_FILE', 'messages.json');
 </div>
 
 <script src="assets/js/smsbank.js"></script>
+

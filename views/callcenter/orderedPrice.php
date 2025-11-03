@@ -256,7 +256,11 @@ if ($isValidCustomer) :
                                                         if (is_hussain_enabled() && !empty($hussin_part)) {
                                                             $item = $hussin_part;
                                                             $price = (int)($item['yadakprice'] / 10000);
-                                                            $finalPrice = $price . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
+
+                                                            // Round UP to nearest hundred
+                                                            $roundedPrice = ceil($price / 100) * 100;
+
+                                                            $finalPrice = $roundedPrice . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
                                                             $isDisplayAllowed = true;
                                                             break;
                                                         }
@@ -274,7 +278,11 @@ if ($isValidCustomer) :
                                                         if (is_hussain_enabled() && !empty($hussin_part)) {
                                                             $item = $hussin_part;
                                                             $price = (int)($item['yadakprice'] / 10000);
-                                                            $finalPrice = $price . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
+
+                                                            // Round UP to nearest hundred
+                                                            $roundedPrice = ceil($price / 100) * 100;
+
+                                                            $finalPrice = $roundedPrice . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
                                                             $isDisplayAllowed = true;
                                                             $class = 'color: orange !important;';
                                                             break;

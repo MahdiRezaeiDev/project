@@ -18,6 +18,10 @@ require_once '../../layouts/callcenter/sidebar.php';
     .tab-content.active {
         display: block;
     }
+
+    textarea#messageInput {
+    min-height: 285px;
+}
 </style>
 
 <!-- CUSTOMER INFORMATION SECTION -->
@@ -409,9 +413,11 @@ require_once '../../layouts/callcenter/sidebar.php';
         </div>
     </div>
 </section>
+<div class="operation_acknowledge text-white px-3 py-2" id="operation_acknowledge"></div>
+
 
 <div id="smsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl shadow-lg min-w-96 p-6 text-right relative">
+    <div class="bg-white rounded-2xl shadow-lg w-1/3 p-6 text-right relative">
         <h2 class="text-xl font-bold mb-4 text-gray-700">ارسال پیامک</h2>
 
         <label class="block mb-2 text-sm font-medium text-gray-700">شماره موبایل:</label>
@@ -542,7 +548,7 @@ require_once '../../layouts/callcenter/sidebar.php';
     </script>
 
 
-    <div class="operation_acknowledge text-white px-3 py-2" id="operation_acknowledge"></div>
+
 
     <!-- MODAL SECTION -->
     <script src="./assets/js/cartable.js"></script>
