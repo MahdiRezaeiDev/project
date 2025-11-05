@@ -15,8 +15,8 @@
         <h2 style="margin-bottom: 7px;" class="element"><?= $title; ?></h2>
         <h2 style="margin-bottom: 7px;"><?= $subTitle; ?></h2>
     </div>
-    <div class="log_section">
-        <img class="logo" src="<?= $logo ?>" alt="logo of yadakshop">
+    <div class="log_section flex justify-center items-center">
+        <img style="width: 120px; height:50px" src="<?= $logo ?>" alt="logo of yadakshop">
     </div>
 </div>
 <div class="customer_info relative flex">

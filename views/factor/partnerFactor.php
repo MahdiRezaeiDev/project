@@ -35,7 +35,7 @@ require_once '../../layouts/callcenter/sidebar.php';
     const BillInfo = <?= json_encode($BillInfo) ?>;
     const billItems = <?= ($billItems) ?>;
 </script>
-<div id="bill_body_pdf" class="bill partnerBill mb-3" style="min-height: 210mm;">
+<div id="bill_body_pdf" class="relative bill partnerBill mb-3" style="min-height: 210mm;">
     <?php
     require_once './components/bill/header.php';
     require_once './components/bill/body.php';
@@ -43,26 +43,38 @@ require_once '../../layouts/callcenter/sidebar.php';
     require_once './components/bill/actionMenu.php';
     ?>
 </div>
-<div class="bill mb-3" style="min-height: 210mm;">
+<div class="bill mb-3 relative" style="min-height: 210mm;">
     <?php
     require './components/owner/header.php';
     require './components/owner/body.php';
     require './components/owner/generalDetails.php';
     ?>
+    <p class="absolute bottom-2 right-2 text-xs text-gray-500">
+        پرینت:
+        <?= ($_SESSION['user']['name'] ?? 'Unknown') . ' ' . ($_SESSION['user']['family'] ?? '') ?>
+    </p>
 </div>
-<div class="bill mb-3" style="min-height: 210mm;">
+<div class="bill mb-3 relative" style="min-height: 210mm;">
     <?php
     require './components/finance/header.php';
     require './components/finance/body.php';
     require './components/finance/generalDetails.php';
     ?>
+    <p class="absolute bottom-2 right-2 text-xs text-gray-500">
+        پرینت:
+        <?= ($_SESSION['user']['name'] ?? 'Unknown') . ' ' . ($_SESSION['user']['family'] ?? '') ?>
+    </p>
 </div>
-<div class="bill mb-3" style="min-height: 210mm;">
+<div class="bill mb-3 relative" style="min-height: 210mm;">
     <?php
     require './components/inventory/header.php';
     require './components/inventory/body.php';
     require './components/inventory/generalDetails.php';
     ?>
+    <p class="absolute bottom-2 right-2 text-xs text-gray-500">
+        پرینت:
+        <?= ($_SESSION['user']['name'] ?? 'Unknown') . ' ' . ($_SESSION['user']['family'] ?? '') ?>
+    </p>
 </div>
 <script src="./assets/js/displayFactor/factor.js"></script>
 <script>

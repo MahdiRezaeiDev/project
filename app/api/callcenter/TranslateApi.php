@@ -65,7 +65,6 @@ $brands = [
         'IRAN',
         'FAKE MOB',
         'FAKE GEN',
-        'OEMAX',
         'OE MAX',
         'MAXFIT',
         'ICBRI',
@@ -98,12 +97,20 @@ function getBrandOrigin($brand)
         return 'اصلی';
     }
 
+    // 🔹 handle direct or short forms of KOREA and CHINA
+    if (in_array($brand, ['KOREA', 'KOR', 'KR'])) return 'کره';
+    if (in_array($brand, ['CHINA', 'CHN', 'CN'])) return 'چینی';
+
+    // 🔹 detect substring matches like "MB KOREA" or "OEM CHINA"
+    if (str_contains($brand, 'KOREA')) return 'کره';
+    if (str_contains($brand, 'CHINA')) return 'چینی';
+
     foreach ($brands['KOREA'] as $kBrand) {
-        if (strcasecmp($brand, $kBrand) === 0) return 'کره';
+        if (strcasecmp($brand, $kBrand) == 0) return 'کره';
     }
 
     foreach ($brands['CHINA'] as $cBrand) {
-        if (strcasecmp($brand, $cBrand) === 0) return 'چینی';
+        if (strcasecmp($brand, $cBrand) == 0) return 'چینی';
     }
 
     return $brand; // اگر برند ناشناخته بود
@@ -132,7 +139,6 @@ function parsePriceText($text)
                     $brand = $pmatch[2];
                     $note = $pmatch[3] ?? null;
 
-                    // اضافه کردن note به برند در خروجی
                     $finalBrand = getBrandOrigin($brand);
                     if ($note) {
                         $finalBrand .= " ($note)";
@@ -144,7 +150,6 @@ function parsePriceText($text)
                     ];
                 }
             }
-
 
             $result[] = [
                 'code' => $code,

@@ -42,7 +42,7 @@ if (!file_exists($profile)) {
     const BillInfo = <?= json_encode($BillInfo) ?>;
     const billItems = <?= ($billItems) ?>;
 </script>
-<div id="bill_body_pdf" class="bill mb-3" style="min-height: 210mm;">
+<div id="bill_body_pdf" class="bill mb-3 relative" style="min-height: 210mm;">
     <?php
     require './components/bill/header.php';
     require './components/bill/body.php';
@@ -50,26 +50,38 @@ if (!file_exists($profile)) {
     require './components/bill/actionMenu.php';
     ?>
 </div>
-<div class="bill mb-3" style="min-height: 210mm;">
+<div class="bill mb-3 relative" style="min-height: 210mm;">
     <?php
     require './components/owner/header.php';
     require './components/owner/body.php';
     require './components/owner/generalDetails.php';
     ?>
+    <p class="absolute bottom-2 right-2 text-xs text-gray-500">
+        پرینت:
+        <?= ($_SESSION['user']['name'] ?? 'Unknown') . ' ' . ($_SESSION['user']['family'] ?? '') ?>
+    </p>
 </div>
-<div class="bill mb-3" style="min-height: 210mm;">
+<div class="bill mb-3 relative" style="min-height: 210mm;">
     <?php
     require './components/finance/header.php';
     require './components/finance/body.php';
     require './components/finance/generalDetails.php';
     ?>
+    <p class="absolute bottom-2 right-2 text-xs text-gray-500">
+        پرینت:
+        <?= ($_SESSION['user']['name'] ?? 'Unknown') . ' ' . ($_SESSION['user']['family'] ?? '') ?>
+    </p>
 </div>
-<div id="bill_body_pdf" class="bill mb-3" style="min-height: 210mm;">
+<div id="bill_body_pdf" class="bill mb-3 relative" style="min-height: 210mm;">
     <?php
     require './components/inventory/header.php';
     require './components/inventory/body.php';
     require './components/inventory/generalDetails.php';
     ?>
+    <p class="absolute bottom-2 right-2 text-xs text-gray-500">
+        پرینت:
+        <?= ($_SESSION['user']['name'] ?? 'Unknown') . ' ' . ($_SESSION['user']['family'] ?? '') ?>
+    </p>
 </div>
 <script src="./assets/js/displayFactor/factor.js"></script>
 <script>
@@ -117,7 +129,7 @@ if (!file_exists($profile)) {
                 <td style="padding: 3px !important; border: none !important; text-align: center !important; font-size:13px">${item.required ?? ''}</td>
             </tr>`;
             if (item.required) {
-                 document.getElementById('template_' + item.id).classList.add('hidden');
+                document.getElementById('template_' + item.id).classList.add('hidden');
                 document.getElementById('owner_' + item.id).innerHTML += `
                     <tr>
                             <td style="padding: 3px !important; border: none !important; text-align: center !important; font-size:13px">${item.partNumber}</td>

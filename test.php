@@ -93,6 +93,9 @@ foreach ($chunks as $chunk) {
     $values = [];
 
     foreach ($chunk as $item) {
+        if (!isset($item['OfferPrice']) || $item['OfferPrice'] == 0) {
+            continue;
+        }
         $placeholders[] = '(' . implode(',', array_fill(0, count($columns), '?')) . ')';
         $values[] = $item['ID'] ?? 0;
         $values[] = $item['PropertyCode'] ?? '';

@@ -57,7 +57,10 @@
         </li> -->
     </ul>
     <div class="text-xs flex items-center gap-2">
-        <img class="rounded-full w-9 h-9 mt-2" src="<?= $profile ?>" alt="">
+        <?php
+        $id = $BillInfo['user_id'];
+        ?>
+        <img class="rounded-full w-9 h-9 mt-2" src="../../public/userimg/<?= $id ?>.jpg" alt="">
         <p>
             زمان ثبت:
             <span id="time_owner"></span>
