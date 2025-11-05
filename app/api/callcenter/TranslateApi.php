@@ -11,66 +11,15 @@ header('Content-Type: text/plain; charset=utf-8');
 
 require_once '../../../config/constants.php';
 require_once '../../../database/db_connect.php';
+require_once '../../../utilities/inventory/InventoryHelpers.php';
 
 // -----------------------------
-// BRANDS CATEGORY
+// BRANDS CATEGORY (Dynamic from DB)
 // -----------------------------
-$brands = [
-    'KOREA' => [
-        'YONG',
-        'YONG HOO',
-        'OEM',
-        'ONNURI',
-        'GY',
-        'MIDO',
-        'MIRE',
-        'CARDEX',
-        'MANDO',
-        'OSUNG',
-        'DONGNAM',
-        'HYUNDAI BRAKE',
-        'SAM YUNG',
-        'BRC',
-        'GEO SUNG',
-        'YULIM',
-        'CARTECH',
-        'HSC',
-        'KOREA STAR',
-        'DONI TEC',
-        'ATC',
-        'VALEO',
-        'MB KOREA',
-        'FAKE MOB',
-        'FAKE GEN',
-        'IACE',
-        'MB',
-        'PH',
-        'CAP',
-        'BRG',
-        'GMB',
-        'KGC',
-        'GATES',
-        'KOART',
-        'SAEHAN',
-        'FORCEONE',
-        'DAEWHA',
-        'AUTOFIX',
-        'BOSUNG'
-    ],
-    'CHINA' => [
-        'OEMAX',
-        'JYR',
-        'RB2',
-        'Rb2',
-        'IRAN',
-        'FAKE MOB',
-        'FAKE GEN',
-        'OE MAX',
-        'MAXFIT',
-        'ICBRI',
-        'HOH'
-    ]
-];
+$AvailableBrands = getBrands();
+$brandsEnglishName = array_column($AvailableBrands, 'name');
+$brandsPersianName = array_column($AvailableBrands, 'persian_name');
+$customBrands = array_combine(array_map('strtoupper', $brandsEnglishName), $brandsPersianName);
 
 // -----------------------------
 // FUNCTIONS
@@ -90,30 +39,29 @@ function roundUpToHundred($num)
 
 function getBrandOrigin($brand)
 {
-    global $brands;
+    global $customBrands;
+
     $brand = strtoupper(trim($brand));
 
+    // 🔹 Known short forms for main brands
     if (in_array($brand, ['MOB', 'GEN'])) {
         return 'اصلی';
     }
 
-    // 🔹 handle direct or short forms of KOREA and CHINA
-    if (in_array($brand, ['KOREA', 'KOR', 'KR'])) return 'کره';
-    if (in_array($brand, ['CHINA', 'CHN', 'CN'])) return 'چینی';
-
-    // 🔹 detect substring matches like "MB KOREA" or "OEM CHINA"
-    if (str_contains($brand, 'KOREA')) return 'کره';
-    if (str_contains($brand, 'CHINA')) return 'چینی';
-
-    foreach ($brands['KOREA'] as $kBrand) {
-        if (strcasecmp($brand, $kBrand) == 0) return 'کره';
+    // 🔹 Direct match from DB mapping
+    if (isset($customBrands[$brand])) {
+        return $customBrands[$brand];
     }
 
-    foreach ($brands['CHINA'] as $cBrand) {
-        if (strcasecmp($brand, $cBrand) == 0) return 'چینی';
+    // 🔹 Try partial match (e.g., "MB KOREA" or "OEM CHINA")
+    foreach ($customBrands as $eng => $per) {
+        if (str_contains($brand, $eng)) {
+            return $per;
+        }
     }
 
-    return $brand; // اگر برند ناشناخته بود
+    // 🔹 Fallback
+    return $brand;
 }
 
 function parsePriceText($text)
