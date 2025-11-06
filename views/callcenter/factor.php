@@ -1,10 +1,14 @@
 <?php
 $pageTitle = "شماره فاکتور";
 $iconUrl = 'bill.png';
+
 require_once './components/header.php';
+
 require_once '../../app/controller/callcenter/FactorController.php';
 require_once '../../layouts/callcenter/nav.php';
 require_once '../../layouts/callcenter/sidebar.php';
+
+
 $TOTAL = 0;
 $PARTNER = 0;
 $PARTNER_COUNT = 0;
@@ -38,47 +42,80 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
         transition: all 0.5s ease;
     }
 
+    .printfactor {
+        width: 38px;
+        background: #f3f4f6;
+    }
+
+    .closedelivery {
+        background: #ff4142;
+    }
+
+    .header-factor {
+        width: 75px;
+        height: 75px;
+    }
+
+    .iocn-factor {
+        width: 18px;
+    }
+
     /* Hide everything except #factor_table for print */
     @media print {
         @page {
             size: auto;
-            /* auto is the default size */
             margin: 0;
-            /* remove default margin */
         }
 
         body {
-            margin: 20px;
+            margin: 10px;
             padding: 0 !important;
-            /* remove body margin */
         }
 
         nav,
         aside,
         .hide_while_print,
         #operation_message,
-        #tvMessage {
+        #tvMessage,
+        #wrapper>*:not(#myModal) {
             display: none !important;
         }
+        #myModal,
+        #myModal * {
+            visibility: visible !important;
+            display: block !important;
+        }
+
+        #myModal {
+            position: static !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            background: white !important;
+            width: 100% !important;
+            height: auto !important;
+        }
+
 
         #resultBox.grid {
             display: block;
-            /* Change from grid to block */
             grid-template-columns: none;
-            /* Remove grid columns */
             grid-template-rows: none;
             padding: 0;
             margin: 0;
-            /* Remove grid rows */
         }
 
         #wrapper {
             padding: 0;
             margin: 0;
-            /* Remove padding and margin */
             box-shadow: none;
         }
+
+        .hide_while_print {
+            display: none !important;
+        }
     }
+
 </style>
 
 <!-- HTML STRUCTURE -->
@@ -115,7 +152,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
             <img src="./assets/img/copy.svg" alt="copy icon" />
             <p id="success_message" class="text-white text-sm font-semibold"></p>
         </div>
-        <img class="cursor-pointer" title="بستن" src="./assets/img/close.svg" alt="close icon" onclick="closeAlert()">
+        <img class="cursor-pointer " title="بستن" src="./assets/img/close.svg" alt="close icon" onclick="closeAlert()">
     </div>
     <!-- Saved new factor success message END -->
 
@@ -129,7 +166,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                         <th class="p-3 text-sm font-semibold">خریدار</th>
                         <th class="p-3 text-sm font-semibold">کاربر</th>
                         <?php if (in_array($_SESSION['username'], $qualified)): ?>
-                            <th class="p-3 text-sm font-semibold hide_while_print">وضعیت</th>
+                        <th class="p-3 text-sm font-semibold hide_while_print">وضعیت</th>
                         <?php endif ?>
                         <?php
                         $isAdmin = $_SESSION['username'] === 'niyayesh' || $_SESSION['username'] === 'mahdi' || $_SESSION['username'] === 'babak' ? true : false;
@@ -138,7 +175,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                         <th class="p-3 text-sm font-semibold hide_while_print">خروج</th>
                         <th class="p-3 text-sm font-semibold">ارسال</th>
                         <?php if ($isAdmin) : ?>
-                            <th class="p-3 text-sm font-semibold hide_while_print hidden sm:table-cell">ویرایش</th>
+                        <th class="p-3 text-sm font-semibold hide_while_print hidden sm:table-cell">ویرایش</th>
                         <?php endif; ?>
                     </tr>
                 </thead>
@@ -157,89 +194,87 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                 $REGULAR += $factor['total'];
                                 $REGULAR_COUNT++;
                             } ?>
-                            <tr class="<?= $factor['partner'] ? 'bg-green-200' : 'even:bg-gray-100' ?> factor_row" data-total="<?= $factor['total'] ?? 'xxx' ?>" data-status="<?= $factor['status'] ?? 'xxx' ?>">
-                                <td class="text-center align-middle">
-                                    <span class="flex justify-center items-center gap-2 bg-blue-500 rounded-sm text-white sm:w-24 py-2 mx-auto cursor-pointer" title="کپی کردن شماره فاکتور" data-billNumber="<?= $factor['shomare'] ?>" onClick="copyBillNumberSingle(this)">
-                                        <span class="factorNumberContainer"><?= $factor['shomare'] ?></span>
-                                        <?php if (!$factor["status"]): ?>
-                                            <img src="./assets/img/close.svg" alt="cross icon">
-                                        <?php else: ?>
-                                            <img src="./assets/img/copy.svg" alt="copy icon" />
-                                        <?php endif; ?>
+                    <tr class="<?= $factor['partner'] ? 'bg-green-200' : 'even:bg-gray-100' ?> factor_row" data-total="<?= $factor['total'] ?? 'xxx' ?>" data-status="<?= $factor['status'] ?? 'xxx' ?>">
+                        <td class="text-center align-middle">
+                            <span class="flex justify-center items-center gap-2 bg-blue-500 rounded-sm text-white sm:w-24 py-2 mx-auto cursor-pointer" title="کپی کردن شماره فاکتور" data-billNumber="<?= $factor['shomare'] ?>" onClick="copyBillNumberSingle(this)">
+                                <span class="factorNumberContainer"><?= $factor['shomare'] ?></span>
+                                <?php if (!$factor["status"]): ?>
+                                <img src="./assets/img/close.svg" alt="cross icon">
+                                <?php else: ?>
+                                <img src="./assets/img/copy.svg" alt="copy icon" />
+                                <?php endif; ?>
+                            </span>
+                        </td>
+                        <td class="text-center align-middle ">
+                            <div class="flex items-center gap-2">
+                                <?php if ($factor['exists_in_bill']) : ?>
+                                <a class="hide_while_print" href="../factor/complete.php?factor_number=<?= $factor['bill_id'] ?>">
+                                    <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده فاکتور" src="./assets/img/bill.svg" />
+                                </a>
+                                <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $factor['bill_id'] ?>">
+                                    <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده جزئیات" src="./assets/img/explore.svg" />
+                                </a>
+                                <?php endif; ?>
+                                <?php if ($factor['printed']) : ?>
+                                <img class="w-6 hide_while_print cursor-pointer d-block" title="چاپ شده" src="./assets/img/printed.svg" />
+                                <?php endif; ?>
+                                <?php if ($factor['exists_in_payments']) : ?>
+                                <a class="relative inline-block w-6 h-6" href="../factor/paymentDetails.php?factor=<?= $factor['shomare'] ?>">
+                                    <img class="w-full h-full cursor-pointer" title="مشاهده واریزی ها" src="./assets/img/payment.svg" />
+                                    <?php if ($factor['payment_count'] > 0): ?>
+                                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center shadow">
+                                        <?= $factor['payment_count'] ?>
                                     </span>
-                                </td>
-                                <td class="text-center align-middle ">
-                                    <div class="flex items-center gap-2">
-                                        <?php if ($factor['exists_in_bill']) : ?>
-                                            <a class="hide_while_print" href="../factor/complete.php?factor_number=<?= $factor['bill_id'] ?>">
-                                                <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده فاکتور" src="./assets/img/bill.svg" />
-                                            </a>
-                                            <a class="hide_while_print" href="../factor/externalView.php?factorNumber=<?= $factor['bill_id'] ?>">
-                                                <img class="w-6 mr-4 cursor-pointer d-block" title="مشاهده جزئیات" src="./assets/img/explore.svg" />
-                                            </a>
-                                        <?php endif; ?>
-                                        <?php if ($factor['printed']) : ?>
-                                            <img class="w-6 hide_while_print cursor-pointer d-block" title="چاپ شده" src="./assets/img/printed.svg" />
-                                        <?php endif; ?>
-                                        <?php if ($factor['exists_in_payments']) : ?>
-                                            <a class="relative inline-block w-6 h-6" href="../factor/paymentDetails.php?factor=<?= $factor['shomare'] ?>">
-                                                <img class="w-full h-full cursor-pointer" title="مشاهده واریزی ها" src="./assets/img/payment.svg" />
-                                                <?php if ($factor['payment_count'] > 0): ?>
-                                                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center shadow">
-                                                        <?= $factor['payment_count'] ?>
-                                                    </span>
-                                                <?php endif; ?>
-                                            </a>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                                <td class="text-center align-middle font-semibold">
-                                    <?= $factor['kharidar'] ?>
-                                </td>
-                                <td class="text-center align-middle">
-                                    <img onclick="userReport(this)" class="w-10 rounded-full hover:cursor-pointer mt-2 mx-auto" data-id="<?= $factor['user']; ?>" src="<?= getUserProfile($factor['user']) ?>" />
-                                </td>
-                                <?php if (in_array($_SESSION['username'], $qualified)): ?>
-                                    <td class="hide_while_print">
-                                        <div class="flex justify-center items-center">
-                                            <input onclick="changeStatus(this)" <?= ($factor["exists_in_phones"] || $factor["approved"]) ? 'checked' : '' ?> type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
-                                        </div>
-                                    </td>
-                                <?php endif;
+                                    <?php endif; ?>
+                                </a>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td class="text-center align-middle font-semibold">
+                            <?= $factor['kharidar'] ?>
+                        </td>
+                        <td class="text-center align-middle">
+                            <img onclick="userReport(this)" class="w-10 rounded-full hover:cursor-pointer mt-2 mx-auto" data-id="<?= $factor['user']; ?>" src="<?= getUserProfile($factor['user']) ?>" />
+                        </td>
+                        <?php if (in_array($_SESSION['username'], $qualified)): ?>
+                        <td class="hide_while_print">
+                            <div class="flex justify-center items-center">
+                                <input onclick="changeStatus(this)" <?= ($factor["exists_in_phones"] || $factor["approved"]) ? 'checked' : '' ?> type="checkbox" name="status" id="<?= $factor['shomare'] ?>">
+                            </div>
+                        </td>
+                        <?php endif;
                                 $payment_bg = 'bg-gray-400 hover:bg-gray-300';
                                 if ($factor['is_paid_off']):
                                     $payment_bg = 'bg-green-500 hover:bg-green-600';
                                 ?>
-                                    <td class="text-center align-middle hide_while_print hidden sm:table-cell">
-                                        <a href="../factor/paymentDetails.php?factor=<?= $factor['shomare'] ?>"
-                                            class="relative inline-block text-xs <?= $payment_bg; ?>  text-white cursor-pointer px-3 py-1 rounded transition">
-                                            مشاهده واریزی
-                                        </a>
-                                    </td>
-                                <?php else:
+                        <td class="text-center align-middle hide_while_print hidden sm:table-cell">
+                            <a href="../factor/paymentDetails.php?factor=<?= $factor['shomare'] ?>" class="relative inline-block text-xs <?= $payment_bg; ?>  text-white cursor-pointer px-3 py-1 rounded transition">
+                                مشاهده واریزی
+                            </a>
+                        </td>
+                        <?php else:
                                     if ($factor['payment_count'] > 0):
                                         $payment_bg = 'bg-cyan-500 hover:bg-cyan-600';
                                     endif;
                                 ?>
-                                    <td class="text-center align-middle hide_while_print hidden sm:table-cell">
-                                        <a href="../factor/addPayment.php?factor=<?= $factor['shomare'] ?>"
-                                            class="relative inline-block text-xs <?= $payment_bg; ?> text-white cursor-pointer px-3 py-1 transition rounded">
-                                            ثبت واریزی
-                                        </a>
-                                    </td>
+                        <td class="text-center align-middle hide_while_print hidden sm:table-cell">
+                            <a href="../factor/addPayment.php?factor=<?= $factor['shomare'] ?>" class="relative inline-block text-xs <?= $payment_bg; ?> text-white cursor-pointer px-3 py-1 transition rounded">
+                                ثبت واریزی
+                            </a>
+                        </td>
+                        <?php endif; ?>
+                        <td class="hide_while_print">
+                            <div class="flex justify-center items-center">
+                                <?php if ($factor['sellout']): ?>
+                                <img src="./assets/img/checked.svg" alt="">
+                                <?php else: ?>
+                                <img src="./assets/img/ignored.svg" alt="">
                                 <?php endif; ?>
-                                <td class="hide_while_print">
-                                    <div class="flex justify-center items-center">
-                                        <?php if ($factor['sellout']): ?>
-                                            <img src="./assets/img/checked.svg" alt="">
-                                        <?php else: ?>
-                                            <img src="./assets/img/ignored.svg" alt="">
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                                <td class="text-center align-middle">
-                                    <div class="flex flex-col items-center gap-1">
-                                        <?php
+                            </div>
+                        </td>
+                        <td class="text-center align-middle">
+                            <div class="flex flex-col items-center gap-1">
+                                <?php
                                         // Determine delivery icon
                                         switch ($factor['delivery_type']) {
                                             case 'تیپاکس':
@@ -262,19 +297,9 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                         }
                                         ?>
 
-                                        <img
-                                            onclick="displayDeliveryModal(this)"
-                                            data-bill="<?= $factor['shomare'] ?>"
-                                            data-contact="<?= $factor['contact_type'] ?>"
-                                            data-destination="<?= $factor['destination'] ?>"
-                                            data-type="<?= $factor['delivery_type'] ?>"
-                                            data-address="<?= $factor['customer_address'] ?>"
-                                            src="<?= $src; ?>"
-                                            alt="arrow icon"
-                                            class="w-6 h-6 cursor-pointer"
-                                            title="ارسال اجناس" />
+                                <img onclick="displayDeliveryModal(this)" data-bill="<?= $factor['shomare'] ?>" data-contact="<?= $factor['contact_type'] ?>" data-destination="<?= $factor['destination'] ?>" data-type="<?= $factor['delivery_type'] ?>" data-address="<?= $factor['customer_address'] ?>" src="<?= $src; ?>" alt="arrow icon" class="w-6 h-6 cursor-pointer" title="ارسال اجناس" />
 
-                                        <?php
+                                <?php
                                         // Only show destination if not "پیک مشتری"
                                         if ($factor['delivery_type'] !== 'پیک مشتری') {
                                             // Pick text color
@@ -291,26 +316,25 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                                             echo "<span class='text-[9px] {$color} font-semibold'>{$displayText}</span>";
                                         }
                                         ?>
-                                    </div>
+                            </div>
 
-                                </td>
-                                <?php if ($isAdmin) : ?>
-                                    <td class="text-center align-middle hide_while_print hidden sm:table-cell">
-                                        <a onclick="toggleModal(this); edit(this)" data-factor="<?= $factor["id"] ?>" data-user="<?= $factor['user']; ?>" data-billNO="<?= $factor['shomare'] ?>" data-user-info="<?= getUserInfo($factor['user']) ?>" data-customer="<?= $factor['kharidar'] ?>"
-                                            class="">
-                                            <img src="./assets/img/edit.svg" alt="edit icon" class="w-6 h-6 cursor-pointer mx-auto" title="ویرایش فاکتور" />
-                                        </a>
-                                    </td>
-                                <?php endif; ?>
-                            </tr>
-                        <?php
+                        </td>
+                        <?php if ($isAdmin) : ?>
+                        <td class="text-center align-middle hide_while_print hidden sm:table-cell">
+                            <a onclick="toggleModal(this); edit(this)" data-factor="<?= $factor["id"] ?>" data-user="<?= $factor['user']; ?>" data-billNO="<?= $factor['shomare'] ?>" data-user-info="<?= getUserInfo($factor['user']) ?>" data-customer="<?= $factor['kharidar'] ?>" class="">
+                                <img src="./assets/img/edit.svg" alt="edit icon" class="w-6 h-6 cursor-pointer mx-auto" title="ویرایش فاکتور" />
+                            </a>
+                        </td>
+                        <?php endif; ?>
+                    </tr>
+                    <?php
                         endforeach;
                     else : ?>
-                        <tr class="bg-gray-100">
-                            <td class="text-center py-40" colspan="9">
-                                <p class="text-rose-500 font-semibold">هیچ فاکتوری برای امروز ثبت نشده است.</p>
-                            </td>
-                        </tr>
+                    <tr class="bg-gray-100">
+                        <td class="text-center py-40" colspan="9">
+                            <p class="text-rose-500 font-semibold">هیچ فاکتوری برای امروز ثبت نشده است.</p>
+                        </td>
+                    </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -335,34 +359,34 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                 <?php
                 if (count($countFactorByUser)) :
                     foreach ($countFactorByUser as $index => $row) : $index++; ?>
-                        <div class="group">
-                            <div class="relative bg-gray-100 group-hover:hover:bg-gray-200 p-5 shadow rounded-lg m-3 mb-10 cursor-pointer">
-                                <div class="flex justify-between">
-                                    <div class="w-16 h-16 overflow-hidden rounded-full bg-gray-100 group-hover:bg-gray-200 p-2" style="position: absolute; top: -50%;">
-                                        <img onclick="userReport(this)" data-id="<?= $row['user'] ?>" class="rounded-full" src="<?= getUserProfile($row['user']) ?>" alt="ananddavis" />
-                                    </div>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <div class="grow text-left">
-                                        <img style="z-index: 10000;" src="../../public/icons/<?= getRankingBadge($index) ?>" alt="first" />
-                                    </div>
-                                    <div class="grow">
-                                        <h4 class="text-left font-semibold text-sm"><?= getUserInfo($row['user']) ?></h4>
-                                    </div>
-                                    <div class="grow">
-                                        <div class="text-sm text-left font-semibold">فاکتورها
-                                            <span class="profile__key"><?= $row['count_shomare']; ?></span>
-                                        </div>
-                                    </div>
+                <div class="group">
+                    <div class="relative bg-gray-100 group-hover:hover:bg-gray-200 p-5 shadow rounded-lg m-3 mb-10 cursor-pointer">
+                        <div class="flex justify-between">
+                            <div class="w-16 h-16 overflow-hidden rounded-full bg-gray-100 group-hover:bg-gray-200 p-2" style="position: absolute; top: -50%;">
+                                <img onclick="userReport(this)" data-id="<?= $row['user'] ?>" class="rounded-full" src="<?= getUserProfile($row['user']) ?>" alt="ananddavis" />
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="grow text-left">
+                                <img style="z-index: 10000;" src="../../public/icons/<?= getRankingBadge($index) ?>" alt="first" />
+                            </div>
+                            <div class="grow">
+                                <h4 class="text-left font-semibold text-sm"><?= getUserInfo($row['user']) ?></h4>
+                            </div>
+                            <div class="grow">
+                                <div class="text-sm text-left font-semibold">فاکتورها
+                                    <span class="profile__key"><?= $row['count_shomare']; ?></span>
                                 </div>
                             </div>
                         </div>
-                    <?php
+                    </div>
+                </div>
+                <?php
                     endforeach;
                 else : ?>
-                    <div class="flex justify-center items-center h-64 bg-gray-100 mx-3">
-                        <p class="text-rose-500 font-semibold">هیچ فاکتوری برای امروز ثبت نشده است.</p>
-                    </div>
+                <div class="flex justify-center items-center h-64 bg-gray-100 mx-3">
+                    <p class="text-rose-500 font-semibold">هیچ فاکتوری برای امروز ثبت نشده است.</p>
+                </div>
                 <?php endif; ?>
             </div>
         </div>
@@ -456,7 +480,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
                         <label class="text-sm font-semibold ml-3" for="edit_user_id">کاربر ثبت کننده</label>
                         <select class="text-sm py-2 px-3 font-semibold border-2 border-gray-500" name="edit_user_id" id="edit_user_id">
                             <?php foreach ($users as $user) { ?>
-                                <option id="option-<?= $user['id'] ?>" value="<?= $user['id'] ?>"><?= $user['name'] . ' ' . $user['family'] ?></option>
+                            <option id="option-<?= $user['id'] ?>" value="<?= $user['id'] ?>"><?= $user['name'] . ' ' . $user['family'] ?></option>
                             <?php } ?>
                         </select>
                     </div>
@@ -489,71 +513,8 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
     </div>
 </div>
 
-<div id="deliveryModal" class="hidden fixed inset-0 bg-gray-900/75 flex justify-center items-center">
-    <div class="bg-white p-4 rounded w-2/3">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl mb-2">ارسال اجناس</h2>
-            <img class="cursor-pointer" src="./assets/img/close.svg" alt="close icon" onclick="document.getElementById('deliveryModal').classList.add('hidden')">
-        </div>
-        <div class="modal-body">
-            <table class="w-full my-4 ">
-                <thead class="bg-gray-700">
-                    <tr>
-                        <th class="text-xs text-white font-semibold p-3">شماره فاکتور</th>
-                        <th class="text-xs text-white font-semibold p-3">روش ارسال</th>
-                        <th class="text-xs text-white font-semibold p-3">آدرس مقصد</th>
-                        <th class="text-xs text-white font-semibold p-3">پیام رسان مشتری</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="bg-gray-100">
-                        <td class="text-gray-600 text-xs p-3 text-center font-semibold" id="display_billNumber"></td>
-                        <td class="text-gray-600 text-xs p-3 text-center font-semibold" id="display_deliveryType"></td>
-                        <td class="text-gray-600 text-xs p-3 text-center font-semibold" id="display_destination"></td>
-                        <td class="text-gray-600 text-xs p-3 text-center font-semibold" id="display_contactType"></td>
-                    </tr>
-                </tbody>
-            </table>
+<?php require_once '../factor/delivery.php';?>
 
-            <form action="" onsubmit="submitDelivery(event)" class="mt-4">
-                <input type="hidden" name="billNumber" id="deliveryBillNumber" value="">
-                <div class="mt-4">
-                    <label class="block text-sm font-semibold mb-2" for="deliveryType">روش ارسال:</label>
-                    <select required id="deliveryType" name="deliveryType" class="w-full border-2 border-gray-300 p-2 rounded">
-                        <option value="پیک مشتری">پیک خود مشتری</option>
-                        <option value="پیک خود مشتری بعد از اطلاع">پیک خود مشتری بعد از اطلاع </option>
-                        <option value="پیک یدک شاپ">پیک یدک شاپ</option>
-                        <option value="اتوبوس">اتوبوس</option>
-                        <option value="تیپاکس">تیپاکس</option>
-                        <option value="سواری">سواری</option>
-                        <option value="باربری">باربری</option>
-                        <option value="هوایی">هوایی</option>
-                    </select>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-semibold mb-2" for="address">آدرس مقصد:</label>
-                    <input value="تهران" type="text" id="address" name="address" class="w-full border-2 border-gray-300 p-2 rounded" placeholder="آدرس ارسال را وارد کنید...">
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-semibold mb-2" for="contactType"> پیام رسان مشتری:</label>
-                    <select required id="contactType" name="contactType" class="w-full border-2 border-gray-300 p-2 rounded">
-                        <option value="واتساپ" selected>واتساپ</option>
-                        <option value="واتساپ راست">واتساپ راست</option>
-                        <option value="واتساپ چپ">واتساپ چپ</option>
-                        <option value="تلگرام">تلگرام</option>
-                        <option value="تلگرام پشتیبانی ">تلگرام پشتیبانی </option>
-                        <option value="تلگرام یدک شاپ ">تلگرام یدک شاپ </option>
-                        <option value="تلگرام واریزی">تلگرام واریزی</option>
-                        <option value="تلگرام کره">تلگرام کره</option>
-                    </select>
-                </div>
-                <div class="mt-4">
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">ثبت ارسال</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <script type="text/javascript">
     const resultBox = document.getElementById('resultBox');
@@ -640,6 +601,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
     function getNewFactorNumber() {
         const date = ($("#invoice_time").attr("data-gdate"));
         const customer = document.getElementById('customer');
+
         if (customer.value.length >= 3) {
             var params = new URLSearchParams();
             params.append('getNewFactorNumber', 'getNewFactorNumber');
@@ -749,6 +711,7 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
             .catch(function(error) {
                 console.log(error);
             });
+
     }
 
     function cancelFactor() {
@@ -812,60 +775,6 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
             });
     }
 
-    function displayDeliveryModal(element) {
-        const billNumber = element.dataset.bill;
-        const contactType = element.dataset.contact;
-        const destination = element.dataset.destination;
-        const deliveryType = element.dataset.type;
-        const address = element.dataset.address || 'تهران';
-
-        // Set display text
-        document.getElementById('display_billNumber').innerText = billNumber;
-        document.getElementById('display_contactType').innerText = contactType;
-        document.getElementById('display_destination').innerText = destination;
-        document.getElementById('display_deliveryType').innerText = deliveryType;
-
-        // Set form values
-        document.getElementById('deliveryBillNumber').value = billNumber;
-        document.getElementById('address').value = address;
-
-        // Select dropdown options if they exist
-        const deliverySelect = document.getElementById('deliveryType');
-        if (deliverySelect && deliveryType) {
-            deliverySelect.value = deliveryType;
-        }
-
-        const contactSelect = document.getElementById('contactType');
-        if (contactSelect && contactType) {
-            contactSelect.value = contactType;
-        }
-
-        // Show modal
-        document.getElementById('deliveryModal').classList.remove('hidden');
-    }
-
-    function submitDelivery(event) {
-        event.preventDefault();
-        const deliveryType = document.getElementById('deliveryType').value;
-        const deliveryBillNumber = document.getElementById('deliveryBillNumber').value;
-        const address = document.getElementById('address').value;
-        const contactType = document.getElementById('contactType').value;
-        const params = new URLSearchParams();
-        params.append('submitDelivery', 'submitDelivery');
-        params.append('deliveryType', deliveryType);
-        params.append('address', address);
-        params.append('contactType', contactType);
-        params.append('billNumber', deliveryBillNumber);
-        axios.post("../../app/api/factor/DeliveryApi.php", params)
-            .then(function(response) {
-                document.getElementById('deliveryModal').classList.add('hidden');
-                showToast("ارسال با موفقیت ثبت شد.");
-            })
-            .catch(function(error) {
-                alert("خطا در هنگام ثبت ارسال، لطفا مجددا تلاش نمایید");
-            });
-
-    }
 
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
@@ -880,10 +789,12 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
             toast.classList.add('opacity-0');
             setTimeout(() => {
                 toast.remove();
-                location.reload();
+                //location.reload();
             }, 500); // wait for fade-out animation
         }, 3000);
     }
+
 </script>
+
 <?php
 require_once './components/footer.php';

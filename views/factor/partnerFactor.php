@@ -49,9 +49,9 @@ require_once '../../layouts/callcenter/sidebar.php';
     require './components/owner/body.php';
     require './components/owner/generalDetails.php';
     ?>
-    <p class="absolute bottom-2 right-2 text-xs text-gray-500">
-        پرینت:
-        <?= ($_SESSION['user']['name'] ?? 'Unknown') . ' ' . ($_SESSION['user']['family'] ?? '') ?>
+    <p class="absolute bottom-2 right-2 text-xs text-gray-500 flex items-center gap-1">
+        <img class="rounded-full w-6 h-6 inline" src="../../public/userimg/<?= $_SESSION['user_id'] ?>.jpg" />
+        <?= date('H:i'); ?>
     </p>
 </div>
 <div class="bill mb-3 relative" style="min-height: 210mm;">
@@ -60,9 +60,9 @@ require_once '../../layouts/callcenter/sidebar.php';
     require './components/finance/body.php';
     require './components/finance/generalDetails.php';
     ?>
-    <p class="absolute bottom-2 right-2 text-xs text-gray-500">
-        پرینت:
-        <?= ($_SESSION['user']['name'] ?? 'Unknown') . ' ' . ($_SESSION['user']['family'] ?? '') ?>
+    <p class="absolute bottom-2 right-2 text-xs text-gray-500 flex items-center gap-1">
+        <img class="rounded-full w-6 h-6 inline" src="../../public/userimg/<?= $_SESSION['user_id'] ?>.jpg" />
+        <?= date('H:i'); ?>
     </p>
 </div>
 <div class="bill mb-3 relative" style="min-height: 210mm;">
@@ -71,9 +71,9 @@ require_once '../../layouts/callcenter/sidebar.php';
     require './components/inventory/body.php';
     require './components/inventory/generalDetails.php';
     ?>
-    <p class="absolute bottom-2 right-2 text-xs text-gray-500">
-        پرینت:
-        <?= ($_SESSION['user']['name'] ?? 'Unknown') . ' ' . ($_SESSION['user']['family'] ?? '') ?>
+    <p class="absolute bottom-2 right-2 text-xs text-gray-500 flex items-center gap-1">
+        <img class="rounded-full w-6 h-6 inline" src="../../public/userimg/<?= $_SESSION['user_id'] ?>.jpg" />
+        <?= date('H:i'); ?>
     </p>
 </div>
 <script src="./assets/js/displayFactor/factor.js"></script>

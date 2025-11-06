@@ -64,9 +64,6 @@
         <p>
             زمان ثبت:
             <span id="time_owner"></span>
-            <br>
-            زمان پرینت:
-            <span><?= date('H:i'); ?></span>
         </p>
     </div>
 </div>

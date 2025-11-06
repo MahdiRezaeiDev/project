@@ -60,9 +60,6 @@
         <div>
             زمان ثبت:
             <span id="time_inventory"></span>
-            <br>
-            زمان پرینت:
-            <span><?= date('H:i'); ?></span>
         </div>
     </div>
 </div>

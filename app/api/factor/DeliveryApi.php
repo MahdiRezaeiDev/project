@@ -127,3 +127,61 @@ if (isset($_POST['toggleStatus'])) {
     $stmt->bindParam(':id', $id);
     return $stmt->execute();
 }
+
+if (isset($_POST['saveDelivery'])) {
+
+
+    PDO_CONNECTION->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $billNumber   = isset($_POST['billNumber']) ? intval($_POST['billNumber']) : 0;
+    $contactType  = isset($_POST['contactType']) ? trim($_POST['contactType']) : '';
+    $address      = isset($_POST['address']) ? trim($_POST['address']) : '';
+    $deliveryType = isset($_POST['deliveryType']) ? trim($_POST['deliveryType']) : '';
+    $deliveryCost = isset($_POST['deliverycost']) ? floatval($_POST['deliverycost']) : null;
+    $courierName  = isset($_POST['courier_name']) ? trim($_POST['courier_name']) : '';
+    $description  = isset($_POST['description']) ? trim($_POST['description']) : '';
+    $peymentother = isset($_POST['peymentother']) ? trim($_POST['peymentother']) : '';
+    
+    $needCall     = (isset($_POST['need_call']) && $_POST['need_call'] === 'YES') ? 'YES' : 'NO';
+    $user_id      = isset($_SESSION['id']) ? intval($_SESSION['id']) : 0;
+
+    if (empty($billNumber)) {
+        echo json_encode(['status' => 'error', 'message' => 'شماره فاکتور ارسال نشده است.']);
+        exit;
+    }
+
+    $sql = "INSERT INTO factor.deliveries 
+            (bill_number, contact_type, destination, type, delivery_cost, courier_name, description, need_call, user_id,peymentother)
+            VALUES 
+            (:bill_number, :contact_type, :destination, :type, :delivery_cost, :courier_name, :description, :need_call, :user_id,:peymentother)
+            ON DUPLICATE KEY UPDATE
+            contact_type  = VALUES(contact_type),
+            destination   = VALUES(destination),
+            type          = VALUES(type),
+            delivery_cost = VALUES(delivery_cost),
+            courier_name  = VALUES(courier_name),
+            description   = VALUES(description),
+            need_call     = VALUES(need_call),
+            user_id       = VALUES(user_id),
+            peymentother    = VALUES(peymentother),
+            updated_at    = NOW()";
+
+    try {
+        $stmt = PDO_CONNECTION->prepare($sql);
+        $stmt->bindParam(':bill_number', $billNumber, PDO::PARAM_INT);
+        $stmt->bindParam(':contact_type', $contactType, PDO::PARAM_STR);
+        $stmt->bindParam(':destination', $address, PDO::PARAM_STR);
+        $stmt->bindParam(':type', $deliveryType, PDO::PARAM_STR);
+        $stmt->bindParam(':delivery_cost', $deliveryCost, PDO::PARAM_STR);
+        $stmt->bindParam(':courier_name', $courierName, PDO::PARAM_STR);
+        $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+        $stmt->bindParam(':need_call', $needCall, PDO::PARAM_STR);
+        $stmt->bindParam(':peymentother', $peymentother, PDO::PARAM_INT);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+
+        $stmt->execute();
+        echo json_encode(['status' => 'success', 'message' => 'اطلاعات ارسال با موفقیت ثبت یا به‌روزرسانی شد.']);
+    } catch (PDOException $e) {
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+}

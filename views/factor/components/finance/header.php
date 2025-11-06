@@ -59,9 +59,6 @@
         <p>
             زمان ثبت:
             <span id="time_finance"></span>
-            <br>
-            زمان پرینت:
-            <span><?= date('H:i'); ?></span>
         </p>
     </div>
 </div>

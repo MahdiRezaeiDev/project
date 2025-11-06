@@ -110,7 +110,8 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
                     'OE MAX',
                     'MAXFIT',
                     'ICBRI',
-                    'HOH'
+                    'HOH',
+                    'UBZ'
                 ],
             ];
             $ALLOWED_BRANDS = [...$brands[$goodNameBrand], $goodNameBrand];

@@ -474,6 +474,7 @@ require_once '../../layouts/inventory/sidebar.php';
             'RB2': ['CHINA'],
             'Rb2': ['CHINA'],
             'IRAN': ['CHINA'],
+            'UBZ': ['CHINA'],
             'FAKE MOB': ['CHINA', 'KOREA'],
             'FAKE GEN': ['CHINA', 'KOREA'],
             'OE MAX': ['CHINA'],
