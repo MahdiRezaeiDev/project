@@ -61,7 +61,7 @@ function getBrandOrigin($brand)
     }
 
     // 🔹 Fallback
-    return $brand;
+    return 'اصلی';
 }
 
 function parsePriceText($text)
@@ -81,7 +81,7 @@ function parsePriceText($text)
             $prices = [];
 
             foreach ($priceParts as $part) {
-                // حفظ note (مثل LR)
+                // 1️⃣ اگر عدد + برند دارد
                 if (preg_match('/(\d+)\s+([A-Z]+)(?:\s*\(([^)]+)\))?/', $part, $pmatch)) {
                     $price = (int)$pmatch[1];
                     $brand = $pmatch[2];
@@ -91,12 +91,19 @@ function parsePriceText($text)
                     if ($note) {
                         $finalBrand .= " ($note)";
                     }
-
-                    $prices[] = [
-                        'price' => roundUpToHundred($price),
-                        'brand' => $finalBrand
-                    ];
                 }
+                // 2️⃣ اگر فقط عدد دارد
+                elseif (preg_match('/^\d+$/', $part)) {
+                    $price = (int)$part;
+                    $finalBrand = 'اصلی';
+                } else {
+                    continue; // خطا یا مقدار نامعتبر
+                }
+
+                $prices[] = [
+                    'price' => roundUpToHundred($price),
+                    'brand' => $finalBrand
+                ];
             }
 
             $result[] = [
