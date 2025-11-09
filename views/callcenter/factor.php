@@ -721,6 +721,8 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
         axios.post("../../app/api/callcenter/FactorApi.php", params)
             .then(function(response) {
 
+                console.log(response.data);
+
                 const date = ($("#invoice_time").attr("data-gdate"));
                 params.append('getNewFactor', 'getNewFactor');
                 params.append('date', date);

@@ -37,7 +37,8 @@ if (isset($_POST["changeStatus"])) {
 
 if (isset($_POST['cancelFactor'])) {
     $factor_id = $_POST['factor'];
-    cancelFactor($factor_id);
+    echo $_POST['factor'];
+    echo cancelFactor($factor_id);
 }
 
 function cancelFactor($factor_id)
