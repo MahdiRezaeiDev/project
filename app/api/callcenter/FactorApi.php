@@ -47,7 +47,7 @@ function toggleFactorStatus($factor_id)
         $sql = "
             UPDATE factor.shomarefaktor
             SET status = CASE WHEN status = 1 THEN 0 ELSE 1 END
-            WHERE shomare = :factor_id
+            WHERE id = :factor_id
         ";
         $stmt = PDO_CONNECTION->prepare($sql);
         $stmt->bindParam(':factor_id', $factor_id, PDO::PARAM_INT);
