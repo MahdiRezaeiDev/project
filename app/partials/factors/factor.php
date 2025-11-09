@@ -104,8 +104,12 @@ function displayUI($factors, $countFactorByUser)
                         <tr class="<?= $factor['partner'] ? 'bg-green-200' : 'even:bg-gray-100' ?> factor_row" data-total="<?= $factor['total'] ?? 'xxx' ?>" data-status="<?= $factor['status'] ?? 'xxx' ?>">
                             <td class="text-center align-middle">
                                 <span class="flex justify-center items-center gap-2 bg-blue-500 rounded-sm text-white w-24 py-2 mx-auto cursor-pointer" title="کپی کردن شماره فاکتور" data-billNumber="<?= $factor['shomare'] ?>" onClick="copyBillNumberSingle(this)">
-                                    <?= $factor['shomare'] ?>
-                                    <img class="hide_while_print" src="./assets/img/copy.svg" alt="copy icon" />
+                                    <span class="factorNumberContainer"><?= $factor['shomare'] ?></span>
+                                    <?php if (!$factor["status"]): ?>
+                                        <img src="./assets/img/close.svg" alt="cross icon">
+                                    <?php else: ?>
+                                        <img src="./assets/img/copy.svg" alt="copy icon" />
+                                    <?php endif; ?>
                                 </span>
                             </td>
                             <td class="text-center align-middle">

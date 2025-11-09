@@ -37,14 +37,13 @@ if (isset($_POST["changeStatus"])) {
 
 if (isset($_POST['cancelFactor'])) {
     $factor_id = $_POST['factor'];
-    echo $_POST['factor'];
     echo cancelFactor($factor_id);
 }
 
 function cancelFactor($factor_id)
 {
     try {
-        $sql = "UPDATE factor.shomarefaktor SET status = 0 WHERE shomare = :factor_id";
+        $sql = "UPDATE factor.shomarefaktor SET status = 0 WHERE id = :factor_id";
         $stmt = PDO_CONNECTION->prepare($sql);
         $stmt->bindParam(':factor_id', $factor_id, PDO::PARAM_INT);
         if ($stmt->execute()) {
