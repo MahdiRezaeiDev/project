@@ -37,26 +37,26 @@ if (isset($_POST["changeStatus"])) {
 
 if (isset($_POST['cancelFactor'])) {
     $factor_id = $_POST['factor'];
-    echo cancelFactor($factor_id);
+    toggleFactorStatus($factor_id);
 }
 
-function cancelFactor($factor_id)
+function toggleFactorStatus($factor_id)
 {
     try {
-        $sql = "UPDATE factor.shomarefaktor SET status = 0 WHERE id = :factor_id";
+        // Toggle the status between 0 and 1
+        $sql = "
+            UPDATE factor.shomarefaktor
+            SET status = CASE WHEN status = 1 THEN 0 ELSE 1 END
+            WHERE shomare = :factor_id
+        ";
         $stmt = PDO_CONNECTION->prepare($sql);
         $stmt->bindParam(':factor_id', $factor_id, PDO::PARAM_INT);
-        if ($stmt->execute()) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return $stmt->execute();
     } catch (\Throwable $th) {
         throw $th;
     }
 }
-
-
 
 function UpdateStatus($factor_id, $status)
 {
