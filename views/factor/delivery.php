@@ -1,4 +1,4 @@
-<div id="deliveryModal" class="hidden fixed inset-0 bg-gray-900/75 flex justify-center items-center">
+<div id="deliveryModal" class="  hidden fixed inset-0 bg-gray-900/75 flex justify-center items-center">
     <div class="bg-white p-4 rounded w-2/3">
         <div class="flex  items-center">
             <h2 class="font-semibold text-xl mb-2" style="flex: 1;">ارسال اجناس</h2>
@@ -125,37 +125,38 @@
             </form>
         </div>
 
-        <el-dialog>
-            <dialog id="dialog" aria-labelledby="dialog-title" class="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent hidden">
-                <el-dialog-backdrop class="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></el-dialog-backdrop>
 
-                <div tabindex="0" class="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0">
-                    <el-dialog-panel class="relative transform overflow-hidden rounded-lg bg-white text-left transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95">
-                        <div class="bg-white  sm:p-6 sm:pb-2">
-
-                            <button type="button" command="close" onclick="closeDelivery();" commandfor="dialog">
-                                <img class="hide_while_print cursor-pointer closedelivery rounded-md p-2" src="./assets/img/close.svg" alt="close icon">
-                            </button>
-                            <div id="printArea" style="display:none;"></div>
-                            <div id="deliveryPrint" dir="rtl" class="print-area font-[tahoma] text-gray-800 text-sm leading-relaxed"> </div>
-
-                        </div>
-
-                        <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 hide_while_print">
-
-                            <button onclick="window.print()" class="inline-flex w-full items-center justify-center gap-2 rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 shadow-sm hover:bg-gray-200 transition-all sm:w-auto">
-                                <img src="./assets/img/print-factor.svg" alt="print icon" class="w-5 h-5">
-                                چاپ
-                            </button>
-
-                        </div>
-
-                    </el-dialog-panel>
-                </div>
-            </dialog>
-        </el-dialog>
     </div>
 </div>
+<el-dialog>
+    <dialog id="dialog" aria-labelledby="dialog-title" class="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent hidden">
+        <el-dialog-backdrop class="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></el-dialog-backdrop>
+
+        <div tabindex="0" class="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0">
+            <el-dialog-panel class="relative transform overflow-hidden rounded-lg bg-white text-left transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+                <div class="bg-white  sm:p-6 sm:pb-2">
+
+                    <button type="button" command="close" onclick="closeDelivery();" commandfor="dialog">
+                        <img class="hide_while_print cursor-pointer closedelivery rounded-md p-2" src="./assets/img/close.svg" alt="close icon">
+                    </button>
+                    <div id="printArea" style="display:none;"></div>
+                    <div id="deliveryPrint" dir="rtl" class="print-area font-[tahoma] text-gray-800 text-sm leading-relaxed"> </div>
+
+                </div>
+
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 hide_while_print">
+
+                    <button onclick="window.print()" class="inline-flex w-full items-center justify-center gap-2 rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 shadow-sm hover:bg-gray-200 transition-all sm:w-auto">
+                        <img src="./assets/img/print-factor.svg" alt="print icon" class="w-5 h-5">
+                        چاپ
+                    </button>
+
+                </div>
+
+            </el-dialog-panel>
+        </div>
+    </dialog>
+</el-dialog>
 
 <script type="text/javascript" src="../../views/factor/assets/js/Delivery.js">
 </script>

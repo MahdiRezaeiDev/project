@@ -109,7 +109,7 @@ $fileName = basename($_SERVER['PHP_SELF']);
                 ثبت کدفنی
             </a>
         </li>
-        <li>
+        <!--<li>
             <a class="flex justify-start items-center gap-2 p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == '404.php' ? 'bg-gray-400' : '' ?>" href="../callcenter/searchGoods.php">
                 <img src="./assets/icons/search.svg" alt="save icon">
                 جستجوی کدفنی
@@ -121,6 +121,7 @@ $fileName = basename($_SERVER['PHP_SELF']);
                 مدیریت فایل
             </a>
         </li>
+ -->
         <li>
             <a class="flex justify-start items-center gap-2 p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'goodsDetailsManagement.php' ? 'bg-gray-400' : '' ?>" href="./goodsDetailsManagement.php">
                 <svg fill="#000000" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke="#000000">
@@ -145,7 +146,7 @@ $fileName = basename($_SERVER['PHP_SELF']);
                 بررسی تک آیتم
             </a>
         </li>
-        <li class="dropdown">
+        <!--<li class="dropdown">
             <a class="flex justify-between items-center gap-2 p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'price.php' ? 'bg-gray-400' : '' ?>">
                 <span class="flex items-center gap-2">
                     <img src="./assets/icons/price.svg" alt="save icon">
@@ -168,6 +169,7 @@ $fileName = basename($_SERVER['PHP_SELF']);
                 </li>
             </ul>
         </li>
+-->
         <li class="dropdown">
             <a class="flex items-center gap-2 p-4 hover:bg-gray-200 text-sm font-semibold justify-between <?= $fileName == 'transfer_index.php' ? 'bg-gray-400' : '' ?>" href="./transfer_index.php">
                 <span class="flex items-center gap-2">

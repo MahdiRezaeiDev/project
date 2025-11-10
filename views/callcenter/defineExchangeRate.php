@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "تعریف دلار جدید";
+$pageTitle = "تغییرات نرخ دلار";
 $iconUrl = 'report.png';
 require_once './components/header.php';
 require_once '../../app/controller/callcenter/DollarRateController.php';

@@ -13,12 +13,12 @@ if (!isset($dbname)) {
                 صفحه اصلی
             </a>
         </li>
-        <li>
+        <!--<li>
             <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold items-center gap-2" href="../inventory/index.php">
                 <img src="../../layouts/callcenter/icons/system.svg" alt="dashboard icon">
                 سامانه قیمت
             </a>
-        </li>
+        </li>-->
         <li class="dropdown">
             <a class="flex justify-between items-center gap-2 p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'customersList.php' ? 'bg-gray-400' : '' ?>">
                 <span class="flex items-center gap-2">
@@ -57,8 +57,7 @@ if (!isset($dbname)) {
         <li>
             <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'priceRates.php' ? 'bg-gray-400' : '' ?> items-center gap-2" href="<?= $append ?>priceRates.php">
                 <img src="../../layouts/callcenter/icons/rate.svg" alt="dashboard icon">
-                نرخ های ارز
-            </a>
+                نمایش قیمت دلار </a>
         </li>
         <li>
             <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'relationships.php' ? 'bg-gray-400' : '' ?> items-center gap-2" href="<?= $append ?>relationships.php">
@@ -67,54 +66,54 @@ if (!isset($dbname)) {
             </a>
         </li>
         <?php if (in_array($_SESSION['username'], ['mahdi', 'niyayesh', 'babak', 'reyhan', 'sabahashemi'])): ?>
-            <li class="dropdown">
-                <a class="flex justify-between items-center gap-2 p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'attendanceReport.php' ? 'bg-gray-400' : '' ?>">
-                    <span class="flex items-center gap-2">
-                        <img src="../../layouts/callcenter/icons/attendance.svg" alt="save icon">
+        <li class="dropdown">
+            <a class="flex justify-between items-center gap-2 p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'attendanceReport.php' ? 'bg-gray-400' : '' ?>">
+                <span class="flex items-center gap-2">
+                    <img src="../../layouts/callcenter/icons/attendance.svg" alt="save icon">
+                    مدیریت کاربران
+                </span>
+                <img src="./assets/icons/left_arrow.svg" alt="left arrow">
+            </a>
+            <ul class="drop_down_menu_aside bg-gray-800 border border-gray-800">
+                <li>
+                    <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="<?= $append ?>usersManagement.php">
+                        <img src="../inventory/assets/icons/manage.svg" alt="save icon">
                         مدیریت کاربران
-                    </span>
-                    <img src="./assets/icons/left_arrow.svg" alt="left arrow">
-                </a>
-                <ul class="drop_down_menu_aside bg-gray-800 border border-gray-800">
-                    <li>
-                        <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="<?= $append ?>usersManagement.php">
-                            <img src="../inventory/assets/icons/manage.svg" alt="save icon">
-                            مدیریت کاربران
-                        </a>
-                    </li>
-                    <li>
-                        <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="<?= $append ?>attendanceReport.php">
-                            <img src="../../layouts/callcenter/icons/attendance.svg" alt="save icon">
-                            گزارش حضور و غیاب
-                        </a>
-                    </li>
-                    <li>
-                        <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="<?= $append ?>attendance.php">
-                            <img src="../../layouts/callcenter/icons/attendance.svg" alt="save icon">
-                            مدیریت حضور و غیاب
-                        </a>
-                    </li>
-                </ul>
-            </li>
+                    </a>
+                </li>
+                <li>
+                    <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="<?= $append ?>attendanceReport.php">
+                        <img src="../../layouts/callcenter/icons/attendance.svg" alt="save icon">
+                        گزارش حضور و غیاب
+                    </a>
+                </li>
+                <li>
+                    <a class="text-sm p-3 text-white hover:bg-gray-900 flex items-center gap-2" target="_self" href="<?= $append ?>attendance.php">
+                        <img src="../../layouts/callcenter/icons/attendance.svg" alt="save icon">
+                        مدیریت حضور و غیاب
+                    </a>
+                </li>
+            </ul>
+        </li>
         <?php endif; ?>
         <li>
             <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'defineExchangeRate.php' ? 'bg-gray-400' : '' ?> items-center gap-2" href="<?= $append ?>defineExchangeRate.php">
                 <img src="../../layouts/callcenter/icons/dollar.svg" alt="dashboard icon">
-                تعریف دلار جدید
-            </a>
+                تغییرات نرخ دلار </a>
         </li>
         <li>
             <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'price_check.php' ? 'bg-gray-400' : '' ?> items-center gap-2" href="<?= $append ?>price_check.php">
                 <img src="../inventory/assets/icons/explore.svg" alt="dashboard icon">
-                بررسی قیمت کدفنی
+                بررسی کدفنی انبوه
             </a>
         </li>
-         <li>
+        <li>
             <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold <?= $fileName == 'smsbank.php' ? 'bg-gray-400' : '' ?> items-center gap-2" href="<?= $append ?>smsbank.php">
                 <img src="../inventory/assets/icons/smsbank.svg" alt="dashboard icon">
                 پیام های آماده پیامک
             </a>
         </li>
+
     </ul>
     <!-- Authentication -->
     <a class="flex justify-start p-4 hover:bg-gray-200 text-sm font-semibold items-center gap-2" href="../auth/logout.php">

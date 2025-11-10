@@ -475,6 +475,7 @@ require_once '../../layouts/inventory/sidebar.php';
             'Rb2': ['CHINA'],
             'IRAN': ['CHINA'],
             'UBZ': ['CHINA'],
+            'Z PRO': ['CHINA'],
             'FAKE MOB': ['CHINA', 'KOREA'],
             'FAKE GEN': ['CHINA', 'KOREA'],
             'OE MAX': ['CHINA'],
@@ -523,6 +524,7 @@ require_once '../../layouts/inventory/sidebar.php';
             'DAEWHA': ['KOREA'],
             'AUTOFIX': ['KOREA'],
             'BOSUNG': ['KOREA'],
+            'SIB': ['KOREA'],
         };
 
 

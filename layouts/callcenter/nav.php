@@ -77,7 +77,7 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
                     <li class="hover:bg-gray-900 text-white text-sm font-bold">
                         <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>telegramPartner.php">
                             <img class=" sm:inline-block" src="../../layouts/callcenter/icons/handshake.svg" alt="add icon">
-                            همکار تلگرام
+                            تلگرام خرید
                         </a>
                     </li>
                     <li class="hover:bg-gray-900 text-white text-sm font-bold">
@@ -86,17 +86,16 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
                             پیام خودکار
                         </a>
                     </li>
-                    <li class="hover:bg-gray-900 text-white text-sm font-bold">
+                    <!--<li class="hover:bg-gray-900 text-white text-sm font-bold">
                         <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>telegramProcess.php">
                             <img class=" sm:inline-block" src="../../layouts/callcenter/icons/attention.svg" alt="add icon">
                             قیمت های تلگرام
                         </a>
-                    </li>
+                    </li>-->
                     <li class="hover:bg-gray-900 text-white text-sm font-bold">
                         <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>hussainAPI.php">
                             <img class=" sm:inline-block" src="../../layouts/callcenter/icons/attention.svg" alt="add icon">
-                            قیمت API
-                        </a>
+                            API خرید </a>
                     </li>
                 </ul>
             </div>
@@ -154,24 +153,10 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
             </div>
         </li>
         <li class="mx-1 <?= $fileName == 'givenPrice.php' ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold">
-            <div class="dropdown">
-
-                <a target="_self" class="p-2 flex items-center gap-2" href="<?= $append ?>givenPrice.php">
-                    <img class=" sm:inline-block" src="../../layouts/callcenter/icons/approve.svg" alt="telegram icon">
-                    قیمت دستوری
-                    <img src="../inventory/assets/icons/down_arrow.svg" alt="down arrow">
-
-                </a>
-                <div class="dropdown_container ">
-                    <ul class="dropdown_menu bg-gray-800 border border-gray-800">
-                        <li class="hover:bg-gray-900 text-white text-sm font-bold">
-                            <a class="p-3 hover:bg-gray-900 flex items-center gap-2" href="<?= $append ?>translate.php">
-                                مترجم
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            <a target="_self" class="p-2 flex items-center gap-2" href="<?= $append ?>givenPrice.php">
+                <img class=" sm:inline-block" src="../../layouts/callcenter/icons/approve.svg" alt="telegram icon">
+                قیمت دستوری
+            </a>
         </li>
         <li class="mx-1  sm:block <?= $fileName == 'pricesHistory.php' ? 'bg-gray-400' : 'bg-gray-200' ?> text-sm font-bold">
             <div class="dropdown">
@@ -192,19 +177,16 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
             </div>
         </li>
         <?php if ($_SESSION['financialYear'] != jdate('Y', '', '', '', 'en')) : ?>
-            <li class="mx-1 text-sm font-bold">
-                <a class="px-4 py-2 bg-rose-600 ml-2 text-white text-xs">
-                    سال مالی <?= $_SESSION['financialYear'] ?>
-                </a>
-            </li>
+        <li class="mx-1 text-sm font-bold">
+            <a class="px-4 py-2 bg-rose-600 ml-2 text-white text-xs">
+                سال مالی <?= $_SESSION['financialYear'] ?>
+            </a>
+        </li>
         <?php endif; ?>
     </ul>
     <div class="relative hidden sm:flex items-center">
         <!-- TV Button -->
-        <img src="../../public/icons/tv.svg"
-            class="cursor-pointer ml-2"
-            alt="close menu icon"
-            onclick="toggleTV()">
+        <img src="../../public/icons/tv.svg" class="cursor-pointer ml-2" alt="close menu icon" onclick="toggleTV()">
 
         <?php
         $profile = '../../public/userimg/default.png';
@@ -215,16 +197,10 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
 
         <!-- Profile picture -->
         <div class="relative">
-            <img id="profileBtn"
-                class="w-9 h-9 rounded-full border-2 border-gray-900 cursor-pointer"
-                src="<?= $profile ?>"
-                title="<?= $_SESSION['username'] ?>"
-                alt="user image"
-                onclick="toggleProfileDropdown()" />
+            <img id="profileBtn" class="w-9 h-9 rounded-full border-2 border-gray-900 cursor-pointer" src="<?= $profile ?>" title="<?= $_SESSION['username'] ?>" alt="user image" onclick="toggleProfileDropdown()" />
 
             <!-- Dropdown (aligned to the right of profile picture) -->
-            <div id="profileDropdown"
-                class="absolute top-full left-full ml-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg hidden">
+            <div id="profileDropdown" class="absolute top-full left-full ml-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg hidden">
                 <ul class="py-2 text-sm text-gray-700">
                     <li>
                         <a href="../profile/index.php" class="block px-4 py-2 hover:bg-gray-100">👤 پروفایل کاربری</a>
@@ -255,5 +231,6 @@ $append = ($parentDirectory === 'callcenter') ? './' : '../callcenter/';
                 once: true
             });
         }
+
     </script>
 </nav>

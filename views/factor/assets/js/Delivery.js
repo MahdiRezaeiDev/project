@@ -399,7 +399,7 @@ function printDeliveryInfo() {
     if (statusEl) statusEl.innerHTML = financialStatus;
 
     const printContent = `
-    <div id="deliveryPrint" dir="rtl" style="font-family: tahoma;  line-height: 1.8;  margin-top: -50px; width:100%">
+    <div id="deliveryPrint" dir="rtl" style="font-family: tahoma;  line-height: 1.8; width:100%">
                     <h2 style="text-align: center; margin-bottom: 10px;"> اطلاعات ارسال یدک شاپ  </h2>
                     <div style="border:1px solid #ccc; border-radius:8px; padding:15px;text-align: right;">
 
@@ -527,4 +527,5 @@ function enablePrintButton() {
     };
 }
 //active print btn
+
 

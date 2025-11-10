@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "نرخ های ارز";
+$pageTitle = "نمایش قیمت دلار";
 $iconUrl = 'report.png';
 require_once './components/header.php';
 require_once '../../layouts/callcenter/nav.php';

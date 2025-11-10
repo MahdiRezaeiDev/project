@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "همکار تلگرام";
+$pageTitle = "تلگرام خرید";
 $iconUrl = 'orange-telegram.png';
 require_once './components/header.php';
 require_once '../../app/controller/callcenter/TelegramPartnerController.php';

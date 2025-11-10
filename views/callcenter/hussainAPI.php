@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "قیمت API";
+$pageTitle = "خرید API";
 $iconUrl = 'ordered.png';
 require_once './components/header.php';
 require_once '../../layouts/callcenter/nav.php';

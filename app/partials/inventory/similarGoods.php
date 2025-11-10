@@ -96,7 +96,8 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
                     'FORCEONE',
                     'DAEWHA',
                     'AUTOFIX',
-                    'BOSUNG'
+                    'BOSUNG',
+                    'SIB'
                 ],
                 'CHINA' => [
                     'OEMAX',
@@ -111,7 +112,8 @@ function getSimilarGoods($factorItems, $billId, $customer, $factorNumber, $facto
                     'MAXFIT',
                     'ICBRI',
                     'HOH',
-                    'UBZ'
+                    'UBZ',
+                    'Z PRO'
                 ],
             ];
             $ALLOWED_BRANDS = [...$brands[$goodNameBrand], $goodNameBrand];
