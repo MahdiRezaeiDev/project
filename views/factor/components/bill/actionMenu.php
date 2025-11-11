@@ -7,7 +7,7 @@
     </li>
     <li style="position: relative;">
         <a target="_blank" class="action_button print bg-sky-600 rounded-full flex justify-center items-center text-white text-sm" href="./addPayment.php?factor=<?= $BillInfo['bill_number'] ?>">
-            وازیزی
+            واریزی
         </a>
         <p class="action_tooltip text-sm">ثبت واریزی</p>
     </li>
@@ -145,19 +145,25 @@
 </style>
 <script>
     function handlePrint(factorNumber) {
-        const params = new URLSearchParams();
-        params.append('factorNumber', factorNumber);
-        params.append('action', 'print');
+        const paramsCheck = new URLSearchParams();
+        paramsCheck.append('factorNumber', factorNumber);
 
-        axios.post('../../app/api/factor/CompleteFactorApi.php', params).then(res => {
-            console.log(res);
-        }).catch(err => {
-            console.log(err);
-        });
+        axios.post('../../app/api/factor/CheckPrintPermission.php', paramsCheck)
+            .then(res => {
+                if (res.data.status === 'success') {
+                    showToast("دسترسی چاپ تأیید شد", "success");
+                    console.log("مجوز چاپ تأیید شد برای فاکتور:", factorNumber);
 
-        window.print();
+                    window.print();
+                } else {
+                    showToast(res.data.message || "شما مجاز به چاپ نیستید", "error");
+                }
+            })
+            .catch(err => {
+                console.error("خطا در بررسی دسترسی چاپ:", err);
+                showToast("خطا در بررسی دسترسی چاپ", "error");
+            });
     }
-
 
     function displayDeliveryModal(element) {
         const billNumber = element.dataset.bill;

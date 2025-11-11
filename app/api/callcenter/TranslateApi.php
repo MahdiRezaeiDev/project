@@ -41,6 +41,8 @@ function getBrandOrigin($brand)
 {
     global $customBrands;
 
+    $brand = ($brand == 'HI' || $brand == 'HIQ') ? 'HI Q' : $brand;
+
     $brand = strtoupper(trim($brand));
 
     // 🔹 Known short forms for main brands
@@ -82,9 +84,9 @@ function parsePriceText($text)
 
             foreach ($priceParts as $part) {
                 // 1️⃣ اگر عدد + برند دارد
-                if (preg_match('/(\d+)\s+([A-Z]+)(?:\s*\(([^)]+)\))?/', $part, $pmatch)) {
+                if (preg_match('/(\d+)\s+([A-Z0-9\s]+?)(?:\s*\(([^)]+)\))?$/i', $part, $pmatch)) {
                     $price = (int)$pmatch[1];
-                    $brand = $pmatch[2];
+                    $brand = trim($pmatch[2]);
                     $note = $pmatch[3] ?? null;
 
                     $finalBrand = getBrandOrigin($brand);
@@ -92,6 +94,7 @@ function parsePriceText($text)
                         $finalBrand .= " ($note)";
                     }
                 }
+
                 // 2️⃣ اگر فقط عدد دارد
                 elseif (preg_match('/^\d+$/', $part)) {
                     $price = (int)$part;
@@ -106,9 +109,15 @@ function parsePriceText($text)
                 ];
             }
 
+            // 🟡 Persian name or "********" fallback
+            $persianName = getPersianName($code);
+            if (!$persianName || trim($persianName) === '') {
+                $persianName = '********';
+            }
+
             $result[] = [
                 'code' => $code,
-                'persian_name' => getPersianName($code) ?? $code,
+                'persian_name' => $persianName,
                 'prices' => $prices
             ];
         }

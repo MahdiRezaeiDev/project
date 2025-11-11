@@ -525,6 +525,7 @@ require_once '../../layouts/inventory/sidebar.php';
             'AUTOFIX': ['KOREA'],
             'BOSUNG': ['KOREA'],
             'SIB': ['KOREA'],
+            'DL KOREA': ['KOREA'],
         };
 
 
