@@ -319,8 +319,10 @@
                 </tr>
                 <tr>
                     <td colspan="3">
-                        <?php $hussin_part = get_hussain_parts($goods[$index]['partnumber']);
-                        if ($hussin_part) : ?>
+                        <?php
+                        $hussin_parts = get_hussain_parts_existing($goods[$index]['partnumber']);
+                        if ($hussin_parts && count($hussin_parts) > 0):
+                        ?>
                             <table dir="ltr" class="w-full text-left text-sm font-light custom-table mt-2">
                                 <thead class="font-medium bg-gray-700 text-white">
                                     <tr>
@@ -336,50 +338,57 @@
                                         <th class="text-xs px-2 text-left">کد فنی</th>
                                     </tr>
                                 </thead>
+
                                 <tbody>
+                                    <?php foreach ($hussin_parts as $hussin_part): ?>
+                                        <tr class="text-xs bg-gray-200 odd:bg-purple-400">
 
-                                    <tr class="text-xs bg-gray-200 odd:bg-purple-400">
+                                            <td class="p-2 text-left font-semibold">
+                                                <?= jdate('Y/m/d H:i', strtotime($hussin_part['last_update'])) ?>
+                                            </td>
 
-                                        <td class="p-2 text-left font-semibold">
-                                            <span><?= jdate('Y/m/d H:i', strtotime($hussin_part['last_update'])) ?>
-                                            </span>
-                                        </td>
-                                        <td class="p-2 text-left font-semibold">
-                                            <span><?= (int) ($hussin_part['yadakprice'] / 10000) ?></span>
-                                        </td>
+                                            <td class="p-2 text-left font-semibold">
+                                                <?= (int)($hussin_part['yadakprice'] / 10000) ?>
+                                            </td>
 
-                                        <td class="p-2 text-left font-semibold">
-                                            <span><?= (int) $hussin_part['stock'] ?></span>
-                                        </td>
+                                            <td class="p-2 text-left font-semibold">
+                                                <?= (int)$hussin_part['stock'] ?>
+                                            </td>
 
-                                        <td class="p-2 text-left font-semibold">
-                                            <span><?= (int) (($hussin_part['online_price'] * 1.3) / 10000); ?></span>
-                                        </td>
+                                            <td class="p-2 text-left font-semibold">
+                                                <?= (int)(($hussin_part['online_price'] * 1.3) / 10000) ?>
+                                            </td>
 
-                                        <td class="p-2 text-left font-semibold">
-                                            <span><?= (int) ($hussin_part['last_sale_price'] / 10000) ?></span>
-                                        </td>
-                                        <td class="p-2 text-left font-semibold">
-                                            <span><?= (int) ($hussin_part['instant_offer_price'] / 10000) ?></span>
-                                        </td>
+                                            <td class="p-2 text-left font-semibold">
+                                                <?= (int)($hussin_part['last_sale_price'] / 10000) ?>
+                                            </td>
 
-                                        <td class="p-2 text-left font-semibold">
-                                            <span><?= (int) ($hussin_part['offer_price'] / 10000) ?></span>
-                                        </td>
-                                        <td class="p-2 text-left font-semibold">
-                                            <span><?= (int)($hussin_part['online_price'] / 10000) ?></span>
-                                        </td>
-                                        <td class="p-2 text-left font-semibold">
-                                            <span><?= $brandMap[$hussin_part['brand']] ?? $hussin_part['brand'] ?></span>
-                                        </td>
-                                        <td class="p-2 text-left font-semibold">
-                                            <span><?= $hussin_part['property_code'] ?></span>
-                                        </td>
-                                    </tr>
+                                            <td class="p-2 text-left font-semibold">
+                                                <?= (int)($hussin_part['instant_offer_price'] / 10000) ?>
+                                            </td>
+
+                                            <td class="p-2 text-left font-semibold">
+                                                <?= (int)($hussin_part['offer_price'] / 10000) ?>
+                                            </td>
+
+                                            <td class="p-2 text-left font-semibold">
+                                                <?= (int)($hussin_part['online_price'] / 10000) ?>
+                                            </td>
+
+                                            <td class="p-2 text-left font-semibold">
+                                                <?= $brandMap[$hussin_part['brand']] ?? $hussin_part['brand'] ?>
+                                            </td>
+
+                                            <td class="p-2 text-left font-semibold">
+                                                <?= $hussin_part['property_code'] ?>
+                                            </td>
+
+                                        </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
-
                         <?php endif; ?>
+
                     </td>
                 </tr>
             <?php endforeach; ?>

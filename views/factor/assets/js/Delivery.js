@@ -54,40 +54,30 @@ async function displayDeliveryModal(element) {
         }
 
         // JSON PARTS
-        const deliveryData = jsonParts.find(j => j.type === 'delivery');
-        const factorData = jsonParts.find(j => j.type === 'factor');
-        const paymentsData = jsonParts.find(j => j.type === 'payments');
-        const mergedData = jsonParts.find(j => j.type === 'merged');
-
-        window.currentfactorData = factorData.data;
-        window.currentdeliveryData = deliveryData.data;
-        window.currentpaymentsData = paymentsData.data;
-        window.currentallData = mergedData.data;
+        const result = jsonParts.find(j => j.type === 'result');
+        window.currentAllData = result.data;
 
 
+        if (!result || !result.data) {
+            console.error("Result data not found");
+            return;
+        }
 
-        if (deliveryData && deliveryData.status === "success" && deliveryData.data) {
-            const {
-                total,
-                paid,
-                remaining
-            } = calculateFinancials(deliveryData.data, paymentsData);
-            fillFinancialInfo(total, paid, remaining);
-            fillDeliveryForm(deliveryData.data);
-            window.currentDeliveryData = deliveryData.data;
-
-        } else if (factorData && factorData.data) {
-            const total = parseFloat(factorData.data.total) || 0;
-            const paid = paymentsData && paymentsData.data ? parseFloat(paymentsData.data) || 0 : 0;
+        const data = result.data;
+        if (result.status === "success") {
+            const total = parseFloat(data.total) || 0;
+            const paid = parseFloat(data.total_paid) || 0;
             const remaining = Math.max(0, total - paid);
 
             fillFinancialInfo(total, paid, remaining);
         }
 
-        if (factorData && factorData.data) fillFactorInfo(factorData.data);
+        const modal = document.getElementById('deliveryModal');
+        if (modal) modal.classList.remove('hidden');
 
+        fillDeliveryForm(data);
+        fillFactorInfo(data);
 
-        showDeliveryModal();
         showToast("اطلاعات بارگذاری شد ✅", "success");
     } catch (error) {
         console.error("❌ خطا در دریافت اطلاعات:", error);
@@ -97,24 +87,22 @@ async function displayDeliveryModal(element) {
     enablePrintButton()
     const addressInput = document.getElementById('address');
 
+    window.dataaddress = element.getAttribute('data-address');
     const address =
-        (window.currentallData && window.currentallData.destination) ||
-        element.getAttribute('data-address') ||
-        '';
-
+        (window.currentAllData && window.currentAllData.destination) || window.dataaddress || '';
 
     if (addressInput) {
         addressInput.value = address;
     } else {
         console.warn('⚠️ المان addressInput پیدا نشد!');
     }
-    window.dataaddress = element.getAttribute('data-address');
+
 }
 
 
-function calculateFinancials(deliveryData, paymentsData) {
-    if (!deliveryData || !deliveryData.items) {
-        console.warn("⚠️ هیچ آیتمی برای محاسبه وجود ندارد");
+function calculateFinancials(data) {
+    if (!data) {
+        console.warn("⚠️ هیچ داده‌ای برای محاسبه وجود ندارد");
         return {
             total: 0,
             paid: 0,
@@ -122,19 +110,18 @@ function calculateFinancials(deliveryData, paymentsData) {
         };
     }
 
-    const items = deliveryData.items;
+    let total = 0;
+    if (Array.isArray(data.items) && data.items.length > 0) {
+        total = data.items.reduce((sum, item) => {
+            const price = parseFloat(item.price_per) || 0;
+            const qty = parseFloat(item.quantity) || 0;
+            return sum + (price * qty);
+        }, 0);
+    } else {
+        total = parseFloat(data.total) || 0;
+    }
 
-
-    const total = items.reduce((sum, item) => {
-        const price = parseFloat(item.price_per) || 0;
-        const qty = parseFloat(item.quantity) || 0;
-        return sum + (price * qty);
-    }, 0);
-
-    const paid = paymentsData && paymentsData.data ?
-        parseFloat(paymentsData.data) || 0 :
-        0;
-
+    const paid = data.total_paid ? parseFloat(data.total_paid) : 0;
     const remaining = Math.max(0, total - paid);
 
     return {
@@ -163,15 +150,15 @@ function fillFactorInfo(f) {
 
 }
 
+
 /* ===============================
      پر کردن فرم  
    =============================== */
 function fillDeliveryForm(d) {
+
     document.getElementById('deliveryBillNumber').value = d.bill_number || '';
-    document.getElementById('deliveryType').value = d.type || '';
-
+    document.getElementById('deliveryType').value = d.delivery_type || '';
     document.getElementById('peymentother').value = d.peymentother || '';
-
 
     const deliverycostSelect = document.getElementById('deliverycost');
     const otherCostInput = document.getElementById('deliverycostother');
@@ -191,11 +178,16 @@ function fillDeliveryForm(d) {
 
     const courierSelect = document.getElementById('courier');
     const courierOther = document.getElementById('courierother');
-    if (['اقای امیردوست', 'آقای عباسی'].includes(String(d.courier_name))) {
-        courierSelect.value = String(d.courier_name);
+
+
+
+    const knownCouriers = ['آقای عباسی', 'آقای امیر دوست'];
+
+    if (knownCouriers.includes(d.courier_name)) {
+        courierSelect.value = d.courier_name;
         courierOther.style.display = 'none';
         courierOther.value = '';
-    } else if (d.courier_name && d.courier_name !== '') {
+    } else if (d.courier_name && d.courier_name.trim() !== '') {
         courierSelect.value = 'other';
         courierOther.style.display = 'block';
         courierOther.value = d.courier_name;
@@ -210,13 +202,6 @@ function fillDeliveryForm(d) {
 
     const needCallCheckbox = document.getElementById('needcall');
     needCallCheckbox.checked = d.need_call === 'YES';
-}
-
-
-function showDeliveryModal() {
-    const modal = document.getElementById('deliveryModal');
-    if (modal) modal.classList.remove('hidden');
-
 }
 
 
@@ -278,7 +263,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 async function saveDelivery(event) {
     event.preventDefault();
-    const d = window.currentfactorData;
+    const d = window.currentAllData;
 
     if (!d) {
         showToast("لطفا تمام بخش ها را تکمیل بکنید", "error");
@@ -339,17 +324,15 @@ async function saveDelivery(event) {
 
 function printDeliveryInfo() {
 
-    const d = window.currentfactorData || window.currentdeliveryData;
-    const all = window.currentallData;
+    const all = window.currentAllData;
 
-
-    if (!d) {
+    if (!all) {
         showToast("لطفا تمام بخش ها را تکمیل بکنید", "error");
         return;
     }
 
     const address = all.destination || window.dataaddress;
-    const buyer = all.kharidar || "——";
+    const buyer = `${all.customer_name || ''} ${all.customer_family || ''}`.trim() || "——";
     const operator = all.user_family || "——";
     const phone = all.phone || "——";
     const billNumber = all.bill_number || "——";
@@ -361,22 +344,10 @@ function printDeliveryInfo() {
     const needCallText =
         all.need_call === "YES" ? "⚠️ حتماً قبل از ارسال با مشتری تماس گرفته شود" : "";
 
-    const f = window.currentfactorData || {};
-    const total = f.total ? parseFloat(f.total) : 0;
 
-    const payments = window.currentpaymentsData;
-    let paid = 0;
-
-    if (typeof payments === "number") {
-        paid = payments;
-    } else if (payments && typeof payments === "object") {
-
-        paid = parseFloat(payments.paid || payments.data || 0);
-    } else {
-        paid = parseFloat(f.paid || 0);
-    }
-
-    let remaining = total - paid;
+    const total = all.total ? parseFloat(all.total) : 0;
+    const paid = all.total_paid ? parseFloat(all.total_paid) : 0;
+    let remaining = Math.max(0, total - paid);
 
     const newRemainingInput = document.getElementById("peymentother");
     if (newRemainingInput && newRemainingInput.value.trim() !== "") {
@@ -494,16 +465,14 @@ function closeDelivery() {
 
     } else if (modal && !modal.classList.contains('hidden')) {
         modal.classList.add('hidden');
-
         if (form) form.reset();
         if (billInput) billInput.value = '';
         if (factorInfo) factorInfo.innerHTML = '';
         if (financialInfo) financialInfo.innerHTML = '';
 
-
     }
 
-    window.currentDeliveryData = null;
+    window.currentAllData = null;
 }
 
 //active print btn
@@ -527,5 +496,4 @@ function enablePrintButton() {
     };
 }
 //active print btn
-
 

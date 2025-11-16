@@ -55,36 +55,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $hashed_password = $user['password'];
                     $roll = $user['roll'];
 
-                    // Verify password
-                    if (password_verify($password, $hashed_password)) {
-                        // Regenerate the session ID after a successful login
-                        session_regenerate_id(true);
-                        // Calculate the expiration timestamp for 6 AM the next day
-                        $expiration_time = strtotime("6AM tomorrow");
+              if (password_verify($password, $hashed_password)) {
+    session_regenerate_id(true);
+    $expiration_time = strtotime("6AM tomorrow");
 
-                        $_SESSION["isLogin"] = true;
-                        $_SESSION["user"] = $user;
-                        $_SESSION["id"] = $id;
-                        $_SESSION["username"] = $username;
-                        $_SESSION["roll"] = $roll;
-                        $_SESSION["financialYear"] = $financialYear;
-                        $_SESSION["expiration_time"] = $expiration_time;
+    $_SESSION["isLogin"] = true;
+    $_SESSION["user"] = $user;
+    $_SESSION["id"] = $id;
+    $_SESSION["username"] = $username;
+    $_SESSION["roll"] = $roll;
+    $_SESSION["financialYear"] = $financialYear;
+    $_SESSION["expiration_time"] = $expiration_time;
 
-                        $notAllowed = array();
-                        $auth = json_decode(getUserAuthority($id), true);
+    $authJson = getUserAuthority($id); 
+    $authArray = json_decode($authJson, true);    
+    $_SESSION['authority'] = $authArray;
 
-                        foreach ($auth as $key => $value) {
-                            if (!$value) {
-                                array_push($notAllowed, $key);
-                            }
-                        }
+    $notAllowed = array();
+    foreach ($authArray as $key => $value) {
+        if (!$value) {
+            $notAllowed[] = $key;
+        }
+    }
+    $_SESSION['not_allowed'] = $notAllowed;
 
-                        $_SESSION['not_allowed'] = $notAllowed;
+    clearModifiedAuth($id);
 
-                        clearModifiedAuth($id);
+    sendAjaxRequest($id, $username, $financialYear);
+}
 
-                        sendAjaxRequest($id, $username, $financialYear);
-                    } else {
+                    else {
                         // Password is not valid, display a generic error message
                         $login_err = "رمز عبور یا اسم کاربری اشتباه است.";
                         sendLoginAttemptAlert($username, $password);

@@ -129,71 +129,62 @@ if ($isValidCustomer) :
                             $isDisplayAllowed = false;
                             $persianName = '';
                             $codes = null;
+
                             foreach ($explodedCodes as $code) {
-                                $relation_id =  array_key_exists($code, $relation_ids) ? $relation_ids[$code] : 'xxx';
+                                $relation_id = array_key_exists($code, $relation_ids) ? $relation_ids[$code] : 'xxx';
+                                $item = current($existing[$code]);
+                                $relation = $item['relation'] ?? [];
+                                $stockInfo = $relation['stockInfo'] ?? [];
+                                $existing_brands = getExistingBrands($stockInfo);
+
                                 $max = 0;
                                 $finalPrice = '';
                                 $codes .= $code . PHP_EOL;
-                                if (array_key_exists($code, $existing)) {
-                                    foreach ($existing[$code] as $item) {
-                                        $max += $item['relation']['existingQuantity'];
-                                    }
 
-                                    if (isset($existing[$code]) && count($existing[$code]) > 0) {
-                                        foreach (current($existing[$code])['relation']['goods'] as $key => $value) {
-                                            if ($value['partName'] != '') {
-                                                $persianName = $value['partName'];
-                                                break;
-                                            } else {
-                                                $persianName = '';
-                                            }
-                                        }
+                                if (isset($existing[$code]) && count($existing[$code]) > 0) {
+                                    foreach ($existing[$code] as $itm) {
+                                        $max += $itm['relation']['existingQuantity'] ?? 0;
+                                    }
+                                    foreach ($item['relation']['goods'] ?? [] as $value) {
+                                        $persianName = $value['partName'] != '' ? $value['partName'] : '';
+                                        if ($persianName) break;
                                     }
                                 }
                             ?>
                                 <p class="hidden descriptionText">
                                     <?php
-                                    if (count($existing) > 0):
-                                        if (isset($existing[$code]) && count($existing[$code]) > 0):
-                                            $goods = current($existing[$code])['relation']['goods'] ?? [];
-                                            $firstGood = is_array($goods) ? current($goods) : null;
-                                            $desc = trim($firstGood['description']) ?? '';
-
-                                            echo $desc ? "($desc)" : '';
-                                        endif;
+                                    if (isset($existing[$code]) && count($existing[$code]) > 0):
+                                        $goods = $item['relation']['goods'] ?? [];
+                                        $firstGood = is_array($goods) ? current($goods) : null;
+                                        $desc = trim($firstGood['description'] ?? '');
+                                        echo $desc ? "($desc)" : '';
                                     endif;
                                     ?>
                                 </p>
                                 <?php
-                                $trBorderClass = ""; // default class
+                                $trBorderClass = "";
 
                                 if (in_array($code, $not_exist)) {
-                                    $trBorderClass = "border-r-4 border-red-600"; // کد اشتباه → قرمز
+                                    $trBorderClass = "border-r-4 border-red-600";
                                 } else {
-                                    if ($max && current($existing[$code])['givenPrice']) {
-                                        $trBorderClass = ""; // قیمت موجود عادی
+                                    if ($max && $item['givenPrice']) {
+                                        $trBorderClass = "";
                                     } else if ($max) {
-                                        if (!empty($existing[$code])) {
-                                            $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
-                                            foreach ($codesToCheck as $c) {
-                                                $hussin_part = get_hussain_parts(strtoupper($c));
-                                                if (is_hussain_enabled() && !empty($hussin_part)) :
-
-                                                    $trBorderClass = "border-r-4 border-r-orange-500"; // قیمت از حسین
-                                                    break;
-
-                                                endif;
+                                        $codesToCheck = array_keys($item['relation']['goods'] ?? []);
+                                        foreach ($codesToCheck as $c) {
+                                            $hussin_part = get_hussain_parts(strtoupper($c));
+                                            if (is_hussain_enabled() && !empty($hussin_part)) {
+                                                $trBorderClass = "border-r-4 border-r-orange-500";
+                                                break;
                                             }
                                         }
                                     } else if ($max == 0) {
-                                        if (!empty($existing[$code])) {
-                                            $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
-                                            foreach ($codesToCheck as $c) {
-                                                $hussin_part = get_hussain_parts(strtoupper($c));
-                                                if (is_hussain_enabled() && !empty($hussin_part)) {
-                                                    $trBorderClass = "border-r-4 border-r-orange-400"; // حسین ولی بدون موجودی
-                                                    break;
-                                                }
+                                        $codesToCheck = array_keys($item['relation']['goods'] ?? []);
+                                        foreach ($codesToCheck as $c) {
+                                            $hussin_part = get_hussain_parts(strtoupper($c));
+                                            if (is_hussain_enabled() && !empty($hussin_part)) {
+                                                $trBorderClass = "border-r-4 border-r-orange-400";
+                                                break;
                                             }
                                         }
                                     }
@@ -201,99 +192,95 @@ if ($isValidCustomer) :
                                 ?>
 
                                 <tr class="border <?= $trBorderClass ?>">
-                                    <?php if (in_array($code, $not_exist)) { ?>
-                                        <td data-persianName="<?= strtoupper($code) ?>"
-                                            class="px-3 py-2 text-left text-white hover:cursor-pointer"
-                                            data-move="<?= $code ?>" onclick="onScreen(this)">
-                                            <?= strtoupper($code) ?>
-                                        </td>
-                                    <?php } else { ?>
-                                        <td data-persianName="<?= $persianName ?>"
-                                            class="px-3 py-2 text-left text-white hover:cursor-pointer"
-                                            data-move="<?= $code ?>" onclick="onScreen(this)">
-                                            <?= strtoupper($code) ?>
-                                        </td>
-                                    <?php } ?>
+                                    <td data-persianName="<?= in_array($code, $not_exist) ? strtoupper($code) : $persianName ?>"
+                                        class="px-3 py-2 text-left text-white hover:cursor-pointer"
+                                        data-move="<?= $code ?>" onclick="onScreen(this)">
+                                        <?= strtoupper($code) ?>
+                                    </td>
 
                                     <td class="px-3 py-2 text-left text-white">
                                         <?php
                                         if (in_array($code, $not_exist)) {
-                                            echo "<p class ='text-red-600' data-relation='" . $relation_id . "' id='" . $code . "-append'>کد اشتباه</p>";
+                                            echo "<p class ='text-red-600' data-relation='{$relation_id}' id='{$code}-append'>کد اشتباه</p>";
                                             echo "<span data-description='کد اشتباه'></span>";
                                         } else {
-                                            if ($max && current($existing[$code])['givenPrice']) {
+                                            $finalPrice = 'موجود نیست';
+                                            $ownPrice = '';
+                                            $hussinPrice = '';
+                                            $hussinClass = '';
 
-                                                $target = current(current($existing[$code])['givenPrice']);
-                                                $priceDate = $target['created_at'];
-
-                                                $rawPrice = current(current($existing[$code])['givenPrice']);
-                                                $existing_brands = getExistingBrands(current($existing[$code])['relation']['stockInfo']);
-                                                $finalPrice = getFinalSanitizedPrice([$rawPrice], $existing_brands, $discount);
-
-                                                if (!$finalPrice) {
-                                                    $finalPrice = 'موجود نیست';
-                                                }
-
-                                                if (!$isDisplayAllowed && $finalPrice != 'موجود نیست') {
-                                                    $isDisplayAllowed = true;
-                                                }
-                                        ?>
-                                                <p style='direction: ltr !important;'
-                                                    data-relation='<?= $relation_id ?>'
-                                                    id='<?= $code ?>-append'
-                                                    class="<?= $finalPrice !== 'موجود نیست' ? '' : 'text-yellow-400' ?>">
-                                                    <?= $finalPrice !== 'موجود نیست' ? $finalPrice : 'نیاز به بررسی' ?>
-                                                </p>
-                                        <?php
-                                            } else if ($max) {
-                                                $finalPrice = 'نیاز به قیمت';
-
-                                                if (count(($existing[$code]))) {
-                                                    $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
-                                                    foreach ($codesToCheck as $code) {
-
-                                                        $hussin_part = get_hussain_parts(strtoupper($code));
-                                                        if (is_hussain_enabled() && !empty($hussin_part)) {
-                                                            $item = $hussin_part;
-                                                            $price = (int)($item['yadakprice'] / 10000);
-
-                                                            // Round UP to nearest hundred
-                                                            $roundedPrice = ceil($price / 100) * 100;
-
-                                                            $finalPrice = $roundedPrice . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
-                                                            $isDisplayAllowed = true;
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-
-                                                echo "<p style='direction: ltr !important;' data-relation='" . $relation_id . "' id='" . $code . "-append' class='text-green-400'>$finalPrice </p>";
-                                            } else if ($max == 0) {
-                                                $finalPrice = 'موجود نیست';
-                                                $class = '';
-                                                if (count(($existing[$code]))) {
-                                                    $codesToCheck = array_keys(current($existing[$code])['relation']['goods']);
-                                                    foreach ($codesToCheck as $code) {
-                                                        $hussin_part = get_hussain_parts(strtoupper($code));
-                                                        if (is_hussain_enabled() && !empty($hussin_part)) {
-                                                            $item = $hussin_part;
-                                                            $price = (int)($item['yadakprice'] / 10000);
-
-                                                            // Round UP to nearest hundred
-                                                            $roundedPrice = ceil($price / 100) * 100;
-
-                                                            $finalPrice = $roundedPrice . ' ' . ($brandMap[$item['brand']] ?? $item['brand']);
-                                                            $isDisplayAllowed = true;
-                                                            $class = 'color: orange !important;';
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-                                                echo "<p style='{$class} direction: ltr !important;' data-relation='{$relation_id}' id='{$code}-append'>{$finalPrice}</p>";
+                                            // قیمت خودمان
+                                            if ($max && $item['givenPrice']) {
+                                                $rawPrice = current($item['givenPrice']);
+                                                $ownPrice = getFinalSanitizedPrice([$rawPrice], $existing_brands, $discount);
+                                                if (!$ownPrice) $ownPrice = 'موجود نیست';
                                             }
+
+                                            // بررسی قیمت های حسین
+                                            $hussinPricesList = [];
+                                            $codesToCheck = array_keys($item['relation']['goods'] ?? []);
+                                            foreach ($codesToCheck as $c) {
+                                                $hussin_part = get_hussain_parts(strtoupper($c));
+                                                if (is_hussain_enabled() && !empty($hussin_part)) {
+                                                    foreach ($hussin_part as $hp) {
+                                                        if (!isset($hp['yadakprice']) || $hp['yadakprice'] <= 0) continue;
+                                                        $price = (int)($hp['yadakprice'] / 10000);
+                                                        $roundedPrice = ceil($price / 100) * 100;
+                                                        $brandName = $brandMap[$hp['brand']] ?? $hp['brand'];
+                                                        $hussinPricesList[$brandName] = $roundedPrice . ' ' . $brandName;
+                                                    }
+                                                }
+                                            }
+
+                                            // تصمیم گیری برای نمایش قیمت حسین
+                                            $showHussin = true;
+                                            $hasMOBGEN = count(array_intersect($existing_brands, ['MOB', 'GEN'])) > 0;
+                                            $hasOtherBrand = count(array_diff($existing_brands, ['MOB', 'GEN'])) > 0;
+                                            if ($hasMOBGEN && $hasOtherBrand) {
+                                                $showHussin = false;
+                                            }
+
+                                            // ترکیب قیمت‌ها
+                                            $finalPriceParts = [];
+                                            if ($ownPrice != '' && $ownPrice != 'موجود نیست') {
+                                                $finalPriceParts[] = $ownPrice;
+                                            }
+
+                                            if ($showHussin && !empty($hussinPricesList)) {
+                                                $hussinMOBGEN = array_filter($hussinPricesList, function ($k) {
+                                                    return in_array($k, ['MOB', 'GEN']);
+                                                }, ARRAY_FILTER_USE_KEY);
+                                                $hussinOther = array_filter($hussinPricesList, function ($k) {
+                                                    return !in_array($k, ['MOB', 'GEN']);
+                                                }, ARRAY_FILTER_USE_KEY);
+
+                                                // اول یک MOB یا GEN اضافه شود (اگر موجود است)
+                                                if (!empty($hussinMOBGEN)) {
+                                                    $firstMOBGENKey = array_key_first($hussinMOBGEN);
+                                                    $finalPriceParts[] = "<span data-price='{$hussinMOBGEN[$firstMOBGENKey]}'  style='color: orange !important;'>{$hussinMOBGEN[$firstMOBGENKey]}</span>";
+                                                }
+
+                                                // اگر برند دیگری هم موجود است اضافه شود
+                                                if (!empty($hussinOther)) {
+                                                    foreach ($hussinOther as $p) {
+                                                        $finalPriceParts[] = "<span data-price='{$p}' style='color: orange !important;'>{$p}</span>";
+                                                        break; // فقط اولین برند غیر MOB/GEN
+                                                    }
+                                                }
+                                            }
+
+                                            if (empty($finalPriceParts)) {
+                                                $finalPrice = 'موجود نیست';
+                                            } else {
+                                                $finalPrice = implode(' / ', $finalPriceParts);
+                                            }
+
+                                            if (!$isDisplayAllowed && $finalPrice != 'موجود نیست') $isDisplayAllowed = true;
+
+                                            echo "<p style='direction: ltr !important;' data-relation='{$relation_id}' id='{$code}-append'>{$finalPrice}</p>";
                                         }
                                         ?>
-                                        <span data-description="<?= $finalPrice ?>"></span>
+                                        <span data-description="<?= strip_tags($finalPrice) ?>"></span>
                                     </td>
 
                                     <td class="text-left py-2" onclick="closeTab()">
@@ -428,6 +415,9 @@ if ($isValidCustomer) :
         <script src="./assets/js/givePrice.js"></script>
         <script>
             const brandTranslations = <?= $customBrands ?>;
+            brandTranslations.HIQ = 'های کیو کره';
+
+
             const brandNames = Object.keys(brandTranslations);
             const brandPattern = new RegExp(`\\b(${brandNames.join('|')})\\b`, 'g');
             const dollarContainerModal = document.getElementById('dollarContainerModal');
@@ -531,8 +521,6 @@ if ($isValidCustomer) :
                     element.src = './assets/img/copyDescription.svg';
                 }, 1500);
             }
-
-
 
             function openDollarModal(basePrice, tenPercent, mobis, mobisTenPercent, korea, koreaTenPercent, ) {
                 const container = document.getElementById('Modal');

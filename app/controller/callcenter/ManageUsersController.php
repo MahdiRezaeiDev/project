@@ -6,7 +6,7 @@ if (!isset($dbname)) {
 // This functions are related to the user management page
 function getUsers()
 {
-    $users_sql = "SELECT users.id, name, family, username, access_token, authorities.user_authorities AS auth FROM yadakshop.users AS users
+    $users_sql = "SELECT users.id, name, family, username, access_token,roll , authorities.user_authorities AS auth FROM yadakshop.users AS users
                     INNER JOIN yadakshop.authorities AS authorities ON yadakshop.authorities.user_id = yadakshop.users.id
                     WHERE users.password IS NOT NULL AND users.password !=''";
 
@@ -32,12 +32,16 @@ $authority = [
     "requiredGoods" => false,
     "generalRequiredGoods" => false,
     "stockAdjustment" => false,
-    "telegramProcess" => false,
+    //"telegramProcess" => false,
     "givePrice" => false,
     "priceRates" => false,
     "relationships" => false,
     "defineExchangeRate" => false,
     "telegramPartner" => false,
+    "hamkarprint" => false,
+    "customerprint" =>false,
+    "readonly" =>false
+    
 ];
 
 
@@ -56,32 +60,38 @@ function getAuthority($type)
                 "requiredGoods" => false,
                 "generalRequiredGoods" => false,
                 "stockAdjustment" => false,
-                "telegramProcess" => false,
+                //"telegramProcess" => false,
                 "givePrice" => true,
                 "priceRates" => false,
                 "relationships" => false,
                 "defineExchangeRate" => false,
-                "telegramPartner" => false,
+                "telegramPartner" => true,
+                "hamkarprint" => false,
+                "customerprint" =>false,
+                 "readonly" =>false
             ];
             break;
         case '2':
             return [
                 "usersManagement" => false,
-                "sell" => true,
-                "purchase" => true,
-                "sellsReport" => true,
-                "purchaseReport" => true,
+                "sell" => false,
+                "purchase" => false,
+                "sellsReport" => false,
+                "purchaseReport" => false,
                 "transferGoods" => false,
                 "transferReport" => false,
                 "requiredGoods" => false,
                 "generalRequiredGoods" => false,
                 "stockAdjustment" => false,
                 "telegramProcess" => false,
-                "givePrice" => false,
+                "givePrice" => true,
                 "priceRates" => false,
                 "relationships" => false,
                 "defineExchangeRate" => false,
                 "telegramPartner" => false,
+                "hamkarprint" => false,
+                "customerprint" =>false,
+                 "readonly" =>false
             ];
             break;
         case '3':
@@ -89,19 +99,22 @@ function getAuthority($type)
                 "usersManagement" => false,
                 "sell" => true,
                 "purchase" => true,
-                "sellsReport" => true,
-                "purchaseReport" => true,
-                "transferGoods" => true,
+                "sellsReport" => false,
+                "purchaseReport" => false,
+                "transferGoods" => false,
                 "transferReport" => true,
-                "requiredGoods" => true,
+                "requiredGoods" => false,
                 "generalRequiredGoods" => true,
                 "stockAdjustment" => true,
-                "telegramProcess" => false,
-                "givePrice" => false,
+                //"telegramProcess" => false,
+                "givePrice" => true,
                 "priceRates" => false,
                 "relationships" => false,
                 "defineExchangeRate" => false,
                 "telegramPartner" => false,
+                "hamkarprint" => false,
+                "customerprint" =>false,
+               "readonly" =>false
             ];
             break;
         case '4':
@@ -116,12 +129,38 @@ function getAuthority($type)
                 "requiredGoods" => true,
                 "generalRequiredGoods" => true,
                 "stockAdjustment" => true,
-                "telegramProcess" => true,
+                //"telegramProcess" => true,
+                "givePrice" => true,
+                "priceRates" => false,
+                "relationships" => false,
+                "defineExchangeRate" => false,
+                "telegramPartner" => false,
+                "hamkarprint" => false,
+                "customerprint" =>false,
+                "readonly" =>false
+            ];
+            break;
+        case '5':
+            return [
+                "usersManagement" => true,
+                "sell" => true,
+                "purchase" => true,
+                "sellsReport" => true,
+                "purchaseReport" => true,
+                "transferGoods" => true,
+                "transferReport" => true,
+                "requiredGoods" => true,
+                "generalRequiredGoods" => true,
+                "stockAdjustment" => true,
+                //"telegramProcess" => true,
                 "givePrice" => true,
                 "priceRates" => true,
                 "relationships" => true,
                 "defineExchangeRate" => true,
                 "telegramPartner" => true,
+                "hamkarprint" => true,
+                "customerprint" =>true,
+                "readonly" =>false
             ];
             break;
     }
@@ -143,10 +182,11 @@ if (isset($_POST['createUser'])) {
         PDO_CONNECTION->beginTransaction();
         try {
             $sql = "INSERT INTO yadakshop.users (username, password, roll, internal, ip, name, family, isLogin) 
-                    VALUES (:username, :password, '10', '', '', :name, :family, '0')";
+                    VALUES (:username, :password, :roll, '', '', :name, :family, '0')";
             $stmt = PDO_CONNECTION->prepare($sql);
             $stmt->bindParam(':username', $username);
             $stmt->bindParam(':password', $hash_pass);
+              $stmt->bindParam(':roll', $type);
             $stmt->bindParam(':name', $name);
             $stmt->bindParam(':family', $family);
             $result = $stmt->execute();
@@ -216,7 +256,7 @@ if (isset($_POST['id']) && !empty($_POST['username'])) {
     $password = trim($_POST['password']);
     $type = $_POST['type'];
     $id = $_POST['id'];
-    $roll = 10;
+    $roll = $type;
     $authority = getAuthority($type);
 
     $hash_pass = password_hash($password, PASSWORD_DEFAULT);

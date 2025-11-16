@@ -360,30 +360,31 @@ function copyItemPrice(elem) {
   var parentTd = elem.parentNode;
 
   // Get the siblings <td> elements
-  var sibling1 = parentTd.previousElementSibling;
-  var sibling2 = sibling1.previousElementSibling;
+  var sibling1 = parentTd.previousElementSibling; // price
+  var sibling2 = sibling1.previousElementSibling; // code
 
-  // Retrieve the innerHTML of the sibling <td> elements
-  var sibling1HTML = sibling1.firstElementChild.innerHTML.trim();
-  var sibling2HTML = sibling2.innerHTML.trim();
+  // Retrieve the text content of the sibling <td> elements (ignores HTML tags like <span>)
+  var sibling1Text = sibling1.textContent.trim();
+  var sibling2Text = sibling2.textContent.trim();
 
   const dash = ["موجود نیست", "نیاز به بررسی"];
   const space = ["کد اشتباه", "نیاز به قیمت"];
 
   let value = "";
-  if (dash.includes(sibling1HTML)) {
+  if (dash.includes(sibling1Text)) {
     value = "-";
-  } else if (space.includes(sibling1HTML)) {
+  } else if (space.includes(sibling1Text)) {
     value = " ";
   } else {
-    value = sibling1HTML;
+    value = sibling1Text;
   }
 
-  let text = sibling2HTML + " : " + value;
+  let text = sibling2Text + " : " + value;
 
+  // Copy to clipboard
   copyToClipboard(text);
 
-  // Alert the copied text
+  // Visual feedback
   elem.innerHTML = `done`;
   setTimeout(() => {
     elem.innerHTML = `content_copy`;

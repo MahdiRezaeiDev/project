@@ -453,7 +453,7 @@ function get_hussain_parts($partNumber)
 
     $benefit = (float)($config['benefit'] ?? 3);  // default 3%
 
-    // Fetch the part from hoseinparts_products
+    // Fetch all parts from hoseinparts_products for the given property_code
     $stmt = PDO_CONNECTION->prepare("
         SELECT 
             property_code, 
@@ -467,26 +467,67 @@ function get_hussain_parts($partNumber)
             last_sale_price,
             last_update
         FROM hoseinparts_products 
-        WHERE property_code = :partnumber 
-        LIMIT 1
+        WHERE property_code = :partnumber
     ");
     $stmt->bindParam(':partnumber', $partNumber);
     $stmt->execute();
-    $part = $stmt->fetch(PDO::FETCH_ASSOC);
+    $parts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if (!$part) {
-        return false; // part not found
+    if (!$parts) {
+        return false; // no parts found
     }
 
-    // Convert numeric fields safely
-    $offerPrice  = (float)($part['offer_price'] ?? 0);
+    // Calculate yadakprice for each brand
+    foreach ($parts as &$part) {
+        $offerPrice = (float)($part['offer_price'] ?? 0);
+        $yadakPrice = $offerPrice * (1 + $benefit / 100);
+        $part['yadakprice'] = round($yadakPrice, 2); // rounded to 2 decimals
+    }
 
-    // Step 3: add dynamic benefit
-    $yadakPrice = $offerPrice * (1 + $benefit / 100);
+    return $parts; // return array of all brands for this part
+}
 
-    $part['yadakprice'] = round($yadakPrice, 2); // rounded to 2 decimals
+function get_hussain_parts_existing($partNumber)
+{
+    // Fetch dynamic percentages from hussain_api (assuming only one row)
+    $stmt2 = PDO_CONNECTION->prepare("SELECT percent, benefit, status FROM hussain_api LIMIT 1");
+    $stmt2->execute();
+    $config = $stmt2->fetch(PDO::FETCH_ASSOC);
 
-    return $part;
+    $benefit = (float)($config['benefit'] ?? 3);  // default 3%
+
+    // Fetch all parts from hoseinparts_products for the given property_code
+    $stmt = PDO_CONNECTION->prepare("
+        SELECT 
+            property_code, 
+            brand, 
+            stock, 
+            offer_price, 
+            id, 
+            similar_code,
+            online_price,
+            instant_offer_price,
+            last_sale_price,
+            last_update
+        FROM hoseinparts_products 
+        WHERE property_code = :partnumber
+    ");
+    $stmt->bindParam(':partnumber', $partNumber);
+    $stmt->execute();
+    $parts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if (!$parts) {
+        return false; // no parts found
+    }
+
+    // Calculate yadakprice for each brand
+    foreach ($parts as &$part) {
+        $offerPrice = (float)($part['offer_price'] ?? 0);
+        $yadakPrice = $offerPrice * (1 + $benefit / 100);
+        $part['yadakprice'] = round($yadakPrice, 2); // rounded to 2 decimals
+    }
+
+    return $parts; // return array of all brands for this part
 }
 
 function lastActiveRate()

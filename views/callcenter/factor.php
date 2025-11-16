@@ -63,8 +63,8 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
     /* Hide everything except #factor_table for print */
     @media print {
         @page {
-            size: auto;
-            margin: 0;
+             margin: 0;
+            size: landscape;
         }
 
         body {
@@ -114,7 +114,17 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
         .hide_while_print {
             display: none !important;
         }
+        
+        el-dialog-backdrop {
+            background: #fff !important;
+        }
     }
+
+
+     
+
+ 
+
 </style>
 
 <!-- HTML STRUCTURE -->
@@ -794,6 +804,32 @@ $qualified = ['mahdi', 'babak', 'niyayesh', 'reyhan', 'ahmadiyan', 'sabahashemi'
             }, 500); // wait for fade-out animation
         }, 3000);
     }
+    document.addEventListener("DOMContentLoaded", function () {
+    const wrapper = document.getElementById('wrapper');
+    const modal = document.getElementById('deliveryModal');
+    const openBtn = document.getElementById('printIcon');
+    const closeBtns = document.getElementsByClassName('closedelivery');
+
+    if (!wrapper || !modal || !openBtn || !closeBtns) {
+        console.error("⚠️ یکی از المنت‌ها پیدا نشد!");
+        return;
+    }
+
+    openBtn.addEventListener("click", function () {
+        modal.classList.remove("hidden");
+        wrapper.classList.add("hide_while_print");
+        console.log("مودال باز شد و کلاس اضافه شد");
+    });
+
+    Array.from(closeBtns).forEach(btn => {
+        btn.addEventListener("click", function () {
+            modal.classList.add("hidden");
+            wrapper.classList.remove("hide_while_print");
+            console.log("مودال بسته شد و کلاس حذف شد");
+        });
+    });
+});
+
 </script>
 
 <?php

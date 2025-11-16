@@ -57,7 +57,7 @@ if (!file_exists($profile)) {
     require './components/owner/generalDetails.php';
     ?>
     <p class="absolute bottom-2 right-2 text-xs text-gray-500 flex items-center gap-1">
-        <img class="rounded-full w-6 h-6 inline" src="../../public/userimg/<?= $_SESSION['user_id'] ?>.jpg" />
+        <img class="rounded-full w-6 h-6 inline" src="../../public/userimg/<?= $_SESSION['user']['id'] ?>.jpg" />
         <?= date('H:i'); ?>
     </p>
 </div>
@@ -68,7 +68,7 @@ if (!file_exists($profile)) {
     require './components/finance/generalDetails.php';
     ?>
     <p class="absolute bottom-2 right-2 text-xs text-gray-500 flex items-center gap-1">
-        <img class="rounded-full w-6 h-6 inline" src="../../public/userimg/<?= $_SESSION['user_id'] ?>.jpg" />
+        <img class="rounded-full w-6 h-6 inline" src="../../public/userimg/<?= $_SESSION['user']['id'] ?>.jpg" />
         <?= date('H:i'); ?>
     </p>
 </div>
@@ -79,7 +79,7 @@ if (!file_exists($profile)) {
     require './components/inventory/generalDetails.php';
     ?>
     <p class="absolute bottom-2 right-2 text-xs text-gray-500 flex items-center gap-1">
-        <img class="rounded-full w-6 h-6 inline" src="../../public/userimg/<?= $_SESSION['user_id'] ?>.jpg" />
+        <img class="rounded-full w-6 h-6 inline" src="../../public/userimg/<?= $_SESSION['user']['id'] ?>.jpg" />
         <?= date('H:i'); ?>
     </p>
 </div>

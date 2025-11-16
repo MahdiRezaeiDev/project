@@ -152,10 +152,10 @@
             .then(res => {
                 if (res.data.status === 'success') {
                     showToast("دسترسی چاپ تأیید شد", "success");
-                    console.log("مجوز چاپ تأیید شد برای فاکتور:", factorNumber);
-
                     window.print();
                 } else {
+                    console.log(res.data);
+
                     showToast(res.data.message || "شما مجاز به چاپ نیستید", "error");
                 }
             })
